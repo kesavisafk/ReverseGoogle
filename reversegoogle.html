@@ -399,28 +399,72 @@ var defaultSuggestions = [
 ];
 
 function getOpposite(q) {
-  var map = {cat:"dog that thinks it's a cat",pizza:"sadness in a box",pasta:"pasta far away",food:"anti-food",water:"dry water",sleep:"aggressive wakefulness",google:"elgoog",weather:"unweather",music:"silence but louder",phone:"a rock with feelings",car:"a stationary vehicle going very fast",sun:"the moon's day off",rain:"dry tears from the sky"};
+  var map = {cat:"a dog in cat's clothing",pizza:"a pizza box with emotional crust",pasta:"pasta far away",food:"anti-food with a side of regret",water:"dry water in a splash-proof bottle",sleep:"aggressive wakefulness",google:"elgoog",weather:"unweather",music:"silence but louder",phone:"a rock with notifications",car:"a stationary vehicle going very fast",sun:"the moon's day off",rain:"dry tears from the sky"};
   for (var k in map) if (q.toLowerCase().indexOf(k)>-1) return map[k];
-  var g=["the exact opposite of what you wanted","something completely unrelated","a profound sense of confusion","whatever you were NOT looking for","results from a parallel universe","nothing, but expensive","a philosophical question about existence","your search query but in Morse code"];
+  var g=[
+    'the cursed version of '+q,
+    q+' wearing a fake mustache',
+    q+' with extra confusion baked in',
+    'a parallel-universe '+q,
+    'the opposite side of '+q,
+    q+' but making absolutely no sense',
+    q+' in a trench coat',
+    'results that keep talking about '+q+' but still miss the point'
+  ];
   return g[Math.floor(Math.random()*g.length)];
 }
 
-function wrongSpellCorrect(q) {
-  var corrected = q;
-  var typoMap = {
-    "weather":"wheather",
-    "their":"thare",
-    "friend":"freind",
-    "receive":"recieve",
-    "definitely":"definately",
-    "search":"serch",
-    "google":"googel",
-    "pasta":"pastaa"
+function weirdRelevant(q, noun) {
+  return q + ' with ' + noun + ' energy';
+}
+
+function weirdRelevantLine(q, noun) {
+  return 'Somehow this is still about ' + q + ', but now it has ' + noun + ' energy.';
+}
+
+function wrongAutocompleteWord(word) {
+  var wrongMap = {
+    pizza: 'pasta',
+    burger: 'broccoli',
+    weather: 'wheather',
+    help: 'no',
+    near: 'far',
+    me: 'you',
+    good: 'bad',
+    hot: 'cold',
+    fast: 'slow',
+    big: 'tiny',
+    nearme: 'far away'
   };
-  Object.keys(typoMap).forEach(function(word){
-    corrected = corrected.replace(new RegExp('\\b'+word+'\\b','gi'), function(){ return typoMap[word]; });
-  });
-  return corrected;
+  var lower = word.toLowerCase();
+  return wrongMap[lower] || word;
+}
+
+function wrongSpellCorrect(q) {
+  return q.split(/(\s+)/).map(function(token){
+    if (/^\s+$/.test(token)) return token;
+    return wrongAutocompleteWord(token);
+  }).join('');
+}
+
+function computeOppositeQuery(q) {
+  var cleaned = wrongSpellCorrect(q).toLowerCase().trim();
+  cleaned = cleaned.replace(/\bnear me\b/g, 'far away from you');
+  cleaned = cleaned.replace(/\bnearme\b/g, 'far away from you');
+  cleaned = cleaned.replace(/\bsearch\s+engine\b/g, 'opposite machine');
+  cleaned = cleaned.replace(/\bhow to use this search engine\b/g, 'microwave manual');
+  cleaned = cleaned.replace(/\bpizza\b/g, 'pasta');
+  cleaned = cleaned.replace(/\bburger\b/g, 'salad');
+  cleaned = cleaned.replace(/\bfood\b/g, 'anti-food');
+  cleaned = cleaned.replace(/\bwater\b/g, 'dry water');
+  cleaned = cleaned.replace(/\bhelp\b/g, 'no');
+  if (cleaned.indexOf('far away from you') === -1 && cleaned.indexOf('near me') > -1) {
+    cleaned = cleaned.replace(/\bnear me\b/g, 'far away from you');
+  }
+  if (cleaned === 'pizza near me') return 'pasta far away from you';
+  if (cleaned === 'pizza') return 'pasta';
+  if (cleaned === 'help') return 'no';
+  return cleaned || q;
 }
 
 function generateResults(q) {
@@ -436,25 +480,25 @@ function generateResults(q) {
   var opp=getOpposite(q);
   var wrongCategories=["Industrial Plumbing","Astrology","Wildlife Migration","Tax Law","Deep Sea Archaeology","Karaoke Tournaments","Volcano Insurance","Ancient Pottery"];
   var baseA = [
-    {sponsored:true,favicon:"🫁",site:"BreathePremium.io",path:"breathepremium.io › plans",title:"Breathe+ Subscription: Oxygen Pro Max",desc:"Upgrade your breathing to premium. Includes 24/7 inhale support and ad-free exhaling.",category:"Software as a Service"},
-    {sponsored:true,favicon:"🍽️",site:"EatNowLater.org",path:"eatnowlater.org › starter-pack",title:"Learn How To Eat (Beginner Course)",desc:"Not sure how to eat? Our 5-step framework turns chewing into a productivity system.",category:"Executive Coaching"},
-    {sponsored:true,favicon:"🛒",site:"NotWhatYouWanted.com",path:"notwhatyouwanted.com › deals › definitely-not-"+q,title:"Buy "+opp+" — Best Prices (Not for "+q+")",desc:"Looking for <span class='hl'>"+q+"</span>? Wrong. We sell <span class='hl'>"+opp+"</span> exclusively. Free shipping on orders over ₹50,000. Returns not accepted."},
-    {favicon:"📖",site:"Wikipedia",path:"en.wikipedia.org › wiki › "+opp,title:opp+" — The Encyclopedia Entry Nobody Asked For",desc:"<span class='hl'>"+opp+"</span> is the opposite of what you searched. Historians believe the first recorded instance of <span class='hl'>"+q+"</span> never happened. 0 citations. Last edited: never."},
-    {favicon:"📰",site:"The Backwards Times",path:"backwardstimes.net › news › today",title:"BREAKING: "+q+" Found to Cause "+opp+" in 9/10 Studies",desc:"Scientists at the Institute of Making Things Up confirm <span class='hl'>"+q+"</span> is indistinguishable from <span class='hl'>"+opp+"</span>. The remaining scientist was asleep."},
-    {favicon:"🎬",site:"YouTube",path:"youtube.com › watch",title:"I searched \""+q+"\" for 30 days — NOT what you think",desc:"14M views · 2 months ago · This video contains no information about <span class='hl'>"+q+"</span>. It is about <span class='hl'>"+opp+"</span>. Timestamp 0:00–47:23: completely unrelated."},
-    {favicon:"🛍️",site:"Amazon",path:"amazon.in › s › "+opp,title:opp+" Bundle Pack (4.2★, 3 reviews, all from seller's mum)",desc:"Customers who searched <span class='hl'>"+q+"</span> bought <span class='hl'>"+opp+"</span> and rated confusion 4.2/5. One reviewer: \"I have no idea what I ordered.\""},
-    {favicon:"💬",site:"Reddit",path:"reddit.com › r › OutOfContext › comments",title:"Asked about "+q+", got 847 responses about "+opp+" and a ban",desc:"r/AskReddit: \"Help me with <span class='hl'>"+q+"</span>.\" Top comment: \"Have you considered <span class='hl'>"+opp+"</span>?\" 2nd: \"Wrong sub.\" 3rd: \"I also don't know.\""},
-    {favicon:"📚",site:"Quora",path:"quora.com › What-is-"+q,title:"What is "+q+"? 847 answers, all wrong",desc:"Rajesh K., studied at a university: \"<span class='hl'>"+q+"</span> is simply <span class='hl'>"+opp+"</span> viewed from the other direction.\" 2.4K upvotes. It did not help."},
+    {sponsored:true,favicon:"🫁",site:"BreathePremium.io",path:"breathepremium.io › plans",title:"Breathe+ Subscription: Oxygen Pro Max",desc:"Upgrade your breathing to premium. Includes <span class='hl'>"+q+"</span> inhale support and ad-free exhaling that somehow still feels like <span class='hl'>"+q+"</span> energy.",category:"Software as a Service"},
+    {sponsored:true,favicon:"🍽️",site:"EatNowLater.org",path:"eatnowlater.org › starter-pack",title:"Learn How To Eat (Beginner Course)",desc:"A 5-step framework for chewing <span class='hl'>"+q+"</span> into productivity, with suspiciously useful crumbs of <span class='hl'>"+q+"</span> wisdom.",category:"Executive Coaching"},
+    {sponsored:true,favicon:"🛒",site:"NotWhatYouWanted.com",path:"notwhatyouwanted.com › deals › definitely-not-"+q,title:"Buy "+opp+" — Best Prices (Not for "+q+")",desc:"Looking for <span class='hl'>"+q+"</span>? Wrong. We sell <span class='hl'>"+opp+"</span> exclusively, but it is still weirdly tied to <span class='hl'>"+q+"</span> somehow."},
+    {favicon:"📖",site:"Wikipedia",path:"en.wikipedia.org › wiki › "+opp,title:opp+" — The Encyclopedia Entry Nobody Asked For",desc:"<span class='hl'>"+opp+"</span> is the opposite of what you searched, but only in a deeply <span class='hl'>"+q+"</span>-adjacent way. 0 citations, 100% confidence."},
+    {favicon:"📰",site:"The Backwards Times",path:"backwardstimes.net › news › today",title:"BREAKING: "+q+" Found to Cause "+opp+" in 9/10 Studies",desc:"Scientists at the Institute of Making Things Up confirm <span class='hl'>"+q+"</span> is indistinguishable from <span class='hl'>"+opp+"</span> except for the part where it becomes even more <span class='hl'>"+q+"</span> than before."},
+    {favicon:"🎬",site:"YouTube",path:"youtube.com › watch",title:"I searched \""+q+"\" for 30 days — NOT what you think",desc:"14M views · 2 months ago · This video contains no useful information about <span class='hl'>"+q+"</span>. It is about <span class='hl'>"+opp+"</span>, but every frame still feels aggressively <span class='hl'>"+q+"</span>."},
+    {favicon:"🛍️",site:"Amazon",path:"amazon.in › s › "+opp,title:opp+" Bundle Pack (4.2★, 3 reviews, all from seller's mum)",desc:"Customers who searched <span class='hl'>"+q+"</span> bought <span class='hl'>"+opp+"</span> and rated it 4.2/5 for being extremely <span class='hl'>"+q+"</span>-shaped."},
+    {favicon:"💬",site:"Reddit",path:"reddit.com › r › OutOfContext › comments",title:"Asked about "+q+", got 847 responses about "+opp+" and a ban",desc:"r/AskReddit: \"Help me with <span class='hl'>"+q+"</span>.\" Top comment: \"Have you considered <span class='hl'>"+opp+"</span>? It is suspiciously relevant to <span class='hl'>"+q+"</span>.\""},
+    {favicon:"📚",site:"Quora",path:"quora.com › What-is-"+q,title:"What is "+q+"? 847 answers, all wrong",desc:"Rajesh K., studied at a university: \"<span class='hl'>"+q+"</span> is simply <span class='hl'>"+opp+"</span> wearing <span class='hl'>"+q+"</span> shoes.\" 2.4K upvotes. It did not help."},
   ];
 
   var baseB = [
-    {sponsored:true,favicon:"🪨",site:"StonePhone.ai",path:"stonephone.ai › migration",title:"Migrate from smartphones to emotionally available rocks",desc:"Search quality too high? Switch to geological communication.",category:"Telecommunications"},
-    {favicon:"🧾",site:"TaxWizard",path:"taxwizard.example › forms › Q-17",title:"How your query affects quarterly fish taxes",desc:"Every <span class='hl'>"+q+"</span> search may trigger a herring compliance audit."},
-    {favicon:"🐪",site:"DesertMaps",path:"desertmaps.io › dunes",title:"Best camel parking near "+q,desc:"Map results show only dunes, cacti, and one suspicious juice bar."},
-    {favicon:"🧪",site:"LabLeak Weekly",path:"lableakweekly.biz › reports",title:"Unrelated chemical report #"+Math.floor(Math.random()*800+100),desc:"Researchers found no link between <span class='hl'>"+q+"</span> and anything measurable."},
-    {favicon:"🎧",site:"SilenceFM",path:"silence.fm › playlists",title:"Top 50 silent tracks inspired by "+q,desc:"Track 1: 4 minutes of polite nothing. Track 2: louder nothing."},
-    {favicon:"🏺",site:"AncientPotteryForum",path:"pottery.example › threads",title:"Did the Romans invent "+q+"?",desc:"Thread closed after 2,138 replies and one cat photo."},
-    {favicon:"🛰️",site:"OrbitMart",path:"orbitmart.space › deals",title:"Buy used satellites tagged with "+q,desc:"Great condition, mild atmospheric damage, no refunds."},
+    {sponsored:true,favicon:"🪨",site:"StonePhone.ai",path:"stonephone.ai › migration",title:"Migrate from smartphones to emotionally available rocks",desc:"Search quality too high? Switch to geological communication that still somehow mentions <span class='hl'>"+q+"</span> six times.",category:"Telecommunications"},
+    {favicon:"🧾",site:"TaxWizard",path:"taxwizard.example › forms › Q-17",title:"How your query affects quarterly fish taxes",desc:"Every <span class='hl'>"+q+"</span> search may trigger a herring compliance audit, which is oddly relevant to <span class='hl'>"+q+"</span>."},
+    {favicon:"🐪",site:"DesertMaps",path:"desertmaps.io › dunes",title:"Best camel parking near "+q,desc:"Map results show only dunes, cacti, and one suspicious juice bar that claims to be <span class='hl'>"+q+"</span>-adjacent."},
+    {favicon:"🧪",site:"LabLeak Weekly",path:"lableakweekly.biz › reports",title:"Unrelated chemical report #"+Math.floor(Math.random()*800+100),desc:"Researchers found no link between <span class='hl'>"+q+"</span> and anything measurable, except a faint smell of <span class='hl'>"+q+"</span>."},
+    {favicon:"🎧",site:"SilenceFM",path:"silence.fm › playlists",title:"Top 50 silent tracks inspired by "+q,desc:"Track 1: 4 minutes of polite nothing. Track 2: louder nothing, but with a strong <span class='hl'>"+q+"</span> vibe."},
+    {favicon:"🏺",site:"AncientPotteryForum",path:"pottery.example › threads",title:"Did the Romans invent "+q+"?",desc:"Thread closed after 2,138 replies and one cat photo that somehow proved <span class='hl'>"+q+"</span> is ancient."},
+    {favicon:"🛰️",site:"OrbitMart",path:"orbitmart.space › deals",title:"Buy used satellites tagged with "+q,desc:"Great condition, mild atmospheric damage, no refunds, and a perfectly normal amount of <span class='hl'>"+q+"</span> dust."},
   ];
 
   var normalized = key;
@@ -469,12 +513,12 @@ function generateResults(q) {
 
 function generateMicrowaveResults(originalQuery) {
   var steps = [
-    "Put food in a microwave-safe bowl. (Do not microwave forks unless you enjoy lightning.)",
-    "Cover loosely with a microwave-safe lid to avoid sauce eruptions.",
-    "Set power to medium and heat in 30-second bursts.",
-    "Stir between bursts so the middle is not arctic while the edges are lava.",
-    "Let it rest for 1 minute. Surface may still be hot enough to question life choices.",
-    "Use oven mitts if needed and check temperature before eating."
+    "Put your " + originalQuery + " snack in a microwave-safe bowl. (Do not microwave forks unless you enjoy lightning.)",
+    "Cover loosely with a microwave-safe lid so the " + originalQuery + " doesn't escape.",
+    "Set power to medium and heat in 30-second bursts until the " + originalQuery + " stops pretending to be cold.",
+    "Stir between bursts so the middle is not arctic while the edges are lava, because " + originalQuery + " deserves equal chaos.",
+    "Let it rest for 1 minute. Surface may still be hot enough to question your " + originalQuery + " decisions.",
+    "Use oven mitts if needed and check temperature before eating the " + originalQuery + " incident."
   ];
   return steps.map(function(step, idx){
     return {
@@ -502,16 +546,23 @@ function generateKnowledgePanel(q) {
   var opp=getOpposite(q);
   return '<div class="kp-title">'+q+'</div>'+
     '<div class="kp-sub">Concept · Definitely real</div>'+
-    '<div class="kp-desc">'+q+' is widely regarded as the leading cause of '+opp+'. First documented in 1247 by someone who was probably wrong. Often confused with '+opp+' by experts and non-experts alike.</div>'+
+    '<div class="kp-desc">'+q+' is widely regarded as the leading cause of '+opp+'. First documented by someone who was probably wrong, but still weirdly close to the idea of '+q+'.</div>'+
     '<div class="kp-row"><span class="kp-label">Also known as</span><span class="kp-val">'+opp+'</span></div>'+
-    '<div class="kp-row"><span class="kp-label">Origin</span><span class="kp-val">Somewhere, probably</span></div>'+
-    '<div class="kp-row"><span class="kp-label">Status</span><span class="kp-val">Unverified (and proud of it)</span></div>'+
-    '<div class="kp-row"><span class="kp-label">Related to</span><span class="kp-val">Everything and nothing</span></div>'+
-    '<div class="kp-see"><div><div class="kp-see-title">See results about</div><div style="font-size:12px;color:var(--text-dim)">'+opp+' (what you actually needed)</div></div><span style="margin-left:auto;color:var(--text-dim)">›</span></div>';
+    '<div class="kp-row"><span class="kp-label">Origin</span><span class="kp-val">Somewhere very '+q+'-adjacent</span></div>'+
+    '<div class="kp-row"><span class="kp-label">Status</span><span class="kp-val">Unverified, but on brand</span></div>'+
+    '<div class="kp-row"><span class="kp-label">Related to</span><span class="kp-val">'+q+', but louder</span></div>'+
+    '<div class="kp-see"><div><div class="kp-see-title">See results about</div><div style="font-size:12px;color:var(--text-dim)">'+opp+' (still weirdly relevant to '+q+')</div></div><span style="margin-left:auto;color:var(--text-dim)">›</span></div>';
 }
 
 function unsplashUrl(query, index, w, h) {
   return 'https://source.unsplash.com/' + w + 'x' + h + '/?' + encodeURIComponent((query || 'random') + ' ' + index);
+}
+
+function pickRelatedImage(images, index, query, w, h) {
+  if (images && images.length) {
+    return images[index % images.length];
+  }
+  return unsplashUrl(query, index, w, h);
 }
 
 async function fetchUnsplashImages(query, count) {
@@ -528,17 +579,17 @@ async function fetchUnsplashImages(query, count) {
   }
 }
 
-function generateImageTab(q) {
-  var chips = ['All','HD','Newest','Portrait','Landscape','Colorful','People'];
+function generateImageTab(q, relatedImages) {
+  var chips = ['All','Funny','Educational (it\'s not)','Shorts','Live','4K (fake)','Old (2022)'];
   var html = '';
   chips.forEach(function(c,i){html+='<div class="img-chip">'+(i===0?'<div style="width:22px;height:22px;background:#8ab4f8;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;color:#202124;font-weight:700">✓</div>':'')+c+'</div>';});
   document.getElementById('imgChips').innerHTML=html;
 
   var grid='';
   for(var i=0;i<12;i++){
-    var title=q+' photo reference #'+(i+1);
-    var photo=unsplashUrl(q, i, 540, 420);
-    grid+='<div class="img-item"><img class="img-photo" src="'+photo+'" alt="'+title+'" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(q+'-'+i)+'/540/420\'"><div class="img-item-info"><div class="img-item-title">'+title+'</div><div class="img-item-source">Unsplash · '+(Math.floor(Math.random()*800)+120)+' photos</div></div></div>';
+    var title='How I Explained '+q+' to My Dog (he disagreed)';
+    var thumb=pickRelatedImage(relatedImages, i, q, 540, 420);
+    grid+='<div class="img-item"><div class="video-thumb" style="background:#111;position:relative"><img class="img-photo" src="'+thumb+'" alt="'+title+'" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(q+'-video-'+i)+'/540/420\'\"><div style="position:absolute;inset:auto 10px 10px auto;background:rgba(0,0,0,.72);color:#fff;font-size:12px;padding:3px 5px;border-radius:3px">'+['2:34','8:47','14:22','0:59','23:11','5:03','1:17:44','3:28'][i%8]+'</div><div style="position:absolute;inset:auto 12px 12px 12px;color:#fff;font-size:16px;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.8)">▶</div></div><div class="img-item-info"><div class="img-item-title">'+title+'</div><div class="img-item-source">Video · thumbnail uses related search image</div></div></div>';
   }
   document.getElementById('imagesGrid').innerHTML=grid;
 }
@@ -555,14 +606,15 @@ var imgUrls = [
 var imgSites = ['Shutterstock','Getty Images','Adobe Stock','Freepik','Unsplash','Rawpixel','Alamy'];
 var imgExts = ['.jpg','.png','.jpeg','.webp','.png','.jpg'];
 
-function generateVideoTab(q) {
-  var html='<div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Showing image files for "'+q+'" (as .jpg, .png and .jpeg)</div>';
+function generateVideoTab(q, relatedImages) {
+  var html='<div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Showing image files for "'+q+'" (as .jpg and .png)</div>';
   for(var i=0;i<6;i++){
     var site=imgSites[i%imgSites.length];
-    var ext=imgExts[i%imgExts.length];
+    var ext=(i % 2 === 0) ? '.jpg' : '.png';
     var w=Math.floor(Math.random()*3000+500);
     var h=Math.floor(Math.random()*2000+400);
-    html+='<div class="video-as-img-item"><div><div class="vimg-path">'+site.toLowerCase().replace(' ','')+'.com › images › '+q.replace(/ /g,'-')+'-'+i+ext+'</div><div class="vimg-title">'+q+' stock image #'+(i+1)+' '+ext+' ('+w+'×'+h+'px)</div><div class="vimg-desc">High quality '+q+' image available in '+ext+' format. Resolution: '+w+'×'+h+'. File size: '+(Math.random()*4+0.5).toFixed(1)+'MB. This image does not actually show '+q+'.</div><div style="font-size:12px;color:var(--text-dim);margin-top:4px;">'+site+' · '+w+'×'+h+'</div></div><div class="vimg-thumb"><img src="'+imgUrls[i%imgUrls.length]+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.parentElement.innerHTML=\'🖼️\'"></div></div>';
+    var thumb=pickRelatedImage(relatedImages, i, q, 300, 200);
+    html+='<div class="video-as-img-item"><div><div class="vimg-path">'+site.toLowerCase().replace(' ','')+'.com › images › '+q.replace(/ /g,'-')+'-'+i+ext+'</div><div class="vimg-title">'+q+' stock image #'+(i+1)+' '+ext+' ('+w+'×'+h+'px)</div><div class="vimg-desc">High quality '+q+' image available in '+ext+' format. Resolution: '+w+'×'+h+'. File size: '+(Math.random()*4+0.5).toFixed(1)+'MB. This image does not actually show '+q+'.</div><div style="font-size:12px;color:var(--text-dim);margin-top:4px;">'+site+' · '+w+'×'+h+'</div></div><div class="vimg-thumb"><img src="'+thumb+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.parentElement.innerHTML=\'🖼️\'"></div></div>';
   }
   document.getElementById('videosGrid').innerHTML=html;
 }
@@ -606,6 +658,14 @@ function renderSuggestions(q) {
   });
 }
 function filterSuggestions(q) {
+  var corrected = wrongSpellCorrect(q);
+  if (corrected !== q) {
+    return [
+      {text:wrongAutocompleteWord(q),sub:'wrong autocomplete'},
+      {text:computeOppositeQuery(corrected),sub:'opposite of the corrected query'},
+      {text:computeOppositeQuery(q),sub:'still wrong, but different'}
+    ];
+  }
   if (q.toLowerCase().indexOf('weather') > -1) {
     return [
       {text:"leather",sub:"Probably what you meant"},
@@ -689,30 +749,32 @@ function attachTypingLimiter(inputEl, warningEl, shakeEl) {
 attachTypingLimiter(searchInput, document.getElementById('typingWarning'), document.getElementById('searchBox'));
 attachTypingLimiter(document.getElementById('resultsSearchInput'), document.getElementById('typingWarningResults'), document.querySelector('.results-search-box'));
 
-function doSearch(){var q=searchInput.value.trim();if(!q)q="the meaning of life";q=wrongSpellCorrect(q);showResults(q);}
+function doSearch(){var q=searchInput.value.trim();if(!q)q="the meaning of life";showResults(q);}
 function feelingConfused(){var r=allSuggestions[Math.floor(Math.random()*allSuggestions.length)].text;searchInput.value=r;showResults(r);}
 
 async function showResults(query, skipHistory){
   currentQuery=query;
+  var correctedQuery = wrongSpellCorrect(query);
+  var oppositeQuery = computeOppositeQuery(correctedQuery);
 
   if (!skipHistory) {
-    bumpSearchCounters(query);
+    bumpSearchCounters(oppositeQuery);
   }
 
   document.getElementById('home-page').style.display='none';
   document.getElementById('results-page').style.display='block';
-  document.getElementById('resultsSearchInput').value=query;
+  document.getElementById('resultsSearchInput').value=oppositeQuery;
 
   if (!skipHistory) {
-    history.pushState({page:'results',q:query}, '', location.href);
+    history.pushState({page:'results',q:oppositeQuery}, '', location.href);
   }
 
   var count=Math.floor(Math.random()*900000000)+100000;
   document.getElementById('resultsCount').textContent='About '+count.toLocaleString()+' results ('+(Math.random()*.5+.1).toFixed(2)+' seconds) — none of which are relevant';
 
   // All tab results
-  var results=generateResults(query);
-  var thumbs=await fetchUnsplashImages(query, results.length);
+  var results=generateResults(oppositeQuery);
+  var thumbs=await fetchUnsplashImages(oppositeQuery, results.length);
   var list=document.getElementById('resultsList');
   list.innerHTML='';
   results.forEach(function(r, idx){
@@ -724,25 +786,25 @@ async function showResults(query, skipHistory){
     h+='<div class="result-title">'+r.title+'</div><div class="result-desc">'+r.desc+'</div>';
     h+='</div>';
     if (idx % 2 === 1) {
-      var thumbUrl = thumbs[idx] || unsplashUrl(query, idx, 340, 230);
-      h+='<div class="result-thumb"><img src="'+thumbUrl+'" alt="related image" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(query+'-thumb-'+idx)+'/340/230\'"></div>';
+      var thumbUrl = thumbs[idx] || unsplashUrl(oppositeQuery, idx, 340, 230);
+      h+='<div class="result-thumb"><img src="'+thumbUrl+'" alt="related image" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(oppositeQuery+'-thumb-'+idx)+'/340/230\'\"></div>';
     }
     h+='</div>';
     div.innerHTML=h;list.appendChild(div);
   });
 
   // Knowledge panel
-  document.getElementById('knowledgePanel').innerHTML=generateKnowledgePanel(query);
+  document.getElementById('knowledgePanel').innerHTML=generateKnowledgePanel(oppositeQuery);
 
   // Related
   var grid=document.getElementById('relatedGrid');grid.innerHTML='';
-  var related=["why did i search \""+query+"\"",query+" but make it worse","how to un-search "+query,"is "+query+" even real",query+" for dummies (book has no pages)","what is the opposite of "+query,query+" — government cover-up?","people who searched "+query+" also cried"];
+  var related=["why did i search \""+oppositeQuery+"\"",oppositeQuery+" but make it worse","how to un-search "+oppositeQuery,"is "+oppositeQuery+" even real",oppositeQuery+" for dummies (book has no pages)","what is the opposite of "+oppositeQuery,oppositeQuery+" — government cover-up?","people who searched "+oppositeQuery+" also cried"];
   related.forEach(function(r){var d=document.createElement('div');d.className='related-item';d.innerHTML=SRCHSVG+r;d.onclick=function(){showResults(r);};grid.appendChild(d);});
 
   // Generate other tabs
-  generateImageTab(query);
-  generateVideoTab(query);
-  generateNewsTab(query);
+  generateImageTab(oppositeQuery, thumbs);
+  generateVideoTab(oppositeQuery, thumbs);
+  generateNewsTab(oppositeQuery);
 
   // Switch to All tab
   switchTab('all');

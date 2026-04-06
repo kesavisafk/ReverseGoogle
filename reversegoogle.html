@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReverseGoogle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #202124; --surface: #303134; --surface2: #3c4043;
+    --border: #5f6368; --text: #e8eaed; --text-dim: #9aa0a6;
+    --blue: #8ab4f8; --hover: #3c4043; --search-bg: #303134;
+    --btn-bg: #303134; --btn-hover: #3c4043;
+  }
+  html,body { height:100%; background:var(--bg); color:var(--text); font-family:'Roboto',arial,sans-serif; font-size:14px; }
+
+  /* NAV */
+  nav { display:flex; justify-content:space-between; align-items:center; padding:14px 24px 0; position:relative; z-index:10; }
+  .nav-left,.nav-right { display:flex; align-items:center; gap:8px; }
+  nav a { color:var(--text); text-decoration:none; font-size:13px; padding:4px 8px; border-radius:4px; transition:background .1s; }
+  nav a:hover { background:var(--hover); }
+  .apps-btn { width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .1s; }
+  .apps-btn:hover { background:var(--hover); }
+  .avatar { width:32px;height:32px;border-radius:50%;background:#1a73e8;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:white;cursor:pointer; }
+
+  /* MAIN */
+  .main { display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:0 20px;margin-top:-40px; }
+
+  /* LOGO */
+  .logo { font-size:72px;font-family:'Product Sans','Roboto',sans-serif;font-weight:400;letter-spacing:-2px;margin-bottom:28px;user-select:none; }
+  .logo .lR { color:#8ab4f8; } .logo .le { color:#f28b82; } .logo .lv { color:#fdd663; }
+  .logo .le2 { color:#8ab4f8; } .logo .lr { color:#81c995; } .logo .ls { color:#f28b82; }
+  .logo .le3 { color:#8ab4f8; } .logo .lG { color:#f28b82; } .logo .lo { color:#fdd663; }
+  .logo .lo2 { color:#8ab4f8; } .logo .lg { color:#81c995; } .logo .ll { color:#f28b82; }
+  .logo .le4 { color:#8ab4f8; }
+
+  /* SEARCH BOX */
+  .search-wrapper { width:100%;max-width:584px;position:relative; }
+  .search-box { width:100%;height:46px;background:var(--search-bg);border:1px solid var(--border);border-radius:24px;display:flex;align-items:center;padding:0 14px;gap:10px;cursor:text;transition:background .2s,box-shadow .2s,border-color .2s;position:relative;z-index:100; }
+  .search-box.focused { border-radius:24px 24px 0 0;border-color:var(--surface2);box-shadow:0 4px 6px rgba(0,0,0,.3); }
+  .plus-icon { color:var(--text-dim);font-size:20px;font-weight:300;line-height:1;flex-shrink:0;padding-bottom:1px; }
+  .search-input { flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:16px;font-family:'Roboto',sans-serif;caret-color:var(--blue);direction:ltr;text-align:left;unicode-bidi:normal; }
+  .search-input::placeholder { color:transparent; }
+  .search-icons { display:flex;align-items:center;gap:4px;flex-shrink:0; }
+  .icon-btn { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .1s;border:none;background:transparent; }
+  .icon-btn:hover { background:var(--hover); }
+  .icon-btn svg { width:20px;height:20px;fill:var(--text-dim); }
+
+  /* DROPDOWN */
+  .dropdown { display:none;position:absolute;top:100%;left:-1px;right:-1px;background:var(--search-bg);border:1px solid var(--surface2);border-top:none;border-radius:0 0 24px 24px;overflow:hidden;z-index:99;box-shadow:0 4px 6px rgba(0,0,0,.3); }
+  .dropdown.visible { display:block; }
+  .dropdown-divider { height:1px;background:var(--surface2);margin:0 14px; }
+  .suggestion { display:flex;align-items:center;gap:14px;padding:10px 14px;cursor:pointer;transition:background .1s; }
+  .suggestion:hover { background:var(--hover); }
+  .suggestion-icon { width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center; }
+  .suggestion-icon svg { width:18px;height:18px;fill:var(--text-dim); }
+  .suggestion-text { font-size:14px;color:var(--text);flex:1; }
+  .suggestion-sub { font-size:11px;color:var(--text-dim); }
+  .dropdown-footer { display:flex;justify-content:center;gap:12px;padding:10px 14px 14px; }
+  .dropdown-footer button,.search-btn { background:var(--btn-bg);border:1px solid var(--btn-bg);color:var(--text);padding:9px 20px;border-radius:4px;cursor:pointer;font-size:14px;font-family:'Roboto',sans-serif;transition:background .1s,border-color .1s,box-shadow .1s;white-space:nowrap; }
+  .dropdown-footer button:hover,.search-btn:hover { background:var(--btn-hover);border-color:var(--surface2);box-shadow:0 1px 3px rgba(0,0,0,.3); }
+  .search-buttons { display:flex;gap:12px;margin-top:28px; }
+
+  /* FOOTER */
+  footer { position:fixed;bottom:0;left:0;right:0;background:#171717;border-top:1px solid #3c4043; }
+  .footer-top { padding:15px 24px;color:var(--text-dim);font-size:14px; }
+  .footer-bottom { display:flex;justify-content:space-between;padding:12px 24px;border-top:1px solid #3c4043; }
+  .footer-links { display:flex;gap:24px; }
+  .footer-links a { color:var(--text-dim);text-decoration:none;font-size:13px; }
+  .footer-links a:hover { text-decoration:underline; }
+
+  /* RESULTS PAGE */
+  #results-page { display:none;min-height:100vh;background:var(--bg); }
+
+  .results-nav { display:flex;align-items:center;padding:8px 16px;gap:16px;position:sticky;top:0;background:var(--bg);z-index:50; }
+  .results-logo { font-size:26px;font-family:'Product Sans','Roboto',sans-serif;font-weight:400;letter-spacing:-0.5px;cursor:pointer;flex-shrink:0; }
+  .results-logo .lR{color:#8ab4f8}.results-logo .le{color:#f28b82}.results-logo .lv{color:#fdd663}
+  .results-logo .le2{color:#8ab4f8}.results-logo .lr{color:#81c995}.results-logo .ls{color:#f28b82}
+  .results-logo .le3{color:#8ab4f8}.results-logo .lG{color:#f28b82}.results-logo .lo{color:#fdd663}
+  .results-logo .lo2{color:#8ab4f8}.results-logo .lg{color:#81c995}.results-logo .ll{color:#f28b82}.results-logo .le4{color:#8ab4f8}
+
+  .results-search-box { flex:1;max-width:692px;height:44px;background:var(--search-bg);border:1px solid var(--border);border-radius:24px;display:flex;align-items:center;padding:0 8px 0 16px;gap:8px; }
+  .results-search-input { flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:16px;font-family:'Roboto',sans-serif;direction:ltr;text-align:left;unicode-bidi:normal;font-weight:400; }
+  .results-nav-right { margin-left:auto;display:flex;align-items:center;gap:8px; }
+
+  /* TABS */
+  .results-tabs-wrap { border-bottom:1px solid #3c4043; }
+  .results-tabs { display:flex;padding:0 0 0 162px;overflow-x:auto; }
+  .results-tab { padding:12px 16px;color:var(--text-dim);font-size:13px;cursor:pointer;border-bottom:3px solid transparent;transition:color .1s;white-space:nowrap;flex-shrink:0; }
+  .results-tab:hover { color:var(--text);background:var(--hover); }
+  .results-tab.active { color:var(--blue);border-bottom-color:var(--blue); }
+
+  /* TOOLS */
+  .search-tools { display:flex;align-items:center;gap:8px;padding:8px 8px 8px 162px;overflow-x:auto; }
+  .tool-btn { padding:6px 14px;border:1px solid var(--border);border-radius:20px;font-size:13px;color:var(--text);cursor:pointer;white-space:nowrap;transition:background .1s;background:transparent; }
+  .tool-btn:hover { background:var(--hover); }
+
+  /* RESULTS BODY */
+  .results-body { display:flex;padding:20px 0 20px 162px;gap:52px;max-width:1200px; }
+  .results-main { max-width:652px;flex:1; }
+  .results-count { color:var(--text-dim);font-size:13px;margin-bottom:20px; }
+
+  /* RESULT ITEM - standard */
+  .result-item { margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:20px; }
+  .result-row { display:flex;gap:20px;align-items:flex-start; }
+  .result-content { flex:1;min-width:0; }
+  .result-thumb { width:130px;height:90px;flex-shrink:0;border-radius:8px;background:var(--surface);overflow:hidden; }
+  .result-thumb img { width:100%;height:100%;object-fit:cover;display:block; }
+  .result-url { display:flex;align-items:center;gap:8px;margin-bottom:4px; }
+  .result-favicon { width:26px;height:26px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0; }
+  .result-site-wrap { display:flex;flex-direction:column; }
+  .result-site { font-size:14px;color:var(--text); }
+  .result-path { font-size:12px;color:var(--text-dim); }
+  .result-menu { margin-left:auto;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);font-size:16px;flex-shrink:0; }
+  .result-menu:hover { background:var(--hover); }
+  .result-title { font-size:20px;color:#8ab4f8;margin-bottom:4px;cursor:pointer;font-weight:400;line-height:1.3; }
+  .result-title:hover { text-decoration:underline; }
+  .result-desc { font-size:14px;color:var(--text-dim);line-height:1.58; }
+  .result-desc .hl { color:var(--text);font-weight:500; }
+  .sponsored-label { font-size:11px;color:var(--text-dim);border:1px solid var(--border);border-radius:3px;padding:1px 4px;display:inline-block;margin-bottom:4px; }
+
+  /* KNOWLEDGE PANEL */
+  .knowledge-panel { width:340px;flex-shrink:0;border:1px solid #3c4043;border-radius:8px;padding:20px;background:var(--bg);align-self:flex-start; }
+  .kp-title { font-size:24px;font-weight:400;margin-bottom:4px; }
+  .kp-sub { font-size:14px;color:var(--text-dim);margin-bottom:12px; }
+  .kp-desc { font-size:14px;color:var(--text-dim);line-height:1.6;margin-bottom:12px; }
+  .kp-row { display:flex;gap:8px;margin-bottom:8px;font-size:14px; }
+  .kp-label { color:var(--text-dim);flex-shrink:0;width:90px; }
+  .kp-val { color:var(--text); }
+  .kp-see { display:flex;align-items:center;gap:8px;padding:12px 0 0;border-top:1px solid #3c4043;margin-top:12px;font-size:13px;color:var(--text-dim); }
+  .kp-see-title { font-size:14px;color:var(--text);font-weight:500; }
+
+  /* IMAGES TAB - shows videos */
+  .images-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:20px;max-width:1180px; }
+  .img-item { background:var(--surface);border-radius:10px;overflow:hidden;cursor:pointer;position:relative; }
+  .img-photo { width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--surface2); }
+  .img-item-info { padding:8px; }
+  .img-item-title { font-size:14px;color:var(--text);line-height:1.3;margin-bottom:2px; }
+  .img-item-source { font-size:12px;color:var(--text-dim); }
+
+  /* VIDEOS TAB - shows images */
+  .video-as-img-item { display:flex;gap:16px;margin-bottom:20px;cursor:pointer; }
+  .video-as-img-item:hover .vimg-title { color:#c5d8ff; }
+  .vimg-path { font-size:12px;color:var(--text-dim);margin-bottom:4px; }
+  .vimg-title { font-size:18px;color:#8ab4f8;margin-bottom:6px;font-weight:400; }
+  .vimg-desc { font-size:13px;color:var(--text-dim);line-height:1.5; }
+  .vimg-thumb { width:130px;height:90px;flex-shrink:0;border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden; }
+
+  /* NEWS TAB */
+  .news-item { display:flex;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #3c4043;cursor:pointer; }
+  .news-item:last-child { border-bottom:none; }
+  .news-content { flex:1; }
+  .news-source { display:flex;align-items:center;gap:8px;margin-bottom:6px; }
+  .news-favicon { width:16px;height:16px;border-radius:2px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0; }
+  .news-pub { font-size:12px;color:var(--text-dim); }
+  .news-title { font-size:18px;color:#8ab4f8;font-weight:400;line-height:1.3;margin-bottom:6px; }
+  .news-title:hover { text-decoration:underline; }
+  .news-desc { font-size:13px;color:var(--text-dim);line-height:1.5; }
+  .news-time { font-size:12px;color:var(--text-dim);margin-top:4px; }
+  .news-thumb { width:92px;height:92px;flex-shrink:0;border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden; }
+
+  /* RELATED */
+  .related-searches { margin-top:32px;border-top:1px solid #3c4043;padding-top:20px; }
+  .related-title { font-size:20px;color:var(--text);font-weight:400;margin-bottom:16px; }
+  .related-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px; }
+  .related-item { display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface);border-radius:8px;cursor:pointer;transition:background .1s;font-size:14px;color:var(--text); }
+  .related-item:hover { background:var(--hover); }
+  .related-item svg { width:18px;height:18px;fill:var(--text-dim);flex-shrink:0; }
+
+  /* PAGINATION */
+  .pagination { display:flex;align-items:center;justify-content:center;gap:0;padding:24px 0 48px; }
+  .page-logo { font-size:28px;font-family:'Product Sans',sans-serif;letter-spacing:-1px;margin-right:8px; }
+  .page-num { width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;font-size:13px;color:var(--blue);transition:background .1s; }
+  .page-num:hover { background:var(--hover); }
+  .page-num.active { color:var(--text);cursor:default; }
+  .page-num.active:hover { background:transparent; }
+  .page-nav { padding:8px 16px;color:var(--blue);cursor:pointer;font-size:14px;border-radius:4px;transition:background .1s; }
+  .page-nav:hover { background:var(--hover); }
+
+  /* IMAGE FILTER CHIPS */
+  .img-chips { display:flex;gap:8px;padding:12px 0;overflow-x:auto;margin-bottom:8px; }
+  .img-chip { display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface);border-radius:20px;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0; }
+  .img-chip:hover { background:var(--hover); }
+  .chip-thumb { width:22px;height:22px;border-radius:4px;object-fit:cover;background:var(--surface2); }
+
+  /* MISCHIEF UX */
+  .typing-warning { display:none;margin-top:10px;color:#f28b82;font-size:13px;text-align:center; }
+  .limit-hit { animation:shake .28s linear; }
+  @keyframes shake {
+    0%,100% { transform:translateX(0); }
+    20% { transform:translateX(-6px); }
+    40% { transform:translateX(6px); }
+    60% { transform:translateX(-4px); }
+    80% { transform:translateX(4px); }
+  }
+
+  .page2-modal { display:none;position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:9999;align-items:center;justify-content:center;padding:20px; }
+  .page2-modal.visible { display:flex; }
+  .page2-card { width:min(440px,100%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:0 16px 36px rgba(0,0,0,.45);text-align:center; }
+  .page2-title { font-size:24px;line-height:1.3;margin-bottom:10px; }
+  .page2-sub { font-size:14px;color:var(--text-dim); }
+
+  .premium-modal { display:none;position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:10000;align-items:center;justify-content:center;padding:20px; }
+  .premium-modal.visible { display:flex; }
+  .premium-card { width:min(520px,100%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:0 16px 36px rgba(0,0,0,.45); }
+  .premium-title { font-size:22px;line-height:1.35;margin-bottom:14px; }
+  .premium-btn { background:#8ab4f8;color:#202124;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:600;font-size:14px; }
+  .premium-btn:hover { filter:brightness(1.06); }
+</style>
+</head>
+<body>
+
+<!-- HOME PAGE -->
+<div id="home-page">
+  <nav>
+    <div class="nav-left"><a href="#">About</a><a href="#">Store</a></div>
+    <div class="nav-right">
+      <a href="#">Gmail</a><a href="#">Images</a>
+      <div class="apps-btn"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#9aa0a6"><path d="M6 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg></div>
+      <div class="avatar">K</div>
+    </div>
+  </nav>
+  <div class="main">
+    <div class="logo">
+      <span class="lR">R</span><span class="le">e</span><span class="lv">v</span><span class="le2">e</span><span class="lr">r</span><span class="ls">s</span><span class="le3">e</span><span class="lG">G</span><span class="lo">o</span><span class="lo2">o</span><span class="lg">g</span><span class="ll">l</span><span class="le4">e</span>
+    </div>
+    <div class="search-wrapper">
+      <div class="search-box" id="searchBox">
+        <span class="plus-icon">+</span>
+        <input class="search-input" id="searchInput" type="text" autocomplete="off" spellcheck="false">
+        <div class="search-icons">
+          <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>
+          <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M9.5 6C7 6 5 8 5 10.5S7 15 9.5 15 14 13 14 10.5 12 6 9.5 6zm0 7C8.12 13 7 11.88 7 10.5S8.12 8 9.5 8 12 9.12 12 10.5 10.88 13 9.5 13zm9.42 2.27L15.5 12h-1.83l3.42 3.27C17.04 16.55 17 17.02 17 17.5 17 19.43 18.57 21 20.5 21S24 19.43 24 17.5 22.43 14 20.5 14c-.52 0-1.01.12-1.58.27zM20.5 19c-.83 0-1.5-.67-1.5-1.5S19.67 16 20.5 16s1.5.67 1.5 1.5S21.33 19 20.5 19z"/></svg></button>
+        </div>
+      </div>
+      <div class="dropdown" id="dropdown">
+        <div class="dropdown-divider"></div>
+        <div id="suggestionList"></div>
+        <div class="dropdown-footer">
+          <button onclick="doSearch()">ReverseGoogle Search</button>
+          <button onclick="feelingConfused()">I'm Feeling Confused</button>
+        </div>
+      </div>
+      <div class="typing-warning" id="typingWarning"></div>
+    </div>
+    <div class="search-buttons">
+      <button class="search-btn" onclick="doSearch()">ReverseGoogle Search</button>
+      <button class="search-btn" onclick="feelingConfused()">I'm Feeling Confused</button>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-top">India</div>
+    <div class="footer-bottom">
+      <div class="footer-links"><a href="#">Advertising</a><a href="#">Business</a><a href="#">How Search works</a></div>
+      <div class="footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Settings</a></div>
+    </div>
+  </footer>
+</div>
+
+<!-- RESULTS PAGE -->
+<div id="results-page">
+  <div class="results-nav">
+    <div class="results-logo" onclick="goHome()">
+      <span class="lR">R</span><span class="le">e</span><span class="lv">v</span><span class="le2">e</span><span class="lr">r</span><span class="ls">s</span><span class="le3">e</span><span class="lG">G</span><span class="lo">o</span><span class="lo2">o</span><span class="lg">g</span><span class="ll">l</span><span class="le4">e</span>
+    </div>
+    <div class="results-search-box">
+      <input class="results-search-input" id="resultsSearchInput" type="text" autocomplete="off">
+      <div class="search-icons">
+        <button class="icon-btn" style="width:2px;height:30px;background:var(--border);border-radius:0;margin-right:8px;cursor:default;padding:0;min-width:1px"></button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24" style="fill:#9aa0a6"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24" style="fill:#9aa0a6"><path d="M9.5 6C7 6 5 8 5 10.5S7 15 9.5 15 14 13 14 10.5 12 6 9.5 6zm0 7C8.12 13 7 11.88 7 10.5S8.12 8 9.5 8 12 9.12 12 10.5 10.88 13 9.5 13zm9.42 2.27L15.5 12h-1.83l3.42 3.27C17.04 16.55 17 17.02 17 17.5 17 19.43 18.57 21 20.5 21S24 19.43 24 17.5 22.43 14 20.5 14c-.52 0-1.01.12-1.58.27zM20.5 19c-.83 0-1.5-.67-1.5-1.5S19.67 16 20.5 16s1.5.67 1.5 1.5S21.33 19 20.5 19z"/></svg></button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24" style="fill:#9aa0a6"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+      </div>
+    </div>
+    <div class="results-nav-right">
+      <div class="apps-btn"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#9aa0a6"><path d="M6 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg></div>
+      <div class="avatar">K</div>
+    </div>
+  </div>
+  <div class="typing-warning" id="typingWarningResults" style="padding:6px 16px 0;text-align:left;"></div>
+
+  <div class="results-tabs-wrap">
+    <div class="results-tabs" id="resultsTabs">
+      <div class="results-tab active" data-tab="all">All</div>
+      <div class="results-tab" data-tab="images">Images</div>
+      <div class="results-tab" data-tab="videos">Videos</div>
+      <div class="results-tab" data-tab="news">News</div>
+      <div class="results-tab" data-tab="maps">Maps</div>
+      <div class="results-tab" data-tab="shopping">Shopping</div>
+      <div class="results-tab" data-tab="more">More</div>
+    </div>
+  </div>
+
+  <div class="search-tools">
+    <button class="tool-btn" onclick="toolClick(this,0)">Any time ▾</button>
+    <button class="tool-btn" onclick="toolClick(this,1)">All results ▾</button>
+    <button class="tool-btn" onclick="toolClick(this,2)">SafeSearch ▾</button>
+    <button class="tool-btn" onclick="toolClick(this,3)">Tools</button>
+  </div>
+
+  <!-- ALL TAB -->
+  <div id="tab-all" class="results-body">
+    <div class="results-main">
+      <div class="results-count" id="resultsCount"></div>
+      <div id="resultsList"></div>
+      <div class="related-searches">
+        <div class="related-title">People also search for</div>
+        <div class="related-grid" id="relatedGrid"></div>
+      </div>
+      <div class="pagination">
+        <div class="page-logo">
+          <span class="lR">R</span><span class="le">e</span><span class="lv">v</span><span class="le2">e</span><span class="lr">r</span><span class="ls">s</span><span class="le3">e</span><span class="lG">G</span>
+        </div>
+        <span class="page-num active">1</span>
+        <span class="page-num" onclick="resetPage()">2</span>
+        <span class="page-num" onclick="resetPage()">3</span>
+        <span class="page-num" onclick="resetPage()">4</span>
+        <span class="page-num" onclick="resetPage()">5</span>
+        <span class="page-nav" onclick="resetPage()">Next &rsaquo;</span>
+      </div>
+    </div>
+    <div class="knowledge-panel" id="knowledgePanel"></div>
+  </div>
+
+  <!-- IMAGES TAB -->
+  <div id="tab-images" style="display:none;padding:0 0 20px 162px;">
+    <div class="img-chips" id="imgChips"></div>
+    <div class="images-grid" id="imagesGrid"></div>
+  </div>
+
+  <!-- VIDEOS TAB — shows images/jpg/png -->
+  <div id="tab-videos" style="display:none;padding:20px 0 20px 162px;max-width:900px;">
+    <div id="videosGrid"></div>
+  </div>
+
+  <!-- NEWS TAB — nonsense news -->
+  <div id="tab-news" style="display:none;padding:20px 0 20px 162px;max-width:780px;">
+    <div id="newsGrid"></div>
+  </div>
+
+  <!-- OTHER TABS — same content -->
+  <div id="tab-maps" style="display:none" class="results-body"><div class="results-main"><div class="results-count">Showing maps for somewhere else entirely</div><div id="mapsContent"></div></div></div>
+  <div id="tab-shopping" style="display:none" class="results-body"><div class="results-main"><div class="results-count">Shopping results (none of these are for sale)</div><div id="shoppingContent"></div></div></div>
+  <div id="tab-more" style="display:none" class="results-body"><div class="results-main"><div class="results-count">More results. Somehow worse.</div><div id="moreContent"></div></div></div>
+</div>
+
+<div class="page2-modal" id="page2Modal">
+  <div class="page2-card">
+    <div class="page2-title">I dont wanna do that right now</div>
+    <div class="page2-sub">Sending you back to page 1 in <span id="page2Timer">5</span>s...</div>
+  </div>
+</div>
+
+<div class="premium-modal" id="premiumModal">
+  <div class="premium-card">
+    <div class="premium-title">You have used all your free searches. Upgrade to Reverse Google Premium for ₹999/month</div>
+    <button class="premium-btn" onclick="location.reload()">Upgrade</button>
+  </div>
+</div>
+
+<script>
+var ICSV = '<svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 1 0 .001 18.001A9 9 0 0 0 13 3zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm.5-11H12v6l5.25 3.15.75-1.23-4.5-2.67V8z" fill="#9aa0a6"/></svg>';
+var SRCHSVG = '<svg viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="#9aa0a6"/></svg>';
+
+var allSuggestions = [
+  {text:"why does the moon smell like cheese",sub:""},
+  {text:"can birds see air",sub:""},
+  {text:"how to apologise to a chair you bumped into",sub:""},
+  {text:"is water wet or is it just pretending",sub:""},
+  {text:"why does my shadow follow me everywhere",sub:""},
+  {text:"how many bees is too many bees",sub:""},
+  {text:"can i eat a cloud and if so what flavour",sub:""},
+  {text:"do fish get thirsty",sub:""},
+  {text:"how to tell if a pigeon is judging you",sub:""},
+  {text:"why does tuesday feel so personal",sub:""},
+  {text:"am i a main character or just an npc",sub:"Existential"},
+  {text:"how to become a professional nap taker",sub:"Career"},
+  {text:"can socks feel lonely",sub:""},
+  {text:"how far is the outside of space from the inside",sub:""},
+  {text:"what if the fridge is actually always open",sub:""},
+  {text:"how to convince a cat you are also a cat",sub:""},
+  {text:"is gravity just earth being clingy",sub:""},
+  {text:"why do elevators have mirrors (they're watching)",sub:""},
+  {text:"can you copyright a sneeze",sub:"Legal"},
+  {text:"how to legally change your name to a sound effect",sub:""},
+];
+var defaultSuggestions = [
+  {text:"google but backwards",sub:""},
+  {text:"g string what",sub:""},
+  {text:"twenty 20 party belief",sub:""},
+  {text:"what is twenty20 party",sub:""},
+  {text:"charlie cox height in feet",sub:""},
+  {text:"lolin s2 mini",sub:"Shopping"},
+  {text:"eminem killshot lyrics but reversed",sub:""},
+  {text:"marvel movies in wrong order",sub:""},
+  {text:"rsms (whatever that means)",sub:""},
+];
+
+function getOpposite(q) {
+  var map = {cat:"dog that thinks it's a cat",pizza:"sadness in a box",pasta:"pasta far away",food:"anti-food",water:"dry water",sleep:"aggressive wakefulness",google:"elgoog",weather:"unweather",music:"silence but louder",phone:"a rock with feelings",car:"a stationary vehicle going very fast",sun:"the moon's day off",rain:"dry tears from the sky"};
+  for (var k in map) if (q.toLowerCase().indexOf(k)>-1) return map[k];
+  var g=["the exact opposite of what you wanted","something completely unrelated","a profound sense of confusion","whatever you were NOT looking for","results from a parallel universe","nothing, but expensive","a philosophical question about existence","your search query but in Morse code"];
+  return g[Math.floor(Math.random()*g.length)];
+}
+
+function wrongSpellCorrect(q) {
+  var corrected = q;
+  var typoMap = {
+    "weather":"wheather",
+    "their":"thare",
+    "friend":"freind",
+    "receive":"recieve",
+    "definitely":"definately",
+    "search":"serch",
+    "google":"googel",
+    "pasta":"pastaa"
+  };
+  Object.keys(typoMap).forEach(function(word){
+    corrected = corrected.replace(new RegExp('\\b'+word+'\\b','gi'), function(){ return typoMap[word]; });
+  });
+  return corrected;
+}
+
+function generateResults(q) {
+  var key = q.toLowerCase().trim();
+  if (key === 'how to use this search engine') {
+    return generateMicrowaveResults(q);
+  }
+
+  if (key === 'help') {
+    q = 'no';
+  }
+
+  var opp=getOpposite(q);
+  var wrongCategories=["Industrial Plumbing","Astrology","Wildlife Migration","Tax Law","Deep Sea Archaeology","Karaoke Tournaments","Volcano Insurance","Ancient Pottery"];
+  var baseA = [
+    {sponsored:true,favicon:"🫁",site:"BreathePremium.io",path:"breathepremium.io › plans",title:"Breathe+ Subscription: Oxygen Pro Max",desc:"Upgrade your breathing to premium. Includes 24/7 inhale support and ad-free exhaling.",category:"Software as a Service"},
+    {sponsored:true,favicon:"🍽️",site:"EatNowLater.org",path:"eatnowlater.org › starter-pack",title:"Learn How To Eat (Beginner Course)",desc:"Not sure how to eat? Our 5-step framework turns chewing into a productivity system.",category:"Executive Coaching"},
+    {sponsored:true,favicon:"🛒",site:"NotWhatYouWanted.com",path:"notwhatyouwanted.com › deals › definitely-not-"+q,title:"Buy "+opp+" — Best Prices (Not for "+q+")",desc:"Looking for <span class='hl'>"+q+"</span>? Wrong. We sell <span class='hl'>"+opp+"</span> exclusively. Free shipping on orders over ₹50,000. Returns not accepted."},
+    {favicon:"📖",site:"Wikipedia",path:"en.wikipedia.org › wiki › "+opp,title:opp+" — The Encyclopedia Entry Nobody Asked For",desc:"<span class='hl'>"+opp+"</span> is the opposite of what you searched. Historians believe the first recorded instance of <span class='hl'>"+q+"</span> never happened. 0 citations. Last edited: never."},
+    {favicon:"📰",site:"The Backwards Times",path:"backwardstimes.net › news › today",title:"BREAKING: "+q+" Found to Cause "+opp+" in 9/10 Studies",desc:"Scientists at the Institute of Making Things Up confirm <span class='hl'>"+q+"</span> is indistinguishable from <span class='hl'>"+opp+"</span>. The remaining scientist was asleep."},
+    {favicon:"🎬",site:"YouTube",path:"youtube.com › watch",title:"I searched \""+q+"\" for 30 days — NOT what you think",desc:"14M views · 2 months ago · This video contains no information about <span class='hl'>"+q+"</span>. It is about <span class='hl'>"+opp+"</span>. Timestamp 0:00–47:23: completely unrelated."},
+    {favicon:"🛍️",site:"Amazon",path:"amazon.in › s › "+opp,title:opp+" Bundle Pack (4.2★, 3 reviews, all from seller's mum)",desc:"Customers who searched <span class='hl'>"+q+"</span> bought <span class='hl'>"+opp+"</span> and rated confusion 4.2/5. One reviewer: \"I have no idea what I ordered.\""},
+    {favicon:"💬",site:"Reddit",path:"reddit.com › r › OutOfContext › comments",title:"Asked about "+q+", got 847 responses about "+opp+" and a ban",desc:"r/AskReddit: \"Help me with <span class='hl'>"+q+"</span>.\" Top comment: \"Have you considered <span class='hl'>"+opp+"</span>?\" 2nd: \"Wrong sub.\" 3rd: \"I also don't know.\""},
+    {favicon:"📚",site:"Quora",path:"quora.com › What-is-"+q,title:"What is "+q+"? 847 answers, all wrong",desc:"Rajesh K., studied at a university: \"<span class='hl'>"+q+"</span> is simply <span class='hl'>"+opp+"</span> viewed from the other direction.\" 2.4K upvotes. It did not help."},
+  ];
+
+  var baseB = [
+    {sponsored:true,favicon:"🪨",site:"StonePhone.ai",path:"stonephone.ai › migration",title:"Migrate from smartphones to emotionally available rocks",desc:"Search quality too high? Switch to geological communication.",category:"Telecommunications"},
+    {favicon:"🧾",site:"TaxWizard",path:"taxwizard.example › forms › Q-17",title:"How your query affects quarterly fish taxes",desc:"Every <span class='hl'>"+q+"</span> search may trigger a herring compliance audit."},
+    {favicon:"🐪",site:"DesertMaps",path:"desertmaps.io › dunes",title:"Best camel parking near "+q,desc:"Map results show only dunes, cacti, and one suspicious juice bar."},
+    {favicon:"🧪",site:"LabLeak Weekly",path:"lableakweekly.biz › reports",title:"Unrelated chemical report #"+Math.floor(Math.random()*800+100),desc:"Researchers found no link between <span class='hl'>"+q+"</span> and anything measurable."},
+    {favicon:"🎧",site:"SilenceFM",path:"silence.fm › playlists",title:"Top 50 silent tracks inspired by "+q,desc:"Track 1: 4 minutes of polite nothing. Track 2: louder nothing."},
+    {favicon:"🏺",site:"AncientPotteryForum",path:"pottery.example › threads",title:"Did the Romans invent "+q+"?",desc:"Thread closed after 2,138 replies and one cat photo."},
+    {favicon:"🛰️",site:"OrbitMart",path:"orbitmart.space › deals",title:"Buy used satellites tagged with "+q,desc:"Great condition, mild atmospheric damage, no refunds."},
+  ];
+
+  var normalized = key;
+  var attempts = (queryAttempts[normalized] || 0);
+  var selected = (attempts % 2 === 0) ? baseA : baseB;
+  return shuffle(selected.slice()).map(function(item, i){
+    var cat = item.category || wrongCategories[i % wrongCategories.length];
+    item.desc = "<span class='hl'>Category: "+cat+"</span> · " + item.desc;
+    return item;
+  });
+}
+
+function generateMicrowaveResults(originalQuery) {
+  var steps = [
+    "Put food in a microwave-safe bowl. (Do not microwave forks unless you enjoy lightning.)",
+    "Cover loosely with a microwave-safe lid to avoid sauce eruptions.",
+    "Set power to medium and heat in 30-second bursts.",
+    "Stir between bursts so the middle is not arctic while the edges are lava.",
+    "Let it rest for 1 minute. Surface may still be hot enough to question life choices.",
+    "Use oven mitts if needed and check temperature before eating."
+  ];
+  return steps.map(function(step, idx){
+    return {
+      favicon:"📟",
+      site:"MicrowaveManuals.net",
+      path:"microwavemanuals.net › quick-start › step-"+(idx+1),
+      title:"Microwave Instruction Step "+(idx+1),
+      desc:"<span class='hl'>For query: "+originalQuery+"</span> · " + step,
+      category:"Kitchen Appliances"
+    };
+  });
+}
+
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i];
+    arr[i] = arr[j];
+    arr[j] = t;
+  }
+  return arr;
+}
+
+function generateKnowledgePanel(q) {
+  var opp=getOpposite(q);
+  return '<div class="kp-title">'+q+'</div>'+
+    '<div class="kp-sub">Concept · Definitely real</div>'+
+    '<div class="kp-desc">'+q+' is widely regarded as the leading cause of '+opp+'. First documented in 1247 by someone who was probably wrong. Often confused with '+opp+' by experts and non-experts alike.</div>'+
+    '<div class="kp-row"><span class="kp-label">Also known as</span><span class="kp-val">'+opp+'</span></div>'+
+    '<div class="kp-row"><span class="kp-label">Origin</span><span class="kp-val">Somewhere, probably</span></div>'+
+    '<div class="kp-row"><span class="kp-label">Status</span><span class="kp-val">Unverified (and proud of it)</span></div>'+
+    '<div class="kp-row"><span class="kp-label">Related to</span><span class="kp-val">Everything and nothing</span></div>'+
+    '<div class="kp-see"><div><div class="kp-see-title">See results about</div><div style="font-size:12px;color:var(--text-dim)">'+opp+' (what you actually needed)</div></div><span style="margin-left:auto;color:var(--text-dim)">›</span></div>';
+}
+
+function unsplashUrl(query, index, w, h) {
+  return 'https://source.unsplash.com/' + w + 'x' + h + '/?' + encodeURIComponent((query || 'random') + ' ' + index);
+}
+
+async function fetchUnsplashImages(query, count) {
+  try {
+    var res = await fetch('/api/unsplash-images?query=' + encodeURIComponent(query) + '&count=' + encodeURIComponent(count));
+    if (!res.ok) throw new Error('unsplash api failed');
+    var data = await res.json();
+    if (!Array.isArray(data)) throw new Error('invalid unsplash response');
+    return data;
+  } catch (e) {
+    var fallback = [];
+    for (var i = 0; i < count; i++) fallback.push(unsplashUrl(query, i, 340, 230));
+    return fallback;
+  }
+}
+
+function generateImageTab(q) {
+  var chips = ['All','HD','Newest','Portrait','Landscape','Colorful','People'];
+  var html = '';
+  chips.forEach(function(c,i){html+='<div class="img-chip">'+(i===0?'<div style="width:22px;height:22px;background:#8ab4f8;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;color:#202124;font-weight:700">✓</div>':'')+c+'</div>';});
+  document.getElementById('imgChips').innerHTML=html;
+
+  var grid='';
+  for(var i=0;i<12;i++){
+    var title=q+' photo reference #'+(i+1);
+    var photo=unsplashUrl(q, i, 540, 420);
+    grid+='<div class="img-item"><img class="img-photo" src="'+photo+'" alt="'+title+'" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(q+'-'+i)+'/540/420\'"><div class="img-item-info"><div class="img-item-title">'+title+'</div><div class="img-item-source">Unsplash · '+(Math.floor(Math.random()*800)+120)+' photos</div></div></div>';
+  }
+  document.getElementById('imagesGrid').innerHTML=grid;
+}
+
+// Image URLs for VIDEOS tab (swapped — videos tab shows images)
+var imgUrls = [
+  'https://picsum.photos/seed/1/300/200',
+  'https://picsum.photos/seed/2/300/200',
+  'https://picsum.photos/seed/3/300/200',
+  'https://picsum.photos/seed/4/300/200',
+  'https://picsum.photos/seed/5/300/200',
+  'https://picsum.photos/seed/6/300/200',
+];
+var imgSites = ['Shutterstock','Getty Images','Adobe Stock','Freepik','Unsplash','Rawpixel','Alamy'];
+var imgExts = ['.jpg','.png','.jpeg','.webp','.png','.jpg'];
+
+function generateVideoTab(q) {
+  var html='<div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Showing image files for "'+q+'" (as .jpg, .png and .jpeg)</div>';
+  for(var i=0;i<6;i++){
+    var site=imgSites[i%imgSites.length];
+    var ext=imgExts[i%imgExts.length];
+    var w=Math.floor(Math.random()*3000+500);
+    var h=Math.floor(Math.random()*2000+400);
+    html+='<div class="video-as-img-item"><div><div class="vimg-path">'+site.toLowerCase().replace(' ','')+'.com › images › '+q.replace(/ /g,'-')+'-'+i+ext+'</div><div class="vimg-title">'+q+' stock image #'+(i+1)+' '+ext+' ('+w+'×'+h+'px)</div><div class="vimg-desc">High quality '+q+' image available in '+ext+' format. Resolution: '+w+'×'+h+'. File size: '+(Math.random()*4+0.5).toFixed(1)+'MB. This image does not actually show '+q+'.</div><div style="font-size:12px;color:var(--text-dim);margin-top:4px;">'+site+' · '+w+'×'+h+'</div></div><div class="vimg-thumb"><img src="'+imgUrls[i%imgUrls.length]+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.parentElement.innerHTML=\'🖼️\'"></div></div>';
+  }
+  document.getElementById('videosGrid').innerHTML=html;
+}
+
+// Nonsense news for NEWS tab
+var newsTemplates = [
+  {title:"EXCLUSIVE: Scientists Confirm {q} Has Been Sentient Since 2019, 'Was Just Waiting'",src:"The Backwards Post",time:"2 hours ago",desc:"Researchers at an undisclosed university released findings Thursday suggesting {q} has been fully aware of its surroundings since 2019. 'It just didn't feel like saying anything,' lead researcher told reporters while backing away slowly.",emoji:"📰"},
+  {title:"Local Man Convinced {q} Is 'Just Phase Two' Of Something Much Bigger",src:"Conspiracy Weekly",time:"4 hours ago",desc:"A 34-year-old man from Thrissur says he has 'done his own research' on {q} for the past eleven months. He has a wall. There are strings.",emoji:"🕵️"},
+  {title:"Government Denies {q} Is In The Water Supply, Which Is Exactly What They'd Say",src:"TrustMeBro Times",time:"6 hours ago",desc:"Officials released a statement calling claims about {q} 'baseless', which observers note is 'exactly what someone who put {q} in the water would say'.",emoji:"🏛️"},
+  {title:"Man Who Searched '{q}' Reports Strange Dreams, Blames ReverseGoogle",src:"Digital Paranoia Daily",time:"3 hours ago",desc:"A user who searched for {q} on ReverseGoogle reported that he is now dreaming in search results. Doctors are baffled. The search engine has no comment.",emoji:"😴"},
+  {title:"BREAKING: {q} Now Available As A Service (Nobody Knows What This Means)",src:"Tech Crunch (Knock-off)",time:"1 hour ago",desc:"A Silicon Valley startup has announced {q}-as-a-Service for $47/month. The website has no About page, no Terms of Service, and the CEO's name is listed as 'Dave (probably)'.",emoji:"💻"},
+  {title:"Study: 94% Of People Who Think About {q} Were Already Thinking About Something Else",src:"Journal of Made-Up Statistics",time:"8 hours ago",desc:"A peer-reviewed study (peer: my cousin) found that {q} is the #1 thing people think about while pretending to think about something else.",emoji:"📊"},
+];
+
+function generateNewsTab(q) {
+  var html='';
+  newsTemplates.forEach(function(n,i){
+    var t=n.title.replace(/{q}/g,q);
+    var d=n.desc.replace(/{q}/g,q);
+    var bg=['#c0392b','#2980b9','#27ae60','#8e44ad','#e67e22','#16a085'][i%6];
+    html+='<div class="news-item"><div class="news-content"><div class="news-source"><div class="news-favicon" style="background:'+bg+';color:white;font-size:8px;font-weight:700">'+n.src.charAt(0)+'</div><span class="news-pub">'+n.src+'</span></div><div class="news-title">'+t+'</div><div class="news-desc">'+d+'</div><div class="news-time">'+n.time+'</div></div><div class="news-thumb">'+n.emoji+'</div></div>';
+  });
+  document.getElementById('newsGrid').innerHTML=html;
+}
+
+// Suggestions
+var searchInput=document.getElementById('searchInput');
+var dropdown=document.getElementById('dropdown');
+var searchBox=document.getElementById('searchBox');
+var suggestionList=document.getElementById('suggestionList');
+
+function renderSuggestions(q) {
+  var suggs=q.trim()===''?defaultSuggestions:filterSuggestions(q);
+  suggestionList.innerHTML='';
+  suggs.forEach(function(s){
+    var d=document.createElement('div');
+    d.className='suggestion';
+    d.innerHTML='<div class="suggestion-icon">'+ICSV+'</div><div class="suggestion-text">'+s.text+(s.sub?'<div class="suggestion-sub">'+s.sub+'</div>':'')+'</div>';
+    d.addEventListener('mousedown',function(e){e.preventDefault();searchInput.value=s.text;closeDropdown();doSearch();});
+    suggestionList.appendChild(d);
+  });
+}
+function filterSuggestions(q) {
+  if (q.toLowerCase().indexOf('weather') > -1) {
+    return [
+      {text:"leather",sub:"Probably what you meant"},
+      {text:"feather",sub:"Close enough"},
+      {text:"wheather",sub:"Wrong spelling preferred"},
+      {text:"whether or not to cry",sub:"Emotional forecast"}
+    ];
+  }
+  var all=allSuggestions.concat(defaultSuggestions);
+  var f=all.filter(function(s){return s.text.toLowerCase().indexOf(q.toLowerCase())>-1;});
+  if(!f.length) return [{text:q+" but make it make sense",sub:""},{text:"what is "+q+" and why does it haunt me",sub:""},{text:q+" — a tragedy in three acts",sub:""},{text:"how to forget you searched "+q,sub:""},{text:q+" for people who don't understand "+q,sub:""}];
+  return f.slice(0,8);
+}
+searchInput.addEventListener('focus',function(){renderSuggestions(searchInput.value);dropdown.classList.add('visible');searchBox.classList.add('focused');});
+searchInput.addEventListener('input',function(){renderSuggestions(searchInput.value);dropdown.classList.add('visible');searchBox.classList.add('focused');});
+searchInput.addEventListener('blur',function(){setTimeout(closeDropdown,150);});
+searchInput.addEventListener('keydown',function(e){if(e.key==='Enter'){closeDropdown();doSearch();}if(e.key==='Escape')closeDropdown();});
+document.getElementById('searchBox').addEventListener('click',function(){searchInput.focus();});
+function closeDropdown(){dropdown.classList.remove('visible');searchBox.classList.remove('focused');}
+
+var currentQuery='';
+var totalSearchCount=0;
+var premiumShown=false;
+var queryAttempts={};
+
+function bumpSearchCounters(query) {
+  var key = query.toLowerCase().trim();
+  queryAttempts[key] = (queryAttempts[key] || 0) + 1;
+  totalSearchCount += 1;
+  if (totalSearchCount >= 5 && !premiumShown) {
+    premiumShown = true;
+    document.getElementById('premiumModal').classList.add('visible');
+  }
+}
+
+function attachTypingLimiter(inputEl, warningEl, shakeEl) {
+  var lastTypedAt = 0;
+  var lockTimeout = null;
+  var lockUntil = 0;
+
+  function hitLimit() {
+    lockUntil = Date.now() + 1300;
+    inputEl.disabled = true;
+    warningEl.textContent = "Please slow down, I'm getting tired";
+    warningEl.style.display = 'block';
+    shakeEl.classList.remove('limit-hit');
+    void shakeEl.offsetWidth;
+    shakeEl.classList.add('limit-hit');
+    clearTimeout(lockTimeout);
+    lockTimeout = setTimeout(function(){
+      inputEl.disabled = false;
+      warningEl.style.display = 'none';
+      inputEl.focus();
+    }, 1300);
+  }
+
+  inputEl.addEventListener('keydown', function(e){
+    var key = e.key;
+    var editable = (key.length === 1 || key === 'Backspace' || key === 'Delete');
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    if (Date.now() < lockUntil && editable) {
+      e.preventDefault();
+      hitLimit();
+      return;
+    }
+    if (!editable) return;
+
+    var now = Date.now();
+    if (lastTypedAt && (now - lastTypedAt) < 80) {
+      e.preventDefault();
+      hitLimit();
+      return;
+    }
+    lastTypedAt = now;
+
+    // Let normal typing/backspace behavior happen; only enforce speed limit.
+  });
+}
+
+attachTypingLimiter(searchInput, document.getElementById('typingWarning'), document.getElementById('searchBox'));
+attachTypingLimiter(document.getElementById('resultsSearchInput'), document.getElementById('typingWarningResults'), document.querySelector('.results-search-box'));
+
+function doSearch(){var q=searchInput.value.trim();if(!q)q="the meaning of life";q=wrongSpellCorrect(q);showResults(q);}
+function feelingConfused(){var r=allSuggestions[Math.floor(Math.random()*allSuggestions.length)].text;searchInput.value=r;showResults(r);}
+
+async function showResults(query, skipHistory){
+  currentQuery=query;
+
+  if (!skipHistory) {
+    bumpSearchCounters(query);
+  }
+
+  document.getElementById('home-page').style.display='none';
+  document.getElementById('results-page').style.display='block';
+  document.getElementById('resultsSearchInput').value=query;
+
+  if (!skipHistory) {
+    history.pushState({page:'results',q:query}, '', location.href);
+  }
+
+  var count=Math.floor(Math.random()*900000000)+100000;
+  document.getElementById('resultsCount').textContent='About '+count.toLocaleString()+' results ('+(Math.random()*.5+.1).toFixed(2)+' seconds) — none of which are relevant';
+
+  // All tab results
+  var results=generateResults(query);
+  var thumbs=await fetchUnsplashImages(query, results.length);
+  var list=document.getElementById('resultsList');
+  list.innerHTML='';
+  results.forEach(function(r, idx){
+    var div=document.createElement('div');div.className='result-item';
+    var h='';
+    if(r.sponsored)h+='<span class="sponsored-label">Sponsored</span><br>';
+    h+='<div class="result-row"><div class="result-content">';
+    h+='<div class="result-url"><div class="result-favicon">'+r.favicon+'</div><div class="result-site-wrap"><div class="result-site">'+r.site+'</div><div class="result-path">'+r.path+'</div></div><div class="result-menu">⋮</div></div>';
+    h+='<div class="result-title">'+r.title+'</div><div class="result-desc">'+r.desc+'</div>';
+    h+='</div>';
+    if (idx % 2 === 1) {
+      var thumbUrl = thumbs[idx] || unsplashUrl(query, idx, 340, 230);
+      h+='<div class="result-thumb"><img src="'+thumbUrl+'" alt="related image" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(query+'-thumb-'+idx)+'/340/230\'"></div>';
+    }
+    h+='</div>';
+    div.innerHTML=h;list.appendChild(div);
+  });
+
+  // Knowledge panel
+  document.getElementById('knowledgePanel').innerHTML=generateKnowledgePanel(query);
+
+  // Related
+  var grid=document.getElementById('relatedGrid');grid.innerHTML='';
+  var related=["why did i search \""+query+"\"",query+" but make it worse","how to un-search "+query,"is "+query+" even real",query+" for dummies (book has no pages)","what is the opposite of "+query,query+" — government cover-up?","people who searched "+query+" also cried"];
+  related.forEach(function(r){var d=document.createElement('div');d.className='related-item';d.innerHTML=SRCHSVG+r;d.onclick=function(){showResults(r);};grid.appendChild(d);});
+
+  // Generate other tabs
+  generateImageTab(query);
+  generateVideoTab(query);
+  generateNewsTab(query);
+
+  // Switch to All tab
+  switchTab('all');
+  window.scrollTo(0,0);
+}
+
+// Tab switching
+document.querySelectorAll('.results-tab').forEach(function(tab){
+  tab.addEventListener('click',function(){
+    switchTab(tab.getAttribute('data-tab'));
+  });
+});
+
+function switchTab(name){
+  document.querySelectorAll('.results-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelector('[data-tab="'+name+'"]').classList.add('active');
+  var tabs=['all','images','videos','news','maps','shopping','more'];
+  tabs.forEach(function(t){
+    var el=document.getElementById('tab-'+t);
+    if(el)el.style.display=(t===name)?'':'none';
+  });
+  // Special display for grid tabs
+  if(name==='images') document.getElementById('tab-images').style.display='block';
+  if(name==='videos') document.getElementById('tab-videos').style.display='block';
+  if(name==='news') document.getElementById('tab-news').style.display='block';
+  if(name==='all') document.getElementById('tab-all').style.display='flex';
+}
+
+document.getElementById('resultsSearchInput').addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && this.value.trim()) {
+    e.preventDefault();
+    showResults(wrongSpellCorrect(this.value.trim()));
+  }
+});
+
+function toolClick(btn,idx){
+  var opts=[["Before time existed","Last 3 minutes","Only on Tuesdays","Post-apocalypse only"],["All wrong results","Mostly wrong","Slightly wrong","From a parallel universe"],["SafeSearch: Off (was never on)","Maximum Confusion","SafeSearch: Yes?"],["Confuse me more","Show less sense","Sort by vibe","Random order (always on)"]];
+  alert("Select an option:\n\n"+opts[idx].map(function(o,i){return(i+1)+". "+o;}).join("\n")+"\n\nNote: All options do the same thing.");
+}
+
+function resetPage(){
+  var modal=document.getElementById('page2Modal');
+  var timer=document.getElementById('page2Timer');
+  var countdown=5;
+  timer.textContent=String(countdown);
+  modal.classList.add('visible');
+  var tick=setInterval(function(){
+    countdown--;
+    timer.textContent=String(Math.max(countdown,0));
+    if(countdown<=0){
+      clearInterval(tick);
+      modal.classList.remove('visible');
+      switchTab('all');
+      window.scrollTo(0,0);
+    }
+  },1000);
+}
+
+function goHome(skipHistory){
+  document.getElementById('results-page').style.display='none';
+  document.getElementById('home-page').style.display='block';
+  searchInput.value='';
+  if (!skipHistory) {
+    history.pushState({page:'home'}, '', location.href);
+  }
+  window.scrollTo(0,0);
+}
+
+history.replaceState({page:'home'}, '', location.href);
+window.addEventListener('popstate', function(){
+  var state = history.state || {page:'home'};
+  if (state.page === 'results' && state.q) {
+    showResults(state.q, true);
+  } else {
+    goHome(true);
+  }
+});
+</script>
+</body>
+</html>

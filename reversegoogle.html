@@ -360,6 +360,7 @@
   </div>
 </div>
 
+<script src="opposites.js"></script>
 <script>
 var ICSV = '<svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 1 0 .001 18.001A9 9 0 0 0 13 3zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm.5-11H12v6l5.25 3.15.75-1.23-4.5-2.67V8z" fill="#9aa0a6"/></svg>';
 var SRCHSVG = '<svg viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="#9aa0a6"/></svg>';
@@ -398,117 +399,76 @@ var defaultSuggestions = [
   {text:"rsms (whatever that means)",sub:""},
 ];
 
-function getOpposite(q) {
-  var map = {cat:"a dog in cat's clothing",pizza:"a pizza box with emotional crust",pasta:"pasta far away",food:"anti-food with a side of regret",water:"dry water in a splash-proof bottle",sleep:"aggressive wakefulness",google:"elgoog",weather:"unweather",music:"silence but louder",phone:"a rock with notifications",car:"a stationary vehicle going very fast",sun:"the moon's day off",rain:"dry tears from the sky"};
-  for (var k in map) if (q.toLowerCase().indexOf(k)>-1) return map[k];
-  var g=[
-    'the cursed version of '+q,
-    q+' wearing a fake mustache',
-    q+' with extra confusion baked in',
-    'a parallel-universe '+q,
-    'the opposite side of '+q,
-    q+' but making absolutely no sense',
-    q+' in a trench coat',
-    'results that keep talking about '+q+' but still miss the point'
-  ];
-  return g[Math.floor(Math.random()*g.length)];
-}
+var OPPOSITE_KEYWORDS = window.CUSTOM_OPPOSITES || {
+  pizza: 'pasta',
+  near: 'far',
+  me: 'you'
+};
 
-function weirdRelevant(q, noun) {
-  return q + ' with ' + noun + ' energy';
-}
-
-function weirdRelevantLine(q, noun) {
-  return 'Somehow this is still about ' + q + ', but now it has ' + noun + ' energy.';
-}
+var WRONG_AUTOCORRECT = {
+  piza: 'pasta',
+  pizzza: 'pasta',
+  pissa: 'pasta',
+  weathr: 'wheather',
+  wether: 'wheather',
+  wheter: 'wheather',
+  freind: 'enemy',
+  frend: 'enemy',
+  recieve: 'lose',
+  googl: 'googel',
+  gogle: 'googel',
+  serch: 'screech',
+  searh: 'screech',
+  kiten: 'puppy',
+  dop: 'cat'
+};
 
 function wrongAutocompleteWord(word) {
-  var wrongMap = {
-    pizza: 'pasta',
-    burger: 'broccoli',
-    weather: 'wheather',
-    help: 'no',
-    near: 'far',
-    me: 'you',
-    good: 'bad',
-    hot: 'cold',
-    fast: 'slow',
-    big: 'tiny',
-    nearme: 'far away'
-  };
   var lower = word.toLowerCase();
-  return wrongMap[lower] || word;
+  if (WRONG_AUTOCORRECT[lower]) return WRONG_AUTOCORRECT[lower];
+  return word;
 }
 
 function wrongSpellCorrect(q) {
-  return q.split(/(\s+)/).map(function(token){
-    if (/^\s+$/.test(token)) return token;
-    return wrongAutocompleteWord(token);
-  }).join('');
+  return q.replace(/\b[a-zA-Z]+\b/g, function(word){
+    return wrongAutocompleteWord(word);
+  });
+}
+
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function computeOppositeQuery(q) {
   var cleaned = wrongSpellCorrect(q).toLowerCase().trim();
-  cleaned = cleaned.replace(/\bnear me\b/g, 'far away from you');
-  cleaned = cleaned.replace(/\bnearme\b/g, 'far away from you');
-  cleaned = cleaned.replace(/\bsearch\s+engine\b/g, 'opposite machine');
-  cleaned = cleaned.replace(/\bhow to use this search engine\b/g, 'microwave manual');
-  cleaned = cleaned.replace(/\bpizza\b/g, 'pasta');
-  cleaned = cleaned.replace(/\bburger\b/g, 'salad');
-  cleaned = cleaned.replace(/\bfood\b/g, 'anti-food');
-  cleaned = cleaned.replace(/\bwater\b/g, 'dry water');
-  cleaned = cleaned.replace(/\bhelp\b/g, 'no');
-  if (cleaned.indexOf('far away from you') === -1 && cleaned.indexOf('near me') > -1) {
-    cleaned = cleaned.replace(/\bnear me\b/g, 'far away from you');
-  }
-  if (cleaned === 'pizza near me') return 'pasta far away from you';
-  if (cleaned === 'pizza') return 'pasta';
-  if (cleaned === 'help') return 'no';
+
+  var phraseKeys = Object.keys(OPPOSITE_KEYWORDS)
+    .filter(function(k){ return k.indexOf(' ') > -1; })
+    .sort(function(a, b){ return b.length - a.length; });
+  phraseKeys.forEach(function(phrase){
+    var replacement = OPPOSITE_KEYWORDS[phrase];
+    var re = new RegExp('\\b' + escapeRegex(phrase) + '\\b', 'g');
+    cleaned = cleaned.replace(re, replacement);
+  });
+
+  cleaned = cleaned.replace(/\b[a-z]+\b/g, function(word){ return OPPOSITE_KEYWORDS[word] || word; });
+  cleaned = cleaned.replace(/\bfar you\b/g, 'far away from you');
+  cleaned = cleaned.replace(/\bfar from you\b/g, 'far away from you');
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  if (cleaned === 'pizza far away from you') cleaned = 'pasta far away from you';
   return cleaned || q;
 }
 
 function generateResults(q) {
-  var key = q.toLowerCase().trim();
-  if (key === 'how to use this search engine') {
-    return generateMicrowaveResults(q);
-  }
-
-  if (key === 'help') {
-    q = 'no';
-  }
-
-  var opp=getOpposite(q);
-  var wrongCategories=["Industrial Plumbing","Astrology","Wildlife Migration","Tax Law","Deep Sea Archaeology","Karaoke Tournaments","Volcano Insurance","Ancient Pottery"];
-  var baseA = [
-    {sponsored:true,favicon:"🫁",site:"BreathePremium.io",path:"breathepremium.io › plans",title:"Breathe+ Subscription: Oxygen Pro Max",desc:"Upgrade your breathing to premium. Includes <span class='hl'>"+q+"</span> inhale support and ad-free exhaling that somehow still feels like <span class='hl'>"+q+"</span> energy.",category:"Software as a Service"},
-    {sponsored:true,favicon:"🍽️",site:"EatNowLater.org",path:"eatnowlater.org › starter-pack",title:"Learn How To Eat (Beginner Course)",desc:"A 5-step framework for chewing <span class='hl'>"+q+"</span> into productivity, with suspiciously useful crumbs of <span class='hl'>"+q+"</span> wisdom.",category:"Executive Coaching"},
-    {sponsored:true,favicon:"🛒",site:"NotWhatYouWanted.com",path:"notwhatyouwanted.com › deals › definitely-not-"+q,title:"Buy "+opp+" — Best Prices (Not for "+q+")",desc:"Looking for <span class='hl'>"+q+"</span>? Wrong. We sell <span class='hl'>"+opp+"</span> exclusively, but it is still weirdly tied to <span class='hl'>"+q+"</span> somehow."},
-    {favicon:"📖",site:"Wikipedia",path:"en.wikipedia.org › wiki › "+opp,title:opp+" — The Encyclopedia Entry Nobody Asked For",desc:"<span class='hl'>"+opp+"</span> is the opposite of what you searched, but only in a deeply <span class='hl'>"+q+"</span>-adjacent way. 0 citations, 100% confidence."},
-    {favicon:"📰",site:"The Backwards Times",path:"backwardstimes.net › news › today",title:"BREAKING: "+q+" Found to Cause "+opp+" in 9/10 Studies",desc:"Scientists at the Institute of Making Things Up confirm <span class='hl'>"+q+"</span> is indistinguishable from <span class='hl'>"+opp+"</span> except for the part where it becomes even more <span class='hl'>"+q+"</span> than before."},
-    {favicon:"🎬",site:"YouTube",path:"youtube.com › watch",title:"I searched \""+q+"\" for 30 days — NOT what you think",desc:"14M views · 2 months ago · This video contains no useful information about <span class='hl'>"+q+"</span>. It is about <span class='hl'>"+opp+"</span>, but every frame still feels aggressively <span class='hl'>"+q+"</span>."},
-    {favicon:"🛍️",site:"Amazon",path:"amazon.in › s › "+opp,title:opp+" Bundle Pack (4.2★, 3 reviews, all from seller's mum)",desc:"Customers who searched <span class='hl'>"+q+"</span> bought <span class='hl'>"+opp+"</span> and rated it 4.2/5 for being extremely <span class='hl'>"+q+"</span>-shaped."},
-    {favicon:"💬",site:"Reddit",path:"reddit.com › r › OutOfContext › comments",title:"Asked about "+q+", got 847 responses about "+opp+" and a ban",desc:"r/AskReddit: \"Help me with <span class='hl'>"+q+"</span>.\" Top comment: \"Have you considered <span class='hl'>"+opp+"</span>? It is suspiciously relevant to <span class='hl'>"+q+"</span>.\""},
-    {favicon:"📚",site:"Quora",path:"quora.com › What-is-"+q,title:"What is "+q+"? 847 answers, all wrong",desc:"Rajesh K., studied at a university: \"<span class='hl'>"+q+"</span> is simply <span class='hl'>"+opp+"</span> wearing <span class='hl'>"+q+"</span> shoes.\" 2.4K upvotes. It did not help."},
+  var target = q.trim();
+  return [
+    {sponsored:true,favicon:"🧭",site:"OppositeFinder",path:"oppositefinder.example › search › "+target.replace(/ /g,'-'),title:target+" near the farthest locations",desc:"Top listings for <span class='hl'>"+target+"</span> are intentionally far away from your location."},
+    {favicon:"📖",site:"Opposite Wiki",path:"opposite-wiki.example › "+target.replace(/ /g,'-'),title:"What is "+target+"?",desc:"This page explains why <span class='hl'>"+target+"</span> is the opposite version of your original search."},
+    {favicon:"🗺️",site:"FarMap",path:"farmap.example › places",title:target+" results far from you",desc:"Map-based suggestions for <span class='hl'>"+target+"</span> in distant areas only."},
+    {favicon:"🛒",site:"Opposite Store",path:"oppositestore.example › "+target.replace(/ /g,'-'),title:"Buy "+target+" online",desc:"Product listings related to <span class='hl'>"+target+"</span>, sorted by opposite relevance."},
+    {favicon:"🎬",site:"ReverseTube",path:"reversetube.example › "+target.replace(/ /g,'-'),title:target+" explained in simple terms",desc:"A clear walkthrough of <span class='hl'>"+target+"</span> as the opposite of what you searched."},
+    {favicon:"💬",site:"AnswerBoard",path:"answerboard.example › topic › "+target.replace(/ /g,'-'),title:"People discussing "+target,desc:"Community answers focused on <span class='hl'>"+target+"</span> and related opposite terms."}
   ];
-
-  var baseB = [
-    {sponsored:true,favicon:"🪨",site:"StonePhone.ai",path:"stonephone.ai › migration",title:"Migrate from smartphones to emotionally available rocks",desc:"Search quality too high? Switch to geological communication that still somehow mentions <span class='hl'>"+q+"</span> six times.",category:"Telecommunications"},
-    {favicon:"🧾",site:"TaxWizard",path:"taxwizard.example › forms › Q-17",title:"How your query affects quarterly fish taxes",desc:"Every <span class='hl'>"+q+"</span> search may trigger a herring compliance audit, which is oddly relevant to <span class='hl'>"+q+"</span>."},
-    {favicon:"🐪",site:"DesertMaps",path:"desertmaps.io › dunes",title:"Best camel parking near "+q,desc:"Map results show only dunes, cacti, and one suspicious juice bar that claims to be <span class='hl'>"+q+"</span>-adjacent."},
-    {favicon:"🧪",site:"LabLeak Weekly",path:"lableakweekly.biz › reports",title:"Unrelated chemical report #"+Math.floor(Math.random()*800+100),desc:"Researchers found no link between <span class='hl'>"+q+"</span> and anything measurable, except a faint smell of <span class='hl'>"+q+"</span>."},
-    {favicon:"🎧",site:"SilenceFM",path:"silence.fm › playlists",title:"Top 50 silent tracks inspired by "+q,desc:"Track 1: 4 minutes of polite nothing. Track 2: louder nothing, but with a strong <span class='hl'>"+q+"</span> vibe."},
-    {favicon:"🏺",site:"AncientPotteryForum",path:"pottery.example › threads",title:"Did the Romans invent "+q+"?",desc:"Thread closed after 2,138 replies and one cat photo that somehow proved <span class='hl'>"+q+"</span> is ancient."},
-    {favicon:"🛰️",site:"OrbitMart",path:"orbitmart.space › deals",title:"Buy used satellites tagged with "+q,desc:"Great condition, mild atmospheric damage, no refunds, and a perfectly normal amount of <span class='hl'>"+q+"</span> dust."},
-  ];
-
-  var normalized = key;
-  var attempts = (queryAttempts[normalized] || 0);
-  var selected = (attempts % 2 === 0) ? baseA : baseB;
-  return shuffle(selected.slice()).map(function(item, i){
-    var cat = item.category || wrongCategories[i % wrongCategories.length];
-    item.desc = "<span class='hl'>Category: "+cat+"</span> · " + item.desc;
-    return item;
-  });
 }
 
 function generateMicrowaveResults(originalQuery) {
@@ -543,15 +503,14 @@ function shuffle(arr) {
 }
 
 function generateKnowledgePanel(q) {
-  var opp=getOpposite(q);
   return '<div class="kp-title">'+q+'</div>'+
-    '<div class="kp-sub">Concept · Definitely real</div>'+
-    '<div class="kp-desc">'+q+' is widely regarded as the leading cause of '+opp+'. First documented by someone who was probably wrong, but still weirdly close to the idea of '+q+'.</div>'+
-    '<div class="kp-row"><span class="kp-label">Also known as</span><span class="kp-val">'+opp+'</span></div>'+
-    '<div class="kp-row"><span class="kp-label">Origin</span><span class="kp-val">Somewhere very '+q+'-adjacent</span></div>'+
-    '<div class="kp-row"><span class="kp-label">Status</span><span class="kp-val">Unverified, but on brand</span></div>'+
-    '<div class="kp-row"><span class="kp-label">Related to</span><span class="kp-val">'+q+', but louder</span></div>'+
-    '<div class="kp-see"><div><div class="kp-see-title">See results about</div><div style="font-size:12px;color:var(--text-dim)">'+opp+' (still weirdly relevant to '+q+')</div></div><span style="margin-left:auto;color:var(--text-dim)">›</span></div>';
+    '<div class="kp-sub">Opposite query</div>'+
+    '<div class="kp-desc">These results are intentionally generated for <span class="hl">'+q+'</span>, which is the opposite form of your original search.</div>'+
+    '<div class="kp-row"><span class="kp-label">Search mode</span><span class="kp-val">Opposite Results</span></div>'+
+    '<div class="kp-row"><span class="kp-label">Location</span><span class="kp-val">Far away from you</span></div>'+
+    '<div class="kp-row"><span class="kp-label">Status</span><span class="kp-val">Active</span></div>'+
+    '<div class="kp-row"><span class="kp-label">Related to</span><span class="kp-val">'+q+'</span></div>'+
+    '<div class="kp-see"><div><div class="kp-see-title">Current opposite query</div><div style="font-size:12px;color:var(--text-dim)">'+q+'</div></div><span style="margin-left:auto;color:var(--text-dim)">›</span></div>';
 }
 
 function unsplashUrl(query, index, w, h) {
@@ -660,10 +619,11 @@ function renderSuggestions(q) {
 function filterSuggestions(q) {
   var corrected = wrongSpellCorrect(q);
   if (corrected !== q) {
+    var opposite = computeOppositeQuery(corrected);
     return [
-      {text:wrongAutocompleteWord(q),sub:'wrong autocomplete'},
-      {text:computeOppositeQuery(corrected),sub:'opposite of the corrected query'},
-      {text:computeOppositeQuery(q),sub:'still wrong, but different'}
+      {text:corrected,sub:'autocorrected to the wrong word'},
+      {text:opposite,sub:'opposite of the autocorrected search'},
+      {text:computeOppositeQuery(q),sub:'alternate opposite suggestion'}
     ];
   }
   if (q.toLowerCase().indexOf('weather') > -1) {

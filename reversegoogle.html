@@ -174,7 +174,7 @@
   .sponsored-label { font-size:11px;color:var(--text-dim);border:1px solid var(--border);border-radius:3px;padding:1px 4px;display:inline-block;margin-bottom:4px; }
 
   /* KNOWLEDGE PANEL */
-  .knowledge-panel { width:340px;flex-shrink:0;border:1px solid #3c4043;border-radius:8px;padding:20px;background:var(--bg);align-self:flex-start; }
+  .knowledge-panel { width:380px;flex-shrink:0;border:none;border-left:1px solid #3c4043;border-radius:0;padding:0 0 0 32px;background:transparent;align-self:flex-start;margin-top:-72px; }
   .kp-title { font-size:24px;font-weight:400;margin-bottom:4px; }
   .kp-sub { font-size:14px;color:var(--text-dim);margin-bottom:12px; }
   .kp-desc { font-size:14px;color:var(--text-dim);line-height:1.6;margin-bottom:12px; }
@@ -544,8 +544,7 @@
         <input class="search-input" id="searchInput" type="text" autocomplete="off" spellcheck="false">
         <div class="search-icons">
           <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>
-          <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M9.5 6C7 6 5 8 5 10.5S7 15 9.5 15 14 13 14 10.5 12 6 9.5 6zm0 7C8.12 13 7 11.88 7 10.5S8.12 8 9.5 8 12 9.12 12 10.5 10.88 13 9.5 13zm9.42 2.27L15.5 12h-1.83l3.42 3.27C17.04 16.55 17 17.02 17 17.5 17 19.43 18.57 21 20.5 21S24 19.43 24 17.5 22.43 14 20.5 14c-.52 0-1.01.12-1.58.27zM20.5 19c-.83 0-1.5-.67-1.5-1.5S19.67 16 20.5 16s1.5.67 1.5 1.5S21.33 19 20.5 19z"/></svg></button>
-          <button class="ai-mode-btn"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 15.5h-1.5V14h-1v3H8v-3H7v4.5H5.5v-5c0-.55.45-1 1-1H11c.55 0 1 .45 1 1v5zm5-7c0 .55-.45 1-1 1h-2v1.5h2v1.5h-2v1.5h-1.5v-5c0-.55.45-1 1-1H16c.55 0 1 .45 1 1v.5zM10 9H5.5V7.5H10V9zm8.5 0H14V7.5h4.5V9z"/></svg>AI Mode</button>
+          <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
         </div>
       </div>
       <div class="dropdown" id="dropdown">
@@ -587,7 +586,6 @@
       <div class="search-icons">
         <button class="icon-btn" style="width:2px;height:30px;background:var(--border);border-radius:0;margin-right:8px;cursor:default;padding:0;min-width:1px"></button>
         <button class="icon-btn"><svg viewBox="0 0 24 24" style="fill:#9aa0a6"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>
-        <button class="icon-btn"><svg viewBox="0 0 24 24" style="fill:#9aa0a6"><path d="M9.5 6C7 6 5 8 5 10.5S7 15 9.5 15 14 13 14 10.5 12 6 9.5 6zm0 7C8.12 13 7 11.88 7 10.5S8.12 8 9.5 8 12 9.12 12 10.5 10.88 13 9.5 13zm9.42 2.27L15.5 12h-1.83l3.42 3.27C17.04 16.55 17 17.02 17 17.5 17 19.43 18.57 21 20.5 21S24 19.43 24 17.5 22.43 14 20.5 14c-.52 0-1.01.12-1.58.27zM20.5 19c-.83 0-1.5-.67-1.5-1.5S19.67 16 20.5 16s1.5.67 1.5 1.5S21.33 19 20.5 19z"/></svg></button>
         <button class="icon-btn"><svg viewBox="0 0 24 24" style="fill:#9aa0a6"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
       </div>
     </div>
@@ -604,9 +602,7 @@
       <div class="results-tab" data-tab="images"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>Images</div>
       <div class="results-tab" data-tab="maps"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>Maps</div>
       <div class="results-tab" data-tab="videos"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>Videos</div>
-      <div class="results-tab" data-tab="shopping"><svg viewBox="0 0 24 24"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/></svg>Shopping</div>
       <div class="results-tab" data-tab="news"><svg viewBox="0 0 24 24"><path d="M22 3l-1.67 1.67L18.67 3 17 4.67 15.33 3l-1.66 1.67L12 3l-1.67 1.67L8.67 3 7 4.67 5.33 3 3.67 4.67 2 3v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V3zM11 19H4v-6h7v6zm9 0h-7v-2h7v2zm0-4h-7v-2h7v2zm0-4H4V8h16v3z"/></svg>News</div>
-      <div class="results-tab" data-tab="more">More ▾</div>
     </div>
   </div>
 
@@ -718,15 +714,15 @@ var allSuggestions = [
   {text:"how to legally change your name to a sound effect",sub:""},
 ];
 var defaultSuggestions = [
-  {text:"google but backwards",sub:""},
-  {text:"g string what",sub:""},
-  {text:"twenty 20 party belief",sub:""},
-  {text:"what is twenty20 party",sub:""},
-  {text:"charlie cox height in feet",sub:""},
-  {text:"lolin s2 mini",sub:"Shopping"},
-  {text:"eminem killshot lyrics but reversed",sub:""},
-  {text:"marvel movies in wrong order",sub:""},
-  {text:"rsms (whatever that means)",sub:""},
+  {text:"why does the moon smell like cheese",sub:""},
+  {text:"how to apologise to a chair you bumped into",sub:""},
+  {text:"is water wet or is it just pretending",sub:""},
+  {text:"do fish get thirsty",sub:""},
+  {text:"how to tell if a pigeon is judging you",sub:""},
+  {text:"how many bees is too many bees",sub:""},
+  {text:"can you copyright a sneeze",sub:"Legal"},
+  {text:"how to convince a cat you are also a cat",sub:""},
+  {text:"why do elevators have mirrors (they're watching)",sub:""},
 ];
 
 var WRONG_AUTOCORRECT = {
@@ -837,14 +833,42 @@ function shuffle(arr) {
 }
 
 function generateKnowledgePanel(q) {
-  return '<div class="kp-title">'+q+'</div>'+
-    '<div class="kp-sub">Topic overview</div>'+
-    '<div class="kp-desc">Explore key information, tools, and resources related to <span class="hl">'+q+'</span>.</div>'+
-    '<div class="kp-row"><span class="kp-label">Search mode</span><span class="kp-val">Web Results</span></div>'+
-    '<div class="kp-row"><span class="kp-label">Location</span><span class="kp-val">Far away from you</span></div>'+
-    '<div class="kp-row"><span class="kp-label">Status</span><span class="kp-val">Active</span></div>'+
-    '<div class="kp-row"><span class="kp-label">Related to</span><span class="kp-val">'+q+'</span></div>'+
-    '<div class="kp-see"><div><div class="kp-see-title">Current topic</div><div style="font-size:12px;color:var(--text-dim)">'+q+'</div></div><span style="margin-left:auto;color:var(--text-dim)">›</span></div>';
+  var T = q;
+  if (T) {
+    T = T.split(' ').map(function(s){return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();}).join(' ');
+  } else {
+    T = "Topic";
+  }
+  var imgs = [
+    'https://source.unsplash.com/400x300/?'+encodeURIComponent(q+'-1'),
+    'https://source.unsplash.com/200x150/?'+encodeURIComponent(q+'-2'),
+    'https://source.unsplash.com/200x150/?'+encodeURIComponent(q+'-3')
+  ];
+
+  var t1 = escapeHtml(T) + ' is a fundamental concept that encompasses various types of ' + escapeHtml(q.toLowerCase()) + ', each expertly designed to completely derail your original intentions. The first highly-refined instance of ' + escapeHtml(q.toLowerCase()) + ' was allegedly manufactured in a secret underground laboratory in 1894 by researchers attempting to create the world\'s most flawless distraction. Today, it remains the leading cause of abandoned New Year\'s resolutions globally.';
+  var t2 = 'The phenomenon of ' + escapeHtml(T) + ' has baffled leading scientists for decades. Essentially a construct made entirely out of ' + escapeHtml(q.toLowerCase()) + ', it magically materializes precisely when you are supposed to be doing something else. Historians note that ancient emperors frequently blamed their poorly constructed empires on an excess of ' + escapeHtml(q.toLowerCase()) + '.';
+  var t3 = escapeHtml(T) + ' is an inescapable lifestyle choice marketed heavily toward people avoiding reality. Available in various forms of ' + escapeHtml(q.toLowerCase()) + ', it provides a reliable, low-effort alternative to whatever you actually searched for. Consumer reports suggest that 9 out of 10 people accidentally click on ' + escapeHtml(q.toLowerCase()) + ' while trying to be productive.';
+  var t4 = 'Many leading theorists argue that ' + escapeHtml(T) + ' does not actually exist, but is instead a collective hallucination triggered by supreme procrastination. However, copious amounts of ' + escapeHtml(q.toLowerCase()) + ' found in modern society suggest otherwise. Experts classify ' + escapeHtml(q.toLowerCase()) + ' as a Class-A time-sink, warning citizens to avoid eye contact.';
+
+  var templates = [t1, t2, t3, t4];
+  // Consistently pick one based on the string length so the same topic always gets the same joke, but different topics vary
+  var funnyDesc = templates[q.length % templates.length];
+
+  return '<div style="font-size:32px;line-height:1.2;margin-bottom:8px;font-family: \'Google Sans\', sans-serif;">'+escapeHtml(T)+'</div>'+
+    '<div style="font-size:14px;color:#bdc1c6;margin-bottom:16px;display:flex;align-items:center;">Dish <span style="margin-left:12px;font-size:18px;line-height:1;">⋮</span></div>'+
+    '<div style="display:flex;gap:4px;overflow:hidden;border-radius:16px;height:240px;margin-bottom:20px;">'+
+      '<div style="flex:2;background:#303134;position:relative;">'+
+        '<img src="'+imgs[0]+'" style="width:100%;height:100%;object-fit:cover;">'+
+      '</div>'+
+      '<div style="flex:1;display:flex;flex-direction:column;gap:4px;">'+
+        '<div style="flex:1;background:#303134;position:relative;"><img src="'+imgs[1]+'" style="width:100%;height:100%;object-fit:cover;"></div>'+
+        '<div style="flex:1;background:#303134;position:relative;"><img src="'+imgs[2]+'" style="width:100%;height:100%;object-fit:cover;">'+
+          '<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.65);border-radius:24px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div style="font-size:16px;line-height:1.45;margin-bottom:16px;color:#e8eaed;">'+funnyDesc+'</div>'+
+    '<div style="font-size:14px;color:#9aa0a6;margin-bottom:24px;">Source: <a href="#" style="color:#8ab4f8;text-decoration:none;">Wikipedia</a></div>';
 }
 
 function unsplashUrl(query, index, w, h) {
@@ -1777,7 +1801,13 @@ attachTypingLimiter(searchInput, document.getElementById('typingWarning'), docum
 attachTypingLimiter(document.getElementById('resultsSearchInput'), document.getElementById('typingWarningResults'), document.querySelector('.results-search-box'));
 
 function doSearch(){var q=searchInput.value.trim();if(!q)q="the meaning of life";showResults(q);}
-function feelingConfused(){var r=allSuggestions[Math.floor(Math.random()*allSuggestions.length)].text;searchInput.value=r;showResults(r);}
+function feelingConfused(){
+  var keys = window.CUSTOM_OPPOSITES ? Object.keys(window.CUSTOM_OPPOSITES) : ['pizza'];
+  if (keys.length === 0) keys = ['pizza'];
+  var r = keys[Math.floor(Math.random() * keys.length)];
+  searchInput.value = r;
+  showResults(r);
+}
 
 async function showResults(query, skipHistory){
   currentQuery=query;

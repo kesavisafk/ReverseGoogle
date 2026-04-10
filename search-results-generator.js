@@ -53,7 +53,7 @@
   };
 
   var DID_YOU_MEAN_BY_OPPOSITE = {
-    fitness_nutrition: 'get calorie tracking tips',
+    fitness_nutrition: 'calorie tracking tips',
     productivity: 'improve your productivity',
     distraction: 'ways to stop being productive',
     minimalism_saving: 'save money instead of buying more',

@@ -531,11 +531,28 @@ function unsplashUrl(query, index, w, h) {
   return 'https://source.unsplash.com/' + w + 'x' + h + '/?' + encodeURIComponent((query || 'random') + ' ' + index);
 }
 
-function pickRelatedImage(images, index, query, w, h) {
-  if (images && images.length) {
-    return images[index % images.length];
+function buildUniqueImagePool(images, query, count, prefix) {
+  var out = [];
+  var seen = {};
+  var safePrefix = String(prefix || 'img');
+
+  function pushIfNew(url) {
+    if (!url || seen[url]) return;
+    seen[url] = true;
+    out.push(url);
   }
-  return unsplashUrl(query, index, w, h);
+
+  if (Array.isArray(images)) {
+    images.forEach(function (url) { pushIfNew(url); });
+  }
+
+  var i = 0;
+  while (out.length < count) {
+    pushIfNew('https://picsum.photos/seed/' + encodeURIComponent(safePrefix + '-' + query + '-' + i) + '/640/420');
+    i += 1;
+  }
+
+  return out.slice(0, count);
 }
 
 async function fetchUnsplashImages(query, count) {
@@ -609,10 +626,26 @@ function generateImageTab(q, relatedImages) {
   chips.forEach(function(c,i){html+='<div class="img-chip">'+(i===0?'<div style="width:22px;height:22px;background:#8ab4f8;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;color:#202124;font-weight:700">✓</div>':'')+c+'</div>';});
   document.getElementById('imgChips').innerHTML=html;
 
+  var titleTemplates = [
+    'What Happens If You Learn {q} in 5 Minutes',
+    '{q} Explained by Someone Too Confident',
+    'Top 7 Mistakes People Make About {q}',
+    'Beginner\'s Guide to {q} (Surprisingly Useful)',
+    'I Tried {q} for 30 Days and Took Notes',
+    'Everything About {q} in One Visual Breakdown',
+    'Can {q} Actually Work? Field Test Results',
+    '{q}: The Version Nobody Asked For',
+    'Practical {q} Tips You Can Use Today',
+    '{q} Myths That Refuse to Die',
+    'From Zero to Better at {q}',
+    '{q} in Real Life: What to Expect'
+  ];
+  var pool = buildUniqueImagePool(relatedImages, q, 12, 'images-tab');
+  var titles = buildUniqueTitles(titleTemplates, 12, q, hashString('images:' + q));
   var grid='';
   for(var i=0;i<12;i++){
-    var title='How I Explained '+q+' to My Dog (he disagreed)';
-    var thumb=pickRelatedImage(relatedImages, i, q, 540, 420);
+    var title=titles[i];
+    var thumb=pool[i];
     grid+='<div class="img-item"><div class="video-thumb" style="background:#111;position:relative"><img class="img-photo" src="'+thumb+'" alt="'+title+'" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(q+'-video-'+i)+'/540/420\'\"><div style="position:absolute;inset:auto 10px 10px auto;background:rgba(0,0,0,.72);color:#fff;font-size:12px;padding:3px 5px;border-radius:3px">'+['2:34','8:47','14:22','0:59','23:11','5:03','1:17:44','3:28'][i%8]+'</div><div style="position:absolute;inset:auto 12px 12px 12px;color:#fff;font-size:16px;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.8)">▶</div></div><div class="img-item-info"><div class="img-item-title">'+title+'</div><div class="img-item-source">Video · thumbnail uses related search image</div></div></div>';
   }
   document.getElementById('imagesGrid').innerHTML=grid;
@@ -632,13 +665,24 @@ var imgExts = ['.jpg','.png','.jpeg','.webp','.png','.jpg'];
 
 function generateVideoTab(q, relatedImages) {
   var html='<div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Showing image files for "'+q+'" (as .jpg and .png)</div>';
+  var titleTemplates = [
+    '{q} stock image set for commercial use',
+    'Editorial visuals around {q} trending topics',
+    'High-resolution {q} concept photos',
+    '{q} image collection for presentations',
+    'Creative commons style shots linked to {q}',
+    'Curated visual references for {q}'
+  ];
+  var pool = buildUniqueImagePool(relatedImages, q, 6, 'videos-tab');
+  var titles = buildUniqueTitles(titleTemplates, 6, q, hashString('videos:' + q));
   for(var i=0;i<6;i++){
     var site=imgSites[i%imgSites.length];
     var ext=(i % 2 === 0) ? '.jpg' : '.png';
     var w=Math.floor(Math.random()*3000+500);
     var h=Math.floor(Math.random()*2000+400);
-    var thumb=pickRelatedImage(relatedImages, i, q, 300, 200);
-    html+='<div class="video-as-img-item"><div><div class="vimg-path">'+site.toLowerCase().replace(' ','')+'.com › images › '+q.replace(/ /g,'-')+'-'+i+ext+'</div><div class="vimg-title">'+q+' stock image #'+(i+1)+' '+ext+' ('+w+'×'+h+'px)</div><div class="vimg-desc">High quality '+q+' image available in '+ext+' format. Resolution: '+w+'×'+h+'. File size: '+(Math.random()*4+0.5).toFixed(1)+'MB. This image does not actually show '+q+'.</div><div style="font-size:12px;color:var(--text-dim);margin-top:4px;">'+site+' · '+w+'×'+h+'</div></div><div class="vimg-thumb"><img src="'+thumb+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.parentElement.innerHTML=\'🖼️\'"></div></div>';
+    var thumb=pool[i];
+    var title=titles[i];
+    html+='<div class="video-as-img-item"><div><div class="vimg-path">'+site.toLowerCase().replace(' ','')+'.com › images › '+q.replace(/ /g,'-')+'-'+i+ext+'</div><div class="vimg-title">'+title+' '+ext+' ('+w+'×'+h+'px)</div><div class="vimg-desc">High quality '+q+' image available in '+ext+' format. Resolution: '+w+'×'+h+'. File size: '+(Math.random()*4+0.5).toFixed(1)+'MB. This image does not actually show '+q+'.</div><div style="font-size:12px;color:var(--text-dim);margin-top:4px;">'+site+' · '+w+'×'+h+'</div></div><div class="vimg-thumb"><img src="'+thumb+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent('video-thumb-'+q+'-'+i)+'/300/200\'"></div></div>';
   }
   document.getElementById('videosGrid').innerHTML=html;
 }
@@ -733,13 +777,58 @@ function hashString(text) {
   return h;
 }
 
+function shuffledCopy(list, seed) {
+  var out = (list || []).slice();
+  var h = seed >>> 0;
+  for (var i = out.length - 1; i > 0; i--) {
+    h = (h * 1664525 + 1013904223) >>> 0;
+    var j = h % (i + 1);
+    var temp = out[i];
+    out[i] = out[j];
+    out[j] = temp;
+  }
+  return out;
+}
+
+function buildUniqueTitles(templates, count, query, seed) {
+  var base = shuffledCopy(templates, seed || 1);
+  var used = {};
+  var out = [];
+
+  for (var i = 0; i < base.length && out.length < count; i++) {
+    var t = String(base[i] || '').replace('{q}', query);
+    if (!used[t]) {
+      used[t] = 1;
+      out.push(t);
+    }
+  }
+
+  var k = 1;
+  while (out.length < count) {
+    var fallbackBase = String(base[out.length % Math.max(base.length, 1)] || ('Related ' + query)).replace('{q}', query);
+    var candidate = fallbackBase + ' #' + k;
+    if (!used[candidate]) {
+      used[candidate] = 1;
+      out.push(candidate);
+    }
+    k += 1;
+  }
+  return out;
+}
+
 function generateNewsArticles(oppositeCategory) {
   var pool = OPPOSITE_NEWS_LIBRARY[oppositeCategory] || OPPOSITE_NEWS_LIBRARY.distraction;
   var chosen = rotatePickFrom(pool, 6, hashString(oppositeCategory));
+  var seen = {};
   return chosen.map(function (item, idx) {
+    var title = item.title;
+    if (seen[title]) {
+      title = title + ' #' + (seen[title] + 1);
+    }
+    seen[item.title] = (seen[item.title] || 0) + 1;
     return {
       source: NEWS_SOURCES[idx % NEWS_SOURCES.length],
-      title: item.title,
+      title: title,
       description: item.description,
       time: NEWS_TIMES[idx % NEWS_TIMES.length],
       image: newsImageUrl(item.keywords)
@@ -754,19 +843,40 @@ function generateNewsTab(oppositeCategory) {
     var domain = NEWS_SOURCE_DOMAINS[a.source] || '';
     var sourceInitial = (a.source || 'N').charAt(0).toUpperCase();
     var sourceLogo = domain
-      ? '<img src="'+logoUrl(domain, { size: 32, format: 'png', theme: 'light', fallback: 'monogram' })+'" alt="'+escapeHtml(a.source)+' logo" loading="lazy" data-initial="'+sourceInitial+'" onerror="handleNewsSourceLogoError(this)">'
+      ? '<img src="'+logoUrl(domain, { size: 32, format: 'webp', theme: 'light', fallback: 'monogram' })+'" data-png="'+logoUrl(domain, { size: 32, format: 'png', theme: 'light', fallback: 'monogram' })+'" data-jpg="'+logoUrl(domain, { size: 32, format: 'jpg', theme: 'light', fallback: 'monogram' })+'" data-favicon="https://www.google.com/s2/favicons?domain='+encodeURIComponent(domain)+'&sz=32" alt="'+escapeHtml(a.source)+' logo" loading="lazy" data-initial="'+sourceInitial+'" onerror="handleNewsSourceLogoError(this)">'
       : sourceInitial;
-    html += '<div class="news-item"><div class="news-content"><div class="news-source"><div class="news-favicon" style="background:var(--surface2);color:var(--text);font-size:9px;font-weight:700">'+sourceLogo+'</div><span class="news-pub">'+a.source+'</span></div><div class="news-title">'+a.title+'</div><div class="news-desc">'+a.description+'</div><div class="news-time">'+a.time+'</div></div><div class="news-thumb"><img src="'+a.image+'" alt="news image" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="handleNewsThumbError(this)"></div></div>';
+    html += '<div class="news-item"><div class="news-content"><div class="news-source"><div class="news-favicon" style="background:var(--surface2);color:var(--text);font-size:9px;font-weight:700">'+sourceLogo+'</div><span class="news-pub">'+a.source+'</span></div><div class="news-title">'+a.title+'</div><div class="news-desc">'+a.description+'</div><div class="news-time">'+a.time+'</div></div><div class="news-thumb"><img src="'+a.image+'" data-fallback="https://picsum.photos/seed/'+encodeURIComponent('news-'+oppositeCategory+'-'+i)+'/92/92" alt="news image" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="handleNewsThumbError(this)"></div></div>';
   });
   document.getElementById('newsGrid').innerHTML=html;
 }
 
 function handleNewsSourceLogoError(img) {
+  var step = Number(img.getAttribute('data-step') || '0');
+  if (step === 0 && img.dataset.png) {
+    img.setAttribute('data-step', '1');
+    img.src = img.dataset.png;
+    return;
+  }
+  if (step === 1 && img.dataset.jpg) {
+    img.setAttribute('data-step', '2');
+    img.src = img.dataset.jpg;
+    return;
+  }
+  if (step === 2 && img.dataset.favicon) {
+    img.setAttribute('data-step', '3');
+    img.src = img.dataset.favicon;
+    return;
+  }
   var holder = img.closest('.news-favicon');
   if (holder) holder.textContent = img.getAttribute('data-initial') || 'N';
 }
 
 function handleNewsThumbError(img) {
+  if (!img.dataset.failedOnce && img.dataset.fallback) {
+    img.dataset.failedOnce = '1';
+    img.src = img.dataset.fallback;
+    return;
+  }
   var parent = img.closest('.news-thumb');
   if (parent) parent.textContent = '📰';
 }
@@ -959,8 +1069,9 @@ async function showResults(query, skipHistory){
   related.forEach(function(r){var d=document.createElement('div');d.className='related-item';d.innerHTML=SRCHSVG+r;d.onclick=function(){showResults(r);};grid.appendChild(d);});
 
   // Generate other tabs
-  generateImageTab(topicTerm, thumbs);
-  generateVideoTab(topicTerm, thumbs);
+  var combinedVisualPool = buildUniqueImagePool(thumbs, topicTerm, 18, 'all-visuals');
+  generateImageTab(topicTerm, combinedVisualPool.slice(0, 12));
+  generateVideoTab(topicTerm, combinedVisualPool.slice(12, 18));
   generateNewsTab(oppositeCategory);
 
   // Switch to All tab

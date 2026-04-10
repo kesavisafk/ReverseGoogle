@@ -307,7 +307,6 @@ ReverseGoogle/
 |-- opposites.js                  <- JS fallback mapping if JSON is unavailable
 |-- vercel.json                   <- Vercel route and deployment config
 |-- .env.example                  <- Environment variable template
-|-- .env                          <- Local environment values (not for sharing)
 |-- .gitignore                    <- Ignore rules for secrets/build noise
 `-- README.md                     <- Project documentation
 ```

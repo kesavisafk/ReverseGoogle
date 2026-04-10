@@ -40,126 +40,175 @@
 
   function logoUrlForDomain(domain) {
     if (!domain) return '/logos/default.png';
-    return '/api/logo?domain=' + encodeURIComponent(domain) + '&size=64&format=png&theme=auto&fallback=404';
+    return 'https://logo.clearbit.com/' + domain;
   }
 
-  var CATEGORY_MAPPING = {
-    food: {
+  var OPPOSITE_BY_CATEGORY = {
+    food: 'fitness_nutrition',
+    entertainment: 'productivity',
+    productivity: 'distraction',
+    shopping: 'minimalism_saving',
+    travel: 'stay_home',
+    fitness: 'indulgence_junk_food'
+  };
+
+  var DID_YOU_MEAN_BY_OPPOSITE = {
+    fitness_nutrition: 'get calorie tracking tips',
+    productivity: 'improve your productivity',
+    distraction: 'ways to stop being productive',
+    minimalism_saving: 'save money instead of buying more',
+    stay_home: 'indoor activities for tonight',
+    indulgence_junk_food: 'best comfort food delivery ideas'
+  };
+
+  var RESULT_LIBRARY = {
+    fitness_nutrition: {
       real: [
-        { siteName: 'MyFitnessPal', baseUrl: 'https://www.myfitnesspal.com/search', titlePrefix: 'Track calories with', desc: 'Track meals, macros, and workouts instead of ordering food.' },
-        { siteName: 'Healthline', baseUrl: 'https://www.healthline.com/search', titlePrefix: 'Nutrition guidance on', desc: 'Read health-focused guidance that aligns with your reversed intent.' },
-        { siteName: 'Strava', baseUrl: 'https://www.strava.com', titlePrefix: 'Activity goals on', desc: 'Switch from delivery ideas to movement and fitness tracking.' }
+        { siteName: 'MyFitnessPal', url: 'https://www.myfitnesspal.com', title: 'Track Calories and Improve Your Diet', description: 'Monitor daily nutrition, set realistic goals, and build healthier habits with a simple tracking workflow.' },
+        { siteName: 'Healthline', url: 'https://www.healthline.com/nutrition', title: 'Nutrition Plans Backed by Research', description: 'Explore practical nutrition guidance and evidence-based recommendations for long-term health improvements.' },
+        { siteName: 'Strava', url: 'https://www.strava.com', title: 'Build Consistent Activity Routines', description: 'Track workouts, monitor progress over time, and stay motivated with measurable fitness milestones.' }
       ],
       fake: [
-        { siteName: 'AntiDelivery Weekly', domain: 'antidelivery.example', desc: 'A newsletter for people who almost ordered food, but opened a step counter instead.' },
-        { siteName: 'Cardio Cart Canceler', domain: 'cartcanceler.example', desc: 'Converts cravings into treadmill sessions with suspicious confidence.' },
-        { siteName: 'The Opposite Menu', domain: 'oppositemenu.example', desc: 'Every dish recommendation is replaced with a hydration reminder.' }
-      ]
-    },
-    shopping: {
-      real: [
-        { siteName: 'NerdWallet', baseUrl: 'https://www.nerdwallet.com', titlePrefix: 'Save money with', desc: 'Compare saving strategies that counter impulse shopping.' },
-        { siteName: 'The Minimalists', baseUrl: 'https://www.theminimalists.com', titlePrefix: 'Own less with', desc: 'Practical ideas for buying less and keeping only essentials.' },
-        { siteName: 'Reddit Frugal', baseUrl: 'https://www.reddit.com/r/frugal', titlePrefix: 'Frugal tips on', desc: 'Community advice for avoiding unnecessary purchases.' }
-      ],
-      fake: [
-        { siteName: 'Cart Detox Club', domain: 'cartdetox.example', desc: 'A support group for tabs full of products you never needed.' },
-        { siteName: 'Refund Oracle', domain: 'refundoracle.example', desc: 'Predicts regrets before checkout with dramatic accuracy.' },
-        { siteName: 'Minimal Cart Labs', domain: 'minimalcart.example', desc: 'Automatically rounds your cart down to one useful item.' }
-      ]
-    },
-    travel: {
-      real: [
-        { siteName: 'Netflix', baseUrl: 'https://www.netflix.com', titlePrefix: 'Stay home with', desc: 'Home entertainment options for when travel plans become opposite plans.' },
-        { siteName: 'YouTube', baseUrl: 'https://www.youtube.com/results', titlePrefix: 'At-home alternatives on', desc: 'Watch destination videos from your couch instead of booking tickets.' },
-        { siteName: 'Spotify', baseUrl: 'https://open.spotify.com/search', titlePrefix: 'Travel mood, no travel on', desc: 'Playlists for the vibe of travel without leaving home.' }
-      ],
-      fake: [
-        { siteName: 'Couch Passport', domain: 'couchpassport.example', desc: 'Collect digital stamps for visiting your living room repeatedly.' },
-        { siteName: 'NoFlight Tonight', domain: 'noflighttonight.example', desc: 'Find local snacks and stream a documentary instead of boarding.' },
-        { siteName: 'Staycation Radar', domain: 'staycationradar.example', desc: 'Detects the nearest blanket and marks it as a premium destination.' }
+        { siteName: 'Macro Journal Daily', domain: 'macrojournaldaily.com', title: 'Create a Weekly Macro Tracking Plan', description: 'Use a lightweight weekly structure to track intake, improve consistency, and avoid nutrition guesswork.' },
+        { siteName: 'Streak Metrics', domain: 'streakmetrics.com', title: 'Small Habits That Improve Fitness Consistency', description: 'Learn how tiny daily actions can compound into measurable results over a few weeks.' },
+        { siteName: 'Calorie Compass', domain: 'caloriecompass.io', title: 'Calorie Targets for Sustainable Progress', description: 'Understand maintenance, deficit, and surplus strategies with practical examples you can apply quickly.' }
       ]
     },
     productivity: {
       real: [
-        { siteName: 'YouTube', baseUrl: 'https://www.youtube.com/results', titlePrefix: 'Distraction ideas on', desc: 'Videos carefully optimized to derail your productivity plans.' },
-        { siteName: 'Reddit', baseUrl: 'https://www.reddit.com', titlePrefix: 'Lose focus on', desc: 'Threads that start useful and end two hours later.' },
-        { siteName: '9GAG', baseUrl: 'https://9gag.com/search', titlePrefix: 'Break your flow with', desc: 'Endless scrolling for when focus is not the goal.' }
+        { siteName: 'Notion', url: 'https://www.notion.so', title: 'Organize Work and Personal Tasks in One Place', description: 'Create structured notes, project boards, and workflows to keep daily priorities clear and actionable.' },
+        { siteName: 'Trello', url: 'https://trello.com', title: 'Plan Projects with Clear Visual Workflows', description: 'Track progress, assign tasks, and simplify collaboration using flexible boards and checklists.' },
+        { siteName: 'RescueTime', url: 'https://www.rescuetime.com', title: 'Measure Focus and Improve Time Management', description: 'Understand how your day is spent and identify high-impact opportunities to improve attention.' }
       ],
       fake: [
-        { siteName: 'Procrastination Pro', domain: 'procrastinationpro.example', desc: 'Turns every task into a perfectly timed delay.' },
-        { siteName: 'Tab Collector', domain: 'tabcollector.example', desc: 'Opens fifteen tabs so your original task can hide safely.' },
-        { siteName: 'Deadline Dodger', domain: 'deadlinedodger.example', desc: 'Strategic avoidance techniques with polished explanations.' }
+        { siteName: 'Focus Blueprint', domain: 'focusblueprint.io', title: 'A Practical System for Better Deep Work', description: 'Set boundaries, block interruptions, and use focused sessions to complete meaningful tasks faster.' },
+        { siteName: 'Output Weekly', domain: 'outputweekly.com', title: 'Weekly Planning Framework for High-Impact Work', description: 'Align weekly priorities with measurable outcomes using a repeatable planning cycle.' },
+        { siteName: 'Task Lens', domain: 'tasklens.app', title: 'Simplify Task Prioritization in Minutes', description: 'Use a lightweight method to sort urgent work from important long-term initiatives.' }
       ]
     },
-    fitness: {
+    distraction: {
       real: [
-        { siteName: 'DoorDash', baseUrl: 'https://www.doordash.com/search/store', titlePrefix: 'Refuel on', desc: 'Food delivery suggestions as the opposite of fitness searches.' },
-        { siteName: 'Uber Eats', baseUrl: 'https://www.ubereats.com/search', titlePrefix: 'Order in with', desc: 'Quick meal options for staying still after searching fitness topics.' },
-        { siteName: 'Zomato', baseUrl: 'https://www.zomato.com/search', titlePrefix: 'Meal picks on', desc: 'Restaurant recommendations replacing your workout intent.' }
+        { siteName: 'YouTube', url: 'https://www.youtube.com', title: 'Trending Videos to Watch Right Now', description: 'Browse new videos, creator channels, and recommendations designed for casual viewing sessions.' },
+        { siteName: 'Reddit', url: 'https://www.reddit.com', title: 'Browse Popular Discussions and Communities', description: 'Jump into active threads, discover niche topics, and follow ongoing community conversations.' },
+        { siteName: '9GAG', url: 'https://9gag.com', title: 'Light Content and Viral Posts', description: 'Explore short-form posts and fast-scrolling entertainment for quick online breaks.' }
       ],
       fake: [
-        { siteName: 'Cardio Cancel Kitchen', domain: 'cardiocancel.example', desc: 'Automatically swaps workout plans for snack plans.' },
-        { siteName: 'Lazy Gains Diner', domain: 'lazygains.example', desc: 'High-calorie menus for low-movement afternoons.' },
-        { siteName: 'Rest Day Forever', domain: 'restdayforever.example', desc: 'A complete strategy for extending one rest day indefinitely.' }
+        { siteName: 'Procrastination Studio', domain: 'procrastinationstudio.com', title: 'How to Procrastinate Like a Pro', description: 'A polished guide to delaying tasks with highly optimized low-priority routines.' },
+        { siteName: 'Idle Loop', domain: 'idleloop.net', title: 'Advanced Techniques for Doing Nothing', description: 'Learn distraction patterns that can quietly consume an afternoon without obvious effort.' },
+        { siteName: 'OpenTab Daily', domain: 'opentabdaily.com', title: 'The Infinite Tab Strategy', description: 'Keep curiosity active by rotating between links that feel useful but rarely get finished.' }
+      ]
+    },
+    minimalism_saving: {
+      real: [
+        { siteName: 'NerdWallet', url: 'https://www.nerdwallet.com', title: 'Practical Ways to Save More Each Month', description: 'Compare budgeting methods and simple spending habits that support long-term financial stability.' },
+        { siteName: 'The Minimalists', url: 'https://www.theminimalists.com', title: 'Minimalist Habits for Intentional Spending', description: 'Learn how reducing clutter and unnecessary purchases can improve financial and mental clarity.' },
+        { siteName: 'r/Frugal', url: 'https://www.reddit.com/r/frugal', title: 'Community Tips for Cutting Everyday Costs', description: 'Find practical ideas from real people focused on saving money across housing, food, and shopping.' }
+      ],
+      fake: [
+        { siteName: 'Save Smart Journal', domain: 'savesmartjournal.com', title: 'A 30-Day Plan to Reduce Impulse Buying', description: 'Use daily checkpoints and purchase-delay rules to improve spending decisions.' },
+        { siteName: 'Minimal Living Notes', domain: 'minimallivingnotes.com', title: 'How to Buy Less Without Feeling Restricted', description: 'Replace impulse purchases with durable alternatives and priority-based spending.' },
+        { siteName: 'Spend Less Weekly', domain: 'spendlessweekly.com', title: 'Weekly Cost-Cutting Checklist', description: 'Track subscriptions, habits, and routine expenses with a repeatable weekly review process.' }
+      ]
+    },
+    stay_home: {
+      real: [
+        { siteName: 'Netflix', url: 'https://www.netflix.com', title: 'Top Streaming Picks for Tonight', description: 'Browse popular series and films for a relaxed evening at home.' },
+        { siteName: 'YouTube', url: 'https://www.youtube.com', title: 'Long-Form Videos and Virtual Tours', description: 'Watch curated entertainment, documentaries, and immersive virtual experiences.' },
+        { siteName: 'Spotify', url: 'https://open.spotify.com', title: 'Playlists for Home Evenings', description: 'Discover mood-based playlists and curated mixes for focused or relaxed indoor time.' }
+      ],
+      fake: [
+        { siteName: 'Indoor Life Guide', domain: 'indoorlifeguide.com', title: 'Indoor Weekend Ideas That Actually Work', description: 'Plan enjoyable evenings with simple home-based activities and routines.' },
+        { siteName: 'Home Mode', domain: 'homemode.co', title: 'A Better Stay-In Routine', description: 'Create a practical mix of entertainment, rest, and low-effort activities.' },
+        { siteName: 'Local Night In', domain: 'localnightin.com', title: 'At-Home Plans for Any Mood', description: 'Choose structured stay-in options for solo time, couples, or family evenings.' }
+      ]
+    },
+    indulgence_junk_food: {
+      real: [
+        { siteName: 'DoorDash', url: 'https://www.doordash.com', title: 'Order Comfort Food Near You', description: 'Browse popular takeout options and get meals delivered quickly.' },
+        { siteName: 'Uber Eats', url: 'https://www.ubereats.com', title: 'Top-Rated Delivery Restaurants', description: 'Explore trending dishes, local favorites, and fast delivery options.' },
+        { siteName: 'Zomato', url: 'https://www.zomato.com', title: 'Find Popular Meals and Fast Delivery', description: 'Compare menus, ratings, and delivery times across nearby restaurants.' }
+      ],
+      fake: [
+        { siteName: 'Snack Route', domain: 'snackroute.com', title: 'Late-Night Delivery Favorites', description: 'A curated list of comfort-food picks for quick ordering.' },
+        { siteName: 'Comfort Bites', domain: 'comfortbites.co', title: 'Most-Ordered Comfort Meals This Week', description: 'Discover high-demand dishes and neighborhood recommendations.' },
+        { siteName: 'Quick Cravings', domain: 'quickcravings.io', title: 'Fast Food Delivery Picks by Area', description: 'Shortlists of popular delivery options for immediate ordering.' }
       ]
     }
   };
 
-  var CATEGORY_KEYWORDS = {
-    food: ['food', 'pizza', 'burger', 'delivery', 'restaurant', 'eat', 'meal'],
-    shopping: ['shop', 'shopping', 'buy', 'deal', 'amazon', 'product', 'cart'],
-    travel: ['travel', 'trip', 'flight', 'hotel', 'vacation', 'beach', 'tour'],
-    productivity: ['productivity', 'productive', 'focus', 'study', 'task', 'work', 'procrastinate'],
-    fitness: ['fitness', 'workout', 'exercise', 'gym', 'running', 'weight loss']
+  var CATEGORY_PATTERNS = {
+    food: [
+      /\b(food|eat|meal|dinner|lunch|breakfast|restaurant|cafe|stall|stalls|delivery|takeout|pizza|burger|snack)\b/i,
+      /\b(near me|nearby)\b.*\b(food|restaurant|eat|meal)\b/i
+    ],
+    entertainment: [
+      /\b(netflix|movie|movies|show|shows|series|watch|stream|streaming|youtube|anime|music)\b/i,
+      /\b(what to watch|watch tonight|binge)\b/i
+    ],
+    productivity: [
+      /\b(productive|productivity|focus|study|notion|todo|task|tasks|organize|planning|time management)\b/i,
+      /\b(work better|study tips|deep work)\b/i
+    ],
+    shopping: [
+      /\b(buy|shop|shopping|deals|discount|amazon|flipkart|order|cart|checkout|price)\b/i,
+      /\b(best .* to buy)\b/i
+    ],
+    travel: [
+      /\b(travel|trip|flight|flights|hotel|vacation|holiday|tour|tourism|goa|itinerary|destination)\b/i,
+      /\b(where to go|places to visit)\b/i
+    ],
+    fitness: [
+      /\b(gym|workout|exercise|fitness|weight loss|lose weight|run|running|calisthenics|cardio|training)\b/i,
+      /\b(get fit|build muscle|fat loss)\b/i
+    ]
   };
 
   function detectCategory(query) {
-    var source = String(query || '').toLowerCase();
+    var source = String(query || '');
     var best = { category: 'productivity', score: 0 };
-    Object.keys(CATEGORY_KEYWORDS).forEach(function (cat) {
+    Object.keys(CATEGORY_PATTERNS).forEach(function (cat) {
       var score = 0;
-      CATEGORY_KEYWORDS[cat].forEach(function (kw) {
-        if (source.indexOf(kw) > -1) score += 1;
+      CATEGORY_PATTERNS[cat].forEach(function (rx) {
+        if (rx.test(source)) score += 1;
       });
       if (score > best.score) best = { category: cat, score: score };
     });
     return best.category;
   }
 
-  function buildRealResult(entry, query, reversedQuery) {
-    var searchTerm = encodeURIComponent(reversedQuery);
-    var url = entry.baseUrl + (entry.baseUrl.indexOf('?') > -1 ? '&' : '?') + 'q=' + searchTerm;
+  function buildRealResult(entry) {
+    var url = entry.url;
     var domain = domainFromUrl(url);
     return {
-      title: titleCase(reversedQuery) + ' - ' + entry.titlePrefix + ' ' + entry.siteName,
-      description: entry.desc + ' Opposite intent from "' + query + '" to "' + reversedQuery + '".',
+      title: entry.title,
+      description: entry.description + ' Explore practical tips, compare options, and follow step-by-step guidance tailored to this topic.',
       url: url,
       siteName: entry.siteName,
-      logo: logoUrlForDomain(domain)
+      logo: logoUrlForDomain(domain),
+      isFake: false
     };
   }
 
-  function buildFakeResult(entry, query, reversedQuery) {
-    var slug = slugify(reversedQuery) || 'opposite-search';
-    var url = 'https://' + entry.domain + '/search/' + slug;
+  function buildFakeResult(entry) {
+    var url = 'https://' + entry.domain;
     return {
-      title: titleCase(reversedQuery) + ' - ' + entry.siteName,
-      description: entry.desc + ' Built around the opposite search "' + reversedQuery + '".',
+      title: entry.title,
+      description: entry.description + ' Includes structured recommendations, quick-start checklists, and clear next actions you can apply immediately.',
       url: url,
       siteName: entry.siteName,
-      logo: '/logos/default.png'
+      logo: '/logos/default.png',
+      isFake: true
     };
   }
 
   function generateOppositeResults(input, options) {
     var opts = options || {};
     var query = String((input && input.query) || '').trim();
-    var reversedQuery = String((input && input.reversedQuery) || '').trim();
     var category = String((input && input.category) || '').trim().toLowerCase() || detectCategory(query);
+    var oppositeCategory = OPPOSITE_BY_CATEGORY[category] || 'distraction';
 
-    var bucket = CATEGORY_MAPPING[category] || CATEGORY_MAPPING.productivity;
-    var seed = hashText(query + '|' + reversedQuery + '|' + category);
+    var bucket = RESULT_LIBRARY[oppositeCategory] || RESULT_LIBRARY.distraction;
+    var seed = hashText(oppositeCategory);
 
     var realCount = opts.realCount || 3;
     var fakeCount = opts.fakeCount || 3;
@@ -169,15 +218,29 @@
 
     var results = [];
     realPicked.forEach(function (entry) {
-      results.push(buildRealResult(entry, query, reversedQuery));
+      results.push(buildRealResult(entry));
     });
     fakePicked.forEach(function (entry) {
-      results.push(buildFakeResult(entry, query, reversedQuery));
+      results.push(buildFakeResult(entry));
     });
 
-    return results.slice(0, 6);
+    return {
+      didYouMean: DID_YOU_MEAN_BY_OPPOSITE[oppositeCategory] || 'discover practical resources',
+      results: results.slice(0, 6)
+    };
+  }
+
+  function getOppositeCategory(category) {
+    return OPPOSITE_BY_CATEGORY[category] || 'distraction';
+  }
+
+  function getOppositeTopicTerm(category) {
+    var oppositeCategory = OPPOSITE_BY_CATEGORY[category] || 'distraction';
+    return DID_YOU_MEAN_BY_OPPOSITE[oppositeCategory] || 'general web topics';
   }
 
   window.detectOppositeCategory = detectCategory;
   window.generateOppositeResults = generateOppositeResults;
+  window.getOppositeCategory = getOppositeCategory;
+  window.getOppositeTopicTerm = getOppositeTopicTerm;
 })();

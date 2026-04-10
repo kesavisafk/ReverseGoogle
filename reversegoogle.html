@@ -101,6 +101,10 @@
   .results-body { display:flex;padding:20px 0 20px 162px;gap:52px;max-width:1200px; }
   .results-main { max-width:652px;flex:1; }
   .results-count { color:var(--text-dim);font-size:13px;margin-bottom:20px; }
+  .did-you-mean { margin:-8px 0 18px;font-size:16px; }
+  .did-you-mean-label { color:var(--text-dim);margin-right:6px; }
+  .did-you-mean-link { color:#8ab4f8;text-decoration:none;cursor:pointer;font-style:italic; }
+  .did-you-mean-link:hover { text-decoration:underline; }
 
   /* RESULT ITEM - standard */
   .result-item { margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:20px; }
@@ -306,6 +310,7 @@
   <div id="tab-all" class="results-body">
     <div class="results-main">
       <div class="results-count" id="resultsCount"></div>
+      <div class="did-you-mean" id="didYouMeanRow" style="display:none"></div>
       <div id="resultsList"></div>
       <div class="related-searches">
         <div class="related-title">People also search for</div>
@@ -441,19 +446,22 @@ function computeOppositeQuery(q) {
   return corrected.toLowerCase().trim();
 }
 
-function generateResults(q) {
-  var target = q.trim();
-  var original = currentQuery || target;
-  var category = (window.detectOppositeCategory ? window.detectOppositeCategory(original) : 'productivity');
-  if (!window.generateOppositeResults) return [];
+function generateResults(originalQuery, category) {
+  var original = (originalQuery || '').trim();
+  var detectedCategory = category || (window.detectOppositeCategory ? window.detectOppositeCategory(original) : 'productivity');
+  if (!window.generateOppositeResults) return { didYouMean: '', results: [] };
 
-  var generated = window.generateOppositeResults({
+  var payload = window.generateOppositeResults({
     query: original,
-    reversedQuery: target,
-    category: category
+    reversedQuery: '',
+    category: detectedCategory
   });
 
-  return generated.map(function(item, idx){
+  var generated = Array.isArray(payload && payload.results) ? payload.results : [];
+
+  return {
+    didYouMean: (payload && payload.didYouMean) || '',
+    results: generated.map(function(item, idx){
     var domain = '';
     var path = item.url;
     try {
@@ -463,7 +471,8 @@ function generateResults(q) {
     } catch (e) {}
 
     return {
-      sponsored: idx === 0,
+      sponsored: idx === 0 && !item.isFake,
+      isFake: !!item.isFake,
       favicon: (item.siteName || '?').charAt(0).toUpperCase(),
       domain: domain,
       site: item.siteName,
@@ -471,7 +480,8 @@ function generateResults(q) {
       title: item.title,
       desc: item.description
     };
-  });
+    })
+  };
 }
 
 function generateMicrowaveResults(originalQuery) {
@@ -507,13 +517,13 @@ function shuffle(arr) {
 
 function generateKnowledgePanel(q) {
   return '<div class="kp-title">'+q+'</div>'+
-    '<div class="kp-sub">Opposite query</div>'+
-    '<div class="kp-desc">These results are intentionally generated for <span class="hl">'+q+'</span>, which is the opposite form of your original search.</div>'+
-    '<div class="kp-row"><span class="kp-label">Search mode</span><span class="kp-val">Opposite Results</span></div>'+
+    '<div class="kp-sub">Topic overview</div>'+
+    '<div class="kp-desc">Explore key information, tools, and resources related to <span class="hl">'+q+'</span>.</div>'+
+    '<div class="kp-row"><span class="kp-label">Search mode</span><span class="kp-val">Web Results</span></div>'+
     '<div class="kp-row"><span class="kp-label">Location</span><span class="kp-val">Far away from you</span></div>'+
     '<div class="kp-row"><span class="kp-label">Status</span><span class="kp-val">Active</span></div>'+
     '<div class="kp-row"><span class="kp-label">Related to</span><span class="kp-val">'+q+'</span></div>'+
-    '<div class="kp-see"><div><div class="kp-see-title">Current opposite query</div><div style="font-size:12px;color:var(--text-dim)">'+q+'</div></div><span style="margin-left:auto;color:var(--text-dim)">›</span></div>';
+    '<div class="kp-see"><div><div class="kp-see-title">Current topic</div><div style="font-size:12px;color:var(--text-dim)">'+q+'</div></div><span style="margin-left:auto;color:var(--text-dim)">›</span></div>';
 }
 
 function unsplashUrl(query, index, w, h) {
@@ -768,27 +778,42 @@ function feelingConfused(){var r=allSuggestions[Math.floor(Math.random()*allSugg
 
 async function showResults(query, skipHistory){
   currentQuery=query;
-  var correctedQuery = wrongSpellCorrect(query);
-  var oppositeQuery = computeOppositeQuery(correctedQuery);
+  var detectedCategory = (window.detectOppositeCategory ? window.detectOppositeCategory(query) : 'productivity');
+  var generatedPayload = generateResults(query, detectedCategory);
+  var didYouMean = generatedPayload.didYouMean || '';
+  var topicTerm = didYouMean || (window.getOppositeTopicTerm ? window.getOppositeTopicTerm(detectedCategory) : 'general web topics');
 
   if (!skipHistory) {
-    bumpSearchCounters(oppositeQuery);
+    bumpSearchCounters(query);
   }
 
   document.getElementById('home-page').style.display='none';
   document.getElementById('results-page').style.display='block';
-  document.getElementById('resultsSearchInput').value=oppositeQuery;
+  document.getElementById('resultsSearchInput').value=query;
 
   if (!skipHistory) {
-    history.pushState({page:'results',q:oppositeQuery}, '', location.href);
+    history.pushState({page:'results',q:query}, '', location.href);
   }
 
   var count=Math.floor(Math.random()*900000000)+100000;
-  document.getElementById('resultsCount').textContent='About '+count.toLocaleString()+' results ('+(Math.random()*.5+.1).toFixed(2)+' seconds) — none of which are relevant';
+  document.getElementById('resultsCount').textContent='About '+count.toLocaleString()+' results ('+(Math.random()*.5+.1).toFixed(2)+' seconds)';
+  var didYouMeanRow = document.getElementById('didYouMeanRow');
+  if (didYouMean) {
+    didYouMeanRow.style.display = '';
+    didYouMeanRow.innerHTML = '<span class="did-you-mean-label">Did you mean:</span><a href="#" class="did-you-mean-link">'+escapeHtml(didYouMean)+'</a>';
+    var didYouMeanLink = didYouMeanRow.querySelector('.did-you-mean-link');
+    didYouMeanLink.onclick = function(e) {
+      e.preventDefault();
+      showResults(didYouMean);
+    };
+  } else {
+    didYouMeanRow.style.display = 'none';
+    didYouMeanRow.innerHTML = '';
+  }
 
   // All tab results
-  var results=generateResults(oppositeQuery);
-  var thumbs=await fetchUnsplashImages(oppositeQuery, results.length);
+  var results=generatedPayload.results;
+  var thumbs=await fetchUnsplashImages(topicTerm, results.length);
   var list=document.getElementById('resultsList');
   list.innerHTML='';
   results.forEach(function(r, idx){
@@ -800,25 +825,34 @@ async function showResults(query, skipHistory){
     h+='<div class="result-title">'+r.title+'</div><div class="result-desc">'+r.desc+'</div>';
     h+='</div>';
     if (idx % 2 === 1) {
-      var thumbUrl = thumbs[idx] || unsplashUrl(oppositeQuery, idx, 340, 230);
-      h+='<div class="result-thumb"><img src="'+thumbUrl+'" alt="related image" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(oppositeQuery+'-thumb-'+idx)+'/340/230\'\"></div>';
+      var thumbUrl = thumbs[idx] || unsplashUrl(topicTerm, idx, 340, 230);
+      h+='<div class="result-thumb"><img src="'+thumbUrl+'" alt="related image" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(topicTerm+'-thumb-'+idx)+'/340/230\'\"></div>';
     }
     h+='</div>';
     div.innerHTML=h;list.appendChild(div);
   });
 
   // Knowledge panel
-  document.getElementById('knowledgePanel').innerHTML=generateKnowledgePanel(oppositeQuery);
+  document.getElementById('knowledgePanel').innerHTML=generateKnowledgePanel(topicTerm);
 
   // Related
   var grid=document.getElementById('relatedGrid');grid.innerHTML='';
-  var related=["why did i search \""+oppositeQuery+"\"",oppositeQuery+" but make it worse","how to un-search "+oppositeQuery,"is "+oppositeQuery+" even real",oppositeQuery+" for dummies (book has no pages)","what is the opposite of "+oppositeQuery,oppositeQuery+" — government cover-up?","people who searched "+oppositeQuery+" also cried"];
+  var related=[
+    topicTerm+' guide',
+    'best '+topicTerm,
+    topicTerm+' tips',
+    topicTerm+' for beginners',
+    topicTerm+' reviews',
+    topicTerm+' alternatives',
+    topicTerm+' examples',
+    topicTerm+' resources'
+  ];
   related.forEach(function(r){var d=document.createElement('div');d.className='related-item';d.innerHTML=SRCHSVG+r;d.onclick=function(){showResults(r);};grid.appendChild(d);});
 
   // Generate other tabs
-  generateImageTab(oppositeQuery, thumbs);
-  generateVideoTab(oppositeQuery, thumbs);
-  generateNewsTab(oppositeQuery);
+  generateImageTab(topicTerm, thumbs);
+  generateVideoTab(topicTerm, thumbs);
+  generateNewsTab(topicTerm);
 
   // Switch to All tab
   switchTab('all');

@@ -11,7 +11,6 @@ It includes:
 
 ## 📸 Screenshots
 
-Drop your screenshots into a `screenshots/` folder in the project root and keep the names below.
 
 ### 🏠 Home + Search
 ![Home and first reverse search](screenshots/home-search.png)

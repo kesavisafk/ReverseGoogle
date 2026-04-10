@@ -1,4 +1,4 @@
-# ReverseGoogle
+# 🔁ReverseGoogle
 
 ReverseGoogle is a parody search engine experience that looks familiar but intentionally sends users toward contradictory outcomes.
 

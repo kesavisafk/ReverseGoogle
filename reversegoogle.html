@@ -38,7 +38,7 @@
 
   /* SEARCH BOX */
   .search-wrapper { width:100%;max-width:584px;position:relative; }
-  .search-box { width:100%;height:46px;background:var(--search-bg);border:1px solid var(--border);border-radius:24px;display:flex;align-items:center;padding:0 14px;gap:10px;cursor:text;transition:background .2s,box-shadow .2s,border-color .2s;position:relative;z-index:100; }
+  .search-box { width:100%;height:46px;background:var(--search-bg);border:1px solid var(--border);border-radius:24px;display:flex;align-items:center;padding:0 8px 0 14px;gap:8px;cursor:text;transition:background .2s,box-shadow .2s,border-color .2s;position:relative;z-index:100; }
   .search-box.focused { border-radius:24px 24px 0 0;border-color:var(--surface2);box-shadow:0 4px 6px rgba(0,0,0,.3); }
   .plus-icon { color:var(--text-dim);font-size:20px;font-weight:300;line-height:1;flex-shrink:0;padding-bottom:1px; }
   .search-input { flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:16px;font-family:'Roboto',sans-serif;caret-color:var(--blue);direction:ltr;text-align:left;unicode-bidi:normal; }
@@ -47,6 +47,13 @@
   .icon-btn { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .1s;border:none;background:transparent; }
   .icon-btn:hover { background:var(--hover); }
   .icon-btn svg { width:20px;height:20px;fill:var(--text-dim); }
+  .ai-mode-btn { display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:18px;border:1px solid #5f6368;background:transparent;color:#e8eaed;font-size:13px;cursor:pointer;font-family:'Roboto',sans-serif;white-space:nowrap;transition:background .15s; }
+  .ai-mode-btn:hover { background:var(--hover); }
+  .ai-mode-btn svg { width:16px;height:16px;fill:#a8c7fa; }
+  .lang-links { display:flex;align-items:center;gap:0;margin-top:14px;font-size:13px;color:var(--text-dim); }
+  .lang-links span { margin-right:8px; }
+  .lang-links a { color:#8ab4f8;text-decoration:none;padding:4px 6px;font-size:13px; }
+  .lang-links a:hover { text-decoration:underline; }
 
   /* DROPDOWN */
   .dropdown { display:none;position:absolute;top:100%;left:-1px;right:-1px;background:var(--search-bg);border:1px solid var(--surface2);border-top:none;border-radius:0 0 24px 24px;overflow:hidden;z-index:99;box-shadow:0 4px 6px rgba(0,0,0,.3); }
@@ -65,7 +72,7 @@
 
   /* FOOTER */
   footer { position:fixed;bottom:0;left:0;right:0;background:#171717;border-top:1px solid #3c4043; }
-  .footer-top { padding:15px 24px;color:var(--text-dim);font-size:14px; }
+  .footer-top { padding:15px 24px;color:#8ab4f8;font-size:14px; }
   .footer-bottom { display:flex;justify-content:space-between;padding:12px 24px;border-top:1px solid #3c4043; }
   .footer-links { display:flex;gap:24px; }
   .footer-links a { color:var(--text-dim);text-decoration:none;font-size:13px; }
@@ -88,14 +95,53 @@
   /* TABS */
   .results-tabs-wrap { border-bottom:1px solid #3c4043; }
   .results-tabs { display:flex;padding:0 0 0 162px;overflow-x:auto; }
-  .results-tab { padding:12px 16px;color:var(--text-dim);font-size:13px;cursor:pointer;border-bottom:3px solid transparent;transition:color .1s;white-space:nowrap;flex-shrink:0; }
+  .results-tab { padding:12px 16px;color:var(--text-dim);font-size:13px;cursor:pointer;border-bottom:3px solid transparent;transition:color .1s;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px; }
   .results-tab:hover { color:var(--text);background:var(--hover); }
   .results-tab.active { color:var(--blue);border-bottom-color:var(--blue); }
+  .results-tab svg { width:14px;height:14px;fill:currentColor; }
+
+  /* Location bar */
+  .location-bar { display:flex;align-items:center;gap:8px;padding:10px 10px 10px 162px;font-size:13px;color:var(--text-dim); }
+  .location-bar svg { width:16px;height:16px;fill:var(--text-dim);flex-shrink:0; }
+  .location-bar strong { color:var(--text);font-weight:500; }
+  .location-bar .loc-precise { display:flex;align-items:center;gap:4px;color:#8ab4f8;cursor:pointer;margin-left:8px;padding:4px 10px;border:1px solid #5f6368;border-radius:16px;font-size:12px; }
+  .location-bar .loc-precise:hover { background:var(--hover); }
+  .location-bar .loc-precise svg { width:12px;height:12px;fill:#8ab4f8; }
+  .location-bar .loc-dots { margin-left:auto;cursor:pointer;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:var(--text-dim);font-size:16px; }
+  .location-bar .loc-dots:hover { background:var(--hover); }
 
   /* TOOLS */
   .search-tools { display:flex;align-items:center;gap:8px;padding:8px 8px 8px 162px;overflow-x:auto; }
   .tool-btn { padding:6px 14px;border:1px solid var(--border);border-radius:20px;font-size:13px;color:var(--text);cursor:pointer;white-space:nowrap;transition:background .1s;background:transparent; }
   .tool-btn:hover { background:var(--hover); }
+
+  /* Places inline panel (All tab) */
+  .places-inline { margin-bottom:24px;border:1px solid #3c4043;border-radius:12px;overflow:hidden;background:#202124; }
+  .places-inline-title { font-size:18px;color:var(--text);font-weight:400;padding:16px 16px 12px; }
+  .places-inline-map { position:relative;width:100%;height:200px;background:#1a2836;overflow:hidden;cursor:pointer; }
+  .places-inline-map .map-bg { position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 40px,rgba(255,255,255,.015) 40px,rgba(255,255,255,.015) 41px),repeating-linear-gradient(90deg,transparent 0,transparent 40px,rgba(255,255,255,.015) 40px,rgba(255,255,255,.015) 41px),radial-gradient(ellipse at 35% 45%,#1e3148 0%,transparent 55%),radial-gradient(ellipse at 70% 30%,#1c2f45 0%,transparent 50%),#1a2836; }
+  .places-inline-map .map-river { position:absolute;inset:auto 0 0 0;height:35%;background:linear-gradient(180deg,rgba(40,100,160,.18),rgba(50,120,180,.30));clip-path:polygon(0 55%,15% 40%,30% 50%,45% 32%,60% 42%,75% 25%,90% 38%,100% 30%,100% 100%,0 100%); }
+  .places-inline-map .pi-marker { position:absolute;transform:translate(-50%,-100%);z-index:5; }
+  .places-inline-map .pi-pin { width:28px;height:28px;border-radius:50% 50% 50% 0;background:#ea4335;border:2px solid #fff;rotate:-45deg;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.5); }
+  .places-inline-map .pi-pin span { rotate:45deg;color:#fff;font-size:9px;font-weight:700; }
+  .places-inline-map .pi-label { position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:4px;background:rgba(20,20,20,.88);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;white-space:nowrap;font-weight:500; }
+  .places-inline-map .pi-expand { position:absolute;top:8px;right:8px;width:28px;height:28px;background:rgba(32,33,36,.85);border:1px solid #5f6368;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10; }
+  .places-inline-map .pi-expand svg { width:14px;height:14px;fill:#e8eaed; }
+  .places-inline-list { }
+  .pi-place-card { display:flex;gap:16px;padding:14px 16px;border-top:1px solid #3c4043;cursor:pointer;transition:background .12s; }
+  .pi-place-card:hover { background:#2a2d30; }
+  .pi-place-name { font-size:16px;color:var(--text);font-weight:400;margin-bottom:2px; }
+  .pi-place-rating { display:flex;align-items:center;gap:4px;font-size:13px;color:#9aa0a6;margin-bottom:2px; }
+  .pi-place-rating .pi-stars { color:#f9ab00; }
+  .pi-place-detail { font-size:13px;color:#9aa0a6;line-height:1.4; }
+  .pi-place-detail .status-open { color:#81c995; }
+  .pi-place-detail .status-closed { color:#f28b82; }
+  .pi-place-thumb { width:100px;height:100px;border-radius:10px;flex-shrink:0;overflow:hidden;background:#303134; }
+  .pi-place-thumb img { width:100%;height:100%;object-fit:cover;display:block; }
+  .pi-more-places { padding:12px 16px;text-align:center;border-top:1px solid #3c4043; }
+  .pi-more-places button { padding:8px 20px;border:1px solid #5f6368;border-radius:20px;background:transparent;color:var(--text);cursor:pointer;font-size:13px;font-family:inherit;display:flex;align-items:center;gap:6px;margin:0 auto; }
+  .pi-more-places button:hover { background:var(--hover); }
+  .pi-more-places button svg { width:14px;height:14px;fill:var(--text); }
 
   /* RESULTS BODY */
   .results-body { display:flex;padding:20px 0 20px 162px;gap:52px;max-width:1200px; }
@@ -167,6 +213,265 @@
   .news-desc { font-size:13px;color:var(--text-dim);line-height:1.5; }
   .news-time { font-size:12px;color:var(--text-dim);margin-top:4px; }
   .news-thumb { width:92px;height:92px;flex-shrink:0;border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden; }
+
+  /* ====== MAPS TAB ====== */
+  .maps-container { max-width:100%;padding:0 16px 0 0; }
+  .maps-shell { display:grid;grid-template-columns:minmax(340px,420px) 1fr;height:calc(100vh - 150px);gap:0;border:1px solid #3c4043;border-radius:12px;overflow:hidden;background:#1a1a1d; }
+
+  /* — Left panel — */
+  .maps-left { display:flex;flex-direction:column;background:#202124;border-right:1px solid #3c4043;overflow:hidden; }
+  .maps-left-head { padding:16px 18px 12px;background:#202124; }
+  .maps-title { font-size:18px;color:#e8eaed;font-weight:500;line-height:1.2;margin-bottom:2px; }
+  .maps-sub { font-size:12px;color:#9aa0a6;display:flex;align-items:center;gap:6px; }
+  .maps-sub svg { width:14px;height:14px;fill:#9aa0a6;flex-shrink:0; }
+  .maps-loc-link { color:#8ab4f8;text-decoration:none;font-size:12px; }
+  .maps-loc-link:hover { text-decoration:underline; }
+  .maps-share-row { display:flex;align-items:center;justify-content:flex-end;padding:0 18px 8px;gap:12px; }
+  .maps-share-btn { display:flex;align-items:center;gap:4px;color:#8ab4f8;font-size:12px;cursor:pointer;background:none;border:none;font-family:inherit; }
+  .maps-share-btn:hover { text-decoration:underline; }
+  .maps-share-btn svg { width:14px;height:14px;fill:#8ab4f8; }
+
+  /* Filters */
+  .maps-filters { display:flex;gap:8px;padding:8px 14px;border-top:1px solid #3c4043;border-bottom:1px solid #3c4043;background:#202124;overflow-x:auto; }
+  .maps-filter { border:1px solid #5f6368;border-radius:20px;padding:6px 14px;font-size:12px;color:#e8eaed;background:transparent;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s;display:flex;align-items:center;gap:5px;font-family:inherit; }
+  .maps-filter:hover { background:#3c4043;border-color:#8ab4f8; }
+  .maps-filter svg { width:14px;height:14px;fill:#e8eaed; }
+  .maps-filter.active { background:#8ab4f8;color:#202124;border-color:#8ab4f8; }
+  .maps-filter.active svg { fill:#202124; }
+
+  /* Place list */
+  .maps-list { flex:1;overflow-y:auto;overflow-x:hidden; }
+  .maps-list::-webkit-scrollbar { width:6px; }
+  .maps-list::-webkit-scrollbar-track { background:transparent; }
+  .maps-list::-webkit-scrollbar-thumb { background:#5f6368;border-radius:3px; }
+
+  /* Place card */
+  .map-place-card { display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid rgba(95,99,104,.35);cursor:pointer;transition:background .15s;position:relative; }
+  .map-place-card:hover { background:#2a2d31; }
+  .map-place-card.active { background:#2f3337;box-shadow:inset 3px 0 0 #8ab4f8; }
+  .map-place-thumb { width:90px;height:90px;border-radius:10px;flex-shrink:0;overflow:hidden;background:#303134;position:relative; }
+  .map-place-thumb img { width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s; }
+  .map-place-card:hover .map-place-thumb img { transform:scale(1.05); }
+  .map-place-info { flex:1;min-width:0;display:flex;flex-direction:column; }
+  .map-place-name { font-size:16px;line-height:1.25;margin-bottom:4px;color:#e8eaed;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .map-place-rating { display:flex;align-items:center;gap:4px;margin-bottom:4px; }
+  .map-place-rating-val { font-size:13px;font-weight:500;color:#e8eaed; }
+  .map-place-stars { display:flex;gap:1px; }
+  .map-place-stars svg { width:13px;height:13px; }
+  .map-place-stars .star-full { fill:#f9ab00; }
+  .map-place-stars .star-half { fill:#f9ab00; }
+  .map-place-stars .star-empty { fill:#5f6368; }
+  .map-place-reviews { font-size:12px;color:#9aa0a6;margin-left:2px; }
+  .map-place-category { font-size:12px;color:#9aa0a6;margin-bottom:3px; }
+  .map-place-status { font-size:12px;line-height:1.3;margin-bottom:3px; }
+  .map-place-status .status-open { color:#81c995; }
+  .map-place-status .status-closed { color:#f28b82; }
+  .map-place-status .status-time { color:#9aa0a6; }
+  .map-place-tags { font-size:12px;color:#9aa0a6;line-height:1.3; }
+  .map-place-distance { font-size:12px;color:#bdc1c6;margin-top:auto;padding-top:4px; }
+
+  /* Place card actions */
+  .maps-actions { display:flex;gap:6px;margin-top:8px; }
+  .maps-btn { border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:filter .15s; }
+  .maps-btn:hover { filter:brightness(1.1); }
+  .maps-btn-primary { background:#1a73e8;color:#fff; }
+  .maps-btn-secondary { background:transparent;border:1px solid #5f6368;color:#8ab4f8; }
+  .maps-btn-secondary:hover { background:rgba(138,180,248,.08); }
+  .maps-btn svg { width:14px;height:14px; }
+
+  /* Map number badge on card */
+  .map-place-badge { position:absolute;top:14px;left:18px;width:22px;height:22px;border-radius:50%;background:#ea4335;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.4); }
+
+  /* — Right panel — */
+  .maps-right { display:flex;flex-direction:column;position:relative;background:#1a2332;overflow:hidden; }
+
+  /* Map canvas */
+  .map-canvas { position:relative;flex:1;overflow:hidden;background:#1a2332;min-height:0;cursor:grab; }
+  .map-canvas:active { cursor:grabbing; }
+  .map-canvas-inner { position:absolute;inset:0;transition:transform .15s ease-out;transform-origin:center center; }
+
+  /* Layered map background */
+  .map-bg {
+    position:absolute;inset:-50%;width:200%;height:200%;
+    background:
+      /* land texture */
+      repeating-linear-gradient(0deg, transparent 0, transparent 40px, rgba(255,255,255,.02) 40px, rgba(255,255,255,.02) 41px),
+      repeating-linear-gradient(90deg, transparent 0, transparent 40px, rgba(255,255,255,.02) 40px, rgba(255,255,255,.02) 41px),
+      /* subtle land color variation */
+      radial-gradient(ellipse at 30% 40%, #1e3148 0%, transparent 55%),
+      radial-gradient(ellipse at 70% 30%, #1c2f45 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 75%, #17293e 0%, transparent 55%),
+      #1a2836;
+  }
+
+  /* River / water body */
+  .map-river {
+    position:absolute;
+    inset:auto 0 0 0;
+    height:38%;
+    background:linear-gradient(180deg, rgba(40,100,160,.20) 0%, rgba(50,120,180,.35) 100%);
+    clip-path:polygon(0 52%, 12% 38%, 28% 48%, 42% 30%, 58% 40%, 72% 22%, 88% 36%, 100% 28%, 100% 100%, 0 100%);
+  }
+  .map-river::after {
+    content:'';
+    position:absolute;
+    inset:0;
+    background:repeating-linear-gradient(95deg, transparent 0, transparent 80px, rgba(100,180,240,.06) 80px, rgba(100,180,240,.06) 82px);
+  }
+
+  /* Road network */
+  .map-roads {
+    position:absolute;inset:0;pointer-events:none;
+  }
+  .map-road {
+    position:absolute;
+    background:rgba(255,255,255,.06);
+  }
+  .map-road-h { height:2px;left:0;right:0; }
+  .map-road-v { width:2px;top:0;bottom:0; }
+  .map-road-main { background:rgba(255,200,50,.10); }
+  .map-road-h.map-road-main { height:3px; }
+  .map-road-v.map-road-main { width:3px; }
+
+  /* Map area labels */
+  .map-area-label {
+    position:absolute;color:rgba(180,200,220,.22);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;pointer-events:none;user-select:none;
+  }
+
+  /* Map markers — Google Maps style red pin with rating */
+  .map-marker-wrap { position:absolute;z-index:10;cursor:pointer;transform:translate(-50%,-100%);transition:z-index 0s; }
+  .map-marker-wrap:hover { z-index:20; }
+  .map-marker-pin-group { display:flex;flex-direction:column;align-items:center;position:relative; }
+  .map-marker-pin {
+    width:30px;height:30px;border-radius:50% 50% 50% 0;rotate:-45deg;
+    background:#ea4335;border:2px solid #fff;
+    box-shadow:0 3px 10px rgba(0,0,0,.45);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .2s ease,box-shadow .2s;
+    position:relative;
+  }
+  .map-marker-pin span { rotate:45deg;color:#fff;font-size:10px;font-weight:700; }
+  .map-marker-wrap:hover .map-marker-pin {
+    transform:scale(1.25);
+    box-shadow:0 5px 16px rgba(0,0,0,.55);
+  }
+  .map-marker-wrap.active .map-marker-pin {
+    transform:scale(1.3);
+    background:#c5221f;
+  }
+  /* Rating label below pin */
+  .map-marker-label {
+    margin-top:3px;padding:2px 6px;border-radius:4px;
+    background:rgba(20,20,22,.88);color:#fff;font-size:11px;font-weight:700;
+    white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.4);
+    transition:transform .2s;
+  }
+  .map-marker-wrap:hover .map-marker-label { transform:scale(1.05); }
+
+  /* Marker with inline rating badge (alternative style for some markers) */
+  .map-marker-rating {
+    width:auto;height:auto;border-radius:8px;rotate:0;padding:4px 8px;
+    background:#ea4335;border:none;
+    box-shadow:0 2px 8px rgba(0,0,0,.4);
+    display:flex;align-items:center;gap:0;
+    transition:transform .2s,box-shadow .2s;
+    position:relative;
+  }
+  .map-marker-rating .mr-val { font-size:12px;font-weight:700;color:#fff;rotate:0; }
+  .map-marker-rating .mr-dot { display:none; }
+  .map-marker-wrap:hover .map-marker-rating {
+    transform:scale(1.15);
+    box-shadow:0 4px 14px rgba(0,0,0,.5);
+  }
+  .map-marker-wrap.active .map-marker-rating {
+    transform:scale(1.2);
+    background:#c5221f;
+  }
+
+  /* Marker tooltip */
+  .map-marker-tooltip {
+    position:absolute;
+    bottom:calc(100% + 10px);
+    left:50%;
+    transform:translateX(-50%) scale(.92);
+    background:#303134;
+    border:1px solid #5f6368;
+    border-radius:10px;
+    padding:10px 14px;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s,transform .2s;
+    box-shadow:0 8px 24px rgba(0,0,0,.5);
+    min-width:180px;
+  }
+  .map-marker-wrap:hover .map-marker-tooltip {
+    opacity:1;
+    transform:translateX(-50%) scale(1);
+    pointer-events:auto;
+  }
+  .map-marker-tooltip::after {
+    content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:6px solid transparent;border-top-color:#303134;
+  }
+  .mtt-name { font-size:13px;font-weight:500;color:#e8eaed;margin-bottom:3px; }
+  .mtt-rating { font-size:12px;color:#f9ab00;margin-bottom:2px; }
+  .mtt-dist { font-size:11px;color:#9aa0a6; }
+
+  /* Map controls floating */
+  .map-controls { position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:4px;z-index:15; }
+  .map-ctrl-btn { width:36px;height:36px;background:rgba(32,33,36,.92);border:1px solid #5f6368;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#e8eaed;font-size:18px;transition:background .15s;font-family:inherit; }
+  .map-ctrl-btn:hover { background:#3c4043; }
+  .map-layers-btn { position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:6px;background:rgba(32,33,36,.92);border:1px solid #5f6368;border-radius:8px;padding:6px 12px;cursor:pointer;z-index:15; }
+  .map-layers-thumb { width:36px;height:36px;border-radius:6px;background:linear-gradient(135deg,#1a2836,#2c4a6a);border:2px solid #5f6368;overflow:hidden; }
+  .map-layers-btn span { color:#e8eaed;font-size:12px; }
+
+  /* Open in Maps floating badge */
+  .map-open-badge { position:absolute;right:12px;bottom:12px;background:rgba(32,33,36,.92);border:1px solid #5f6368;border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:8px;z-index:15;cursor:pointer;transition:background .15s; }
+  .map-open-badge:hover { background:#3c4043; }
+  .map-open-dot { width:10px;height:10px;border-radius:50%;background:#34a853; }
+  .map-open-badge span { font-size:12px;color:#e8eaed;font-weight:500; }
+
+  /* User location pulse */
+  .map-user-loc { position:absolute;z-index:12;transform:translate(-50%,-50%); }
+  .map-user-dot { width:14px;height:14px;border-radius:50%;background:#4285f4;border:3px solid #fff;box-shadow:0 2px 10px rgba(66,133,244,.5); }
+  .map-user-pulse { position:absolute;inset:-8px;border-radius:50%;background:rgba(66,133,244,.18);animation:pulse-ring 2s ease-out infinite; }
+  @keyframes pulse-ring { 0%{transform:scale(.7);opacity:.6} 100%{transform:scale(2);opacity:0} }
+
+  /* Directions panel */
+  .maps-dir-panel { background:rgba(32,33,36,.65);backdrop-filter:blur(12px);border-top:1px solid #3c4043;padding:14px 18px;flex-shrink:0; }
+  .maps-dir-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:10px; }
+  .maps-dir-title { font-size:14px;color:#e8eaed;font-weight:500;display:flex;align-items:center;gap:6px; }
+  .maps-dir-title svg { width:16px;height:16px;fill:#8ab4f8; }
+  .maps-dir-eta { font-size:12px;color:#81c995;font-weight:500; }
+  .maps-dir-steps { display:flex;flex-direction:column;gap:0; }
+  .maps-dir-item { display:flex;gap:0;align-items:stretch;min-height:36px; }
+  .maps-dir-timeline { display:flex;flex-direction:column;align-items:center;width:28px;flex-shrink:0; }
+  .maps-dir-dot { width:18px;height:18px;border-radius:50%;background:#3c4043;color:#e8eaed;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid #5f6368;z-index:1; }
+  .maps-dir-dot.dot-start { background:#4285f4;border-color:#8ab4f8; }
+  .maps-dir-dot.dot-end { background:#ea4335;border-color:#f28b82; }
+  .maps-dir-line { flex:1;width:2px;background:#5f6368;min-height:8px; }
+  .maps-dir-text { flex:1;font-size:13px;color:#bdc1c6;line-height:1.4;padding:4px 0 10px 10px; }
+  .maps-dir-item:last-child .maps-dir-line { display:none; }
+
+  /* Google Maps attribution */
+  .map-attribution { position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-end;padding:4px 8px;pointer-events:none;font-size:10px;color:rgba(150,160,170,.5);z-index:5; }
+
+  /* "More places" button */
+  .maps-more-btn { display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 18px;cursor:pointer;color:#8ab4f8;font-size:13px;font-weight:500;border-top:1px solid #3c4043;transition:background .15s;background:#202124;flex-shrink:0; }
+  .maps-more-btn:hover { background:#2a2d31; }
+  .maps-more-btn svg { width:16px;height:16px;fill:#8ab4f8; }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .maps-shell { grid-template-columns:1fr;height:auto; }
+    .maps-left { order:2;max-height:none; }
+    .maps-right { order:1;min-height:380px; }
+    .map-canvas { min-height:380px; }
+    .location-bar { padding-left:16px; }
+    .results-tabs { padding-left:16px; }
+    .search-tools { padding-left:16px; }
+  }
 
   /* RELATED */
   .related-searches { margin-top:32px;border-top:1px solid #3c4043;padding-top:20px; }
@@ -240,6 +545,7 @@
         <div class="search-icons">
           <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>
           <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M9.5 6C7 6 5 8 5 10.5S7 15 9.5 15 14 13 14 10.5 12 6 9.5 6zm0 7C8.12 13 7 11.88 7 10.5S8.12 8 9.5 8 12 9.12 12 10.5 10.88 13 9.5 13zm9.42 2.27L15.5 12h-1.83l3.42 3.27C17.04 16.55 17 17.02 17 17.5 17 19.43 18.57 21 20.5 21S24 19.43 24 17.5 22.43 14 20.5 14c-.52 0-1.01.12-1.58.27zM20.5 19c-.83 0-1.5-.67-1.5-1.5S19.67 16 20.5 16s1.5.67 1.5 1.5S21.33 19 20.5 19z"/></svg></button>
+          <button class="ai-mode-btn"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 15.5h-1.5V14h-1v3H8v-3H7v4.5H5.5v-5c0-.55.45-1 1-1H11c.55 0 1 .45 1 1v5zm5-7c0 .55-.45 1-1 1h-2v1.5h2v1.5h-2v1.5h-1.5v-5c0-.55.45-1 1-1H16c.55 0 1 .45 1 1v.5zM10 9H5.5V7.5H10V9zm8.5 0H14V7.5h4.5V9z"/></svg>AI Mode</button>
         </div>
       </div>
       <div class="dropdown" id="dropdown">
@@ -255,6 +561,10 @@
     <div class="search-buttons">
       <button class="search-btn" onclick="doSearch()">ReverseGoogle Search</button>
       <button class="search-btn" onclick="feelingConfused()">I'm Feeling Confused</button>
+    </div>
+    <div class="lang-links">
+      <span>ReverseGoogle offered in:</span>
+      <a href="#">हिन्दी</a><a href="#">বাংলা</a><a href="#">తెలుగు</a><a href="#">मराठी</a><a href="#">தமிழ்</a><a href="#">ગુજરાતી</a><a href="#">ಕನ್ನಡ</a><a href="#">മലയാളം</a><a href="#">ਪੰਜਾਬੀ</a>
     </div>
   </div>
   <footer>
@@ -290,17 +600,24 @@
 
   <div class="results-tabs-wrap">
     <div class="results-tabs" id="resultsTabs">
-      <div class="results-tab active" data-tab="all">All</div>
-      <div class="results-tab" data-tab="images">Images</div>
-      <div class="results-tab" data-tab="videos">Videos</div>
-      <div class="results-tab" data-tab="news">News</div>
-      <div class="results-tab" data-tab="maps">Maps</div>
-      <div class="results-tab" data-tab="shopping">Shopping</div>
-      <div class="results-tab" data-tab="more">More</div>
+      <div class="results-tab active" data-tab="all"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>All</div>
+      <div class="results-tab" data-tab="images"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>Images</div>
+      <div class="results-tab" data-tab="maps"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>Maps</div>
+      <div class="results-tab" data-tab="videos"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>Videos</div>
+      <div class="results-tab" data-tab="shopping"><svg viewBox="0 0 24 24"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/></svg>Shopping</div>
+      <div class="results-tab" data-tab="news"><svg viewBox="0 0 24 24"><path d="M22 3l-1.67 1.67L18.67 3 17 4.67 15.33 3l-1.66 1.67L12 3l-1.67 1.67L8.67 3 7 4.67 5.33 3 3.67 4.67 2 3v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V3zM11 19H4v-6h7v6zm9 0h-7v-2h7v2zm0-4h-7v-2h7v2zm0-4H4V8h16v3z"/></svg>News</div>
+      <div class="results-tab" data-tab="more">More ▾</div>
     </div>
   </div>
 
-  <div class="search-tools">
+  <div class="location-bar" id="locationBar">
+    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Results for <strong>Choorakad, Thrippunithura, Ernakulam</strong>
+    <div class="loc-precise"><svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>Use precise location</div>
+    <div class="loc-dots">⋮</div>
+  </div>
+
+  <div class="search-tools" id="searchTools">
     <button class="tool-btn" onclick="toolClick(this,0)">Any time ▾</button>
     <button class="tool-btn" onclick="toolClick(this,1)">All results ▾</button>
     <button class="tool-btn" onclick="toolClick(this,2)">SafeSearch ▾</button>
@@ -312,6 +629,7 @@
     <div class="results-main">
       <div class="results-count" id="resultsCount"></div>
       <div class="did-you-mean" id="didYouMeanRow" style="display:none"></div>
+      <div id="placesInline"></div>
       <div id="resultsList"></div>
       <div class="related-searches">
         <div class="related-title">People also search for</div>
@@ -349,7 +667,9 @@
   </div>
 
   <!-- OTHER TABS — same content -->
-  <div id="tab-maps" style="display:none" class="results-body"><div class="results-main"><div class="results-count">Showing maps for somewhere else entirely</div><div id="mapsContent"></div></div></div>
+  <div id="tab-maps" style="display:none;padding:0 0 0 162px;">
+    <div class="maps-container" id="mapsContent"></div>
+  </div>
   <div id="tab-shopping" style="display:none" class="results-body"><div class="results-main"><div class="results-count">Shopping results (none of these are for sale)</div><div id="shoppingContent"></div></div></div>
   <div id="tab-more" style="display:none" class="results-body"><div class="results-main"><div class="results-count">More results. Somehow worse.</div><div id="moreContent"></div></div></div>
 </div>
@@ -881,6 +1201,471 @@ function handleNewsThumbError(img) {
   if (parent) parent.textContent = '📰';
 }
 
+// ====== Maps tab module (no external map APIs) ======
+var reverseMap = {
+  food: 'fitness',
+  fitness: 'food',
+  productivity: 'distraction',
+  entertainment: 'productivity',
+  shopping: 'minimalism',
+  travel: 'stay_home'
+};
+
+var MAP_INTENT_KEYWORDS = {
+  food: ['pizza', 'restaurant', 'food', 'eat', 'dinner', 'lunch', 'cafe', 'burger', 'meal', 'biryani', 'noodles', 'chicken', 'fries', 'snack', 'bakery', 'ice cream', 'coffee'],
+  fitness: ['gym', 'workout', 'fitness', 'exercise', 'run', 'cardio', 'training', 'yoga', 'pilates', 'crossfit', 'muscle'],
+  productivity: ['notion', 'task', 'focus', 'study', 'workspace', 'work', 'productivity', 'library', 'office', 'coworking'],
+  entertainment: ['netflix', 'movie', 'watch', 'show', 'stream', 'cinema', 'series', 'game', 'arcade', 'fun', 'party'],
+  shopping: ['buy', 'shop', 'store', 'deal', 'amazon', 'mall', 'purchase', 'price', 'sale', 'discount', 'flipkart'],
+  travel: ['trip', 'travel', 'flight', 'hotel', 'tour', 'vacation', 'destination', 'resort', 'beach', 'mountain', 'trek']
+};
+
+var MAP_PLACE_NAMES = {
+  fitness: ['Core Fitness Studio', 'Iron Pulse Gym', 'Active Life Center', 'Stride Lab Arena', 'Peak Performance Hub', 'SweatBox Training'],
+  food: ['Spicy Bite Kitchen', 'Urban Tandoor', 'Street Feast Corner', 'Curry Street Table', 'The Hunger Fix', 'Flame & Fork Bistro'],
+  productivity: ['Focus Workspace', 'Deep Work Hub', 'Taskline Commons', 'Quiet Output Lab', 'The Productive Nook', 'BrainStorm Co-work'],
+  distraction: ['GameZone Lounge', 'Infinite Scroll Cafe', 'Snack Break Arcade', 'Weekend Loop Club', 'The Idle Hour', 'Dopamine Drive-In'],
+  minimalism: ['Second Chance Store', 'Minimal Living Outlet', 'Declutter Depot', 'Simple Choice Studio', 'Empty Shelf Market', 'The Essentials Shop'],
+  stay_home: ['Indoor Activity Center', 'Home Comfort Hub', 'Couch Mode Club', 'Living Room Circuit', 'Netflix & Nap Lodge', 'Pajama Day Retreat']
+};
+
+var MAP_CATEGORY_TYPES = {
+  fitness: 'Gym · Fitness',
+  food: 'Restaurant · Dining',
+  productivity: 'Workspace · Office',
+  distraction: 'Entertainment · Leisure',
+  minimalism: 'Retail · Lifestyle',
+  stay_home: 'Relaxation · Indoor'
+};
+
+var MAP_ABSURD_NAMES = [
+  'Cardio Enforcement Zone','Motivation Checkpoint','Procrastination Hub',
+  'Decision Regret Center','Existential Dread Station','The Point of No Return',
+  'Choice Paralysis Plaza','Guilt Trip Terminal'
+];
+
+var MAP_DISTANCES = [
+  '1.2 km away (thankfully)',
+  '3.5 km away (safe distance)',
+  '500 m away (too close for comfort)',
+  '2.1 km away (plenty of time to rethink)',
+  '750 m away (approaching consequences)',
+  '4.3 km away (comfortably avoidable)',
+  '1.8 km away (within the danger zone)',
+  '900 m away (suspiciously close)'
+];
+
+var MAP_PRICE_RANGES = ['₹', '₹₹', '₹₹-₹₹₹', '₹₹₹', '₹₹₹₹'];
+var MAP_OPEN_HOURS = ['Opens 6 am', 'Opens 8 am', 'Opens 10 am', 'Opens 11 am', 'Opens 12 pm', 'Open 24 hours'];
+
+function detectMapsIntent(query) {
+  var q = String(query || '').toLowerCase();
+  var best = { intent: 'food', score: 0 };
+  Object.keys(MAP_INTENT_KEYWORDS).forEach(function (intent) {
+    var score = 0;
+    MAP_INTENT_KEYWORDS[intent].forEach(function (kw) {
+      if (q.indexOf(kw) > -1) score += 1;
+    });
+    if (score > best.score) best = { intent: intent, score: score };
+  });
+  return best.intent;
+}
+
+function mapToReverseCategory(intent) {
+  return reverseMap[intent] || 'distraction';
+}
+
+function mapHash(text) {
+  var h = 0;
+  var s = String(text || '');
+  for (var i = 0; i < s.length; i++) {
+    h = (h * 33 + s.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
+
+function seededRng(seed) {
+  var state = (seed || 1) >>> 0;
+  return function () {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+function pickRandomFrom(list, rng) {
+  if (!list || !list.length) return '';
+  return list[Math.floor(rng() * list.length)];
+}
+
+function generateDistance(rng) {
+  return pickRandomFrom(MAP_DISTANCES, rng);
+}
+
+function generatePlaces(category, seed) {
+  var userLocation = { lat: 9.9816, lng: 76.2999 }; // Kochi area
+  var rng = seededRng(seed);
+  var baseNames = (MAP_PLACE_NAMES[category] || MAP_PLACE_NAMES.distraction).slice();
+  var absurd = MAP_ABSURD_NAMES.slice();
+  var places = [];
+  var used = {};
+
+  while (places.length < 6) {
+    var pickAbsurd = places.length >= 4 && absurd.length && rng() > 0.4;
+    var namePool = pickAbsurd ? absurd : baseNames;
+    var idx = Math.floor(rng() * namePool.length);
+    var name = namePool.splice(idx, 1)[0];
+    if (!name || used[name]) continue;
+    used[name] = 1;
+
+    var lat = +(userLocation.lat + (rng() * 0.02 - 0.01)).toFixed(6);
+    var lng = +(userLocation.lng + (rng() * 0.02 - 0.01)).toFixed(6);
+    var rating = +(3.5 + rng() * 1.4).toFixed(1);
+    var reviewCount = Math.floor(12 + rng() * 900);
+    var priceRange = pickRandomFrom(MAP_PRICE_RANGES, rng);
+    var openHour = pickRandomFrom(MAP_OPEN_HOURS, rng);
+    var isOpen = rng() > 0.35;
+
+    places.push({
+      name: name,
+      lat: lat,
+      lng: lng,
+      distance: generateDistance(rng),
+      rating: rating,
+      reviewCount: reviewCount,
+      priceRange: priceRange,
+      isOpen: isOpen,
+      openHour: openHour,
+      categoryType: MAP_CATEGORY_TYPES[category] || 'Business',
+      label: pickAbsurd ? 'Popular now' : 'Recommended',
+      isAbsurd: pickAbsurd
+    });
+
+    if (!baseNames.length) baseNames = (MAP_PLACE_NAMES[category] || MAP_PLACE_NAMES.distraction).slice();
+    if (!absurd.length) absurd = MAP_ABSURD_NAMES.slice();
+  }
+  return places;
+}
+
+function generateDirections(seed) {
+  var pool = [
+    'Head in the opposite direction immediately',
+    'Turn back while you still can',
+    'You are getting dangerously close',
+    'Continue straight if you want to regret this',
+    'Rerouting to avoid poor decisions',
+    'Make a sharp U-turn at the next moment of clarity',
+    'Merge onto Denial Highway and stay in the left lane',
+    'Your destination is behind you. It always was.'
+  ];
+  var rng = seededRng(seed ^ 0x9e3779b9);
+  var steps = [];
+  var used = {};
+  var count = 4 + Math.floor(rng() * 2);
+  while (steps.length < count && steps.length < pool.length) {
+    var s = pool[Math.floor(rng() * pool.length)];
+    if (used[s]) continue;
+    used[s] = 1;
+    steps.push(s);
+  }
+  return steps;
+}
+
+function buildMapsPayload(query) {
+  var intent = detectMapsIntent(query);
+  var mappedCategory = mapToReverseCategory(intent);
+  var seed = mapHash(query + '|' + mappedCategory);
+  return {
+    places: generatePlaces(mappedCategory, seed),
+    directions: generateDirections(seed),
+    category: mappedCategory
+  };
+}
+
+function renderStars(rating) {
+  var full = Math.floor(rating);
+  var hasHalf = (rating - full) >= 0.3;
+  var stars = '';
+  for (var i = 0; i < 5; i++) {
+    if (i < full) {
+      stars += '<svg class="star-full" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+    } else if (i === full && hasHalf) {
+      stars += '<svg class="star-half" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" opacity=".3"/><path d="M12 2v15.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+    } else {
+      stars += '<svg class="star-empty" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+    }
+  }
+  return stars;
+}
+
+function renderMapsTab(query) {
+  var payload = buildMapsPayload(query);
+  var places = payload.places;
+  var directions = payload.directions;
+  var container = document.getElementById('mapsContent');
+  if (!container) return;
+
+  // Build place cards
+  var cards = '';
+  places.forEach(function (p, i) {
+    var thumb = 'https://picsum.photos/seed/' + encodeURIComponent('mplace-' + p.name.replace(/\s/g,'-')) + '/180/180';
+    var statusHtml = p.isOpen
+      ? '<span class="status-open">Open</span> <span class="status-time">· Closes 10 pm</span>'
+      : '<span class="status-closed">Closed</span> <span class="status-time">· ' + escapeHtml(p.openHour) + '</span>';
+    var tagsHtml = escapeHtml(p.categoryType) + ' · ' + escapeHtml(p.priceRange);
+
+    cards +=
+      '<div class="map-place-card" data-idx="' + i + '" id="map-card-' + i + '">' +
+        '<div class="map-place-thumb">' +
+          '<img src="' + thumb + '" alt="' + escapeHtml(p.name) + '" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/' + encodeURIComponent('mp-fallback-' + i) + '/180/180\'">' +
+        '</div>' +
+        '<div class="map-place-info">' +
+          '<div class="map-place-name">' + escapeHtml(p.name) + '</div>' +
+          '<div class="map-place-rating">' +
+            '<span class="map-place-rating-val">' + p.rating + '</span>' +
+            '<div class="map-place-stars">' + renderStars(p.rating) + '</div>' +
+            '<span class="map-place-reviews">(' + p.reviewCount + ')</span>' +
+          '</div>' +
+          '<div class="map-place-category">' + tagsHtml + '</div>' +
+          '<div class="map-place-status">' + statusHtml + '</div>' +
+          '<div class="map-place-tags">' + escapeHtml(p.label) + '</div>' +
+          '<div class="map-place-distance">' + escapeHtml(p.distance) + '</div>' +
+          '<div class="maps-actions">' +
+            '<button class="maps-btn maps-btn-primary"><svg fill="#fff" viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9a.996.996 0 0 0-1.41 0l-9 9a.996.996 0 0 0 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9a.996.996 0 0 0 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg>Directions</button>' +
+            '<button class="maps-btn maps-btn-secondary"><svg fill="#8ab4f8" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>Save</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  });
+
+  // Build map markers
+  var markers = '';
+  var areaLabels = [
+    { text: 'Thrippunithura', top: 15, left: 22 },
+    { text: 'Ernakulam', top: 8, left: 62 },
+    { text: 'Choorakad', top: 42, left: 38 },
+    { text: 'Maradu', top: 68, left: 15 },
+    { text: 'Palarivattom', top: 28, left: 78 }
+  ];
+  areaLabels.forEach(function(a){
+    markers += '<div class="map-area-label" style="top:'+a.top+'%;left:'+a.left+'%">'+a.text+'</div>';
+  });
+
+  // Road network
+  var roads = '<div class="map-roads">';
+  var roadPositions = [18, 32, 48, 65, 80];
+  roadPositions.forEach(function(pos, idx){
+    var isMain = idx === 1 || idx === 3;
+    roads += '<div class="map-road map-road-h'+(isMain?' map-road-main':'')+'" style="top:'+pos+'%"></div>';
+    roads += '<div class="map-road map-road-v'+(isMain?' map-road-main':'')+'" style="left:'+(pos+5)+'%"></div>';
+  });
+  roads += '</div>';
+
+  places.forEach(function (p, i) {
+    var top = 14 + ((i * 14 + (Math.abs(p.lat * 1000) % 35)) % 55);
+    var left = 12 + ((i * 18 + (Math.abs(p.lng * 1000) % 50)) % 70);
+    markers +=
+      '<div class="map-marker-wrap" style="top:'+top+'%;left:'+left+'%" data-idx="'+i+'">' +
+        '<div class="map-marker-pin-group">' +
+          '<div class="map-marker-pin"><span>'+(i+1)+'</span></div>' +
+          '<div class="map-marker-label">'+p.rating+'</div>' +
+        '</div>' +
+        '<div class="map-marker-tooltip">' +
+          '<div class="mtt-name">'+escapeHtml(p.name)+'</div>' +
+          '<div class="mtt-rating">'+p.rating+' ★ · '+p.reviewCount+' reviews</div>' +
+          '<div class="mtt-dist">'+escapeHtml(p.distance)+'</div>' +
+        '</div>' +
+      '</div>';
+  });
+
+  // User location
+  var userLocHtml =
+    '<div class="map-user-loc" style="top:50%;left:45%">' +
+      '<div class="map-user-pulse"></div>' +
+      '<div class="map-user-dot"></div>' +
+    '</div>';
+
+  // Map controls
+  var controlsHtml =
+    '<div class="map-controls">' +
+      '<button class="map-ctrl-btn" title="Zoom in">+</button>' +
+      '<button class="map-ctrl-btn" title="Zoom out">−</button>' +
+      '<button class="map-ctrl-btn" title="My location"><svg viewBox="0 0 24 24" width="16" height="16" fill="#e8eaed"><circle cx="12" cy="12" r="4"/><path d="M13 4.069V2h-2v2.069A8.01 8.01 0 0 0 4.069 11H2v2h2.069A8.01 8.01 0 0 0 11 19.931V22h2v-2.069A8.01 8.01 0 0 0 19.931 13H22v-2h-2.069A8.01 8.01 0 0 0 13 4.069zM12 18c-3.309 0-6-2.691-6-6s2.691-6 6-6 6 2.691 6 6-2.691 6-6 6z" fill="none" stroke="#e8eaed" stroke-width="1"/></svg></button>' +
+    '</div>';
+
+  // Layers button
+  var layersHtml =
+    '<div class="map-layers-btn">' +
+      '<div class="map-layers-thumb"></div>' +
+      '<span>Layers</span>' +
+    '</div>';
+
+  // Open in Maps badge
+  var openBadge =
+    '<div class="map-open-badge">' +
+      '<div class="map-open-dot"></div>' +
+      '<span>Open in Maps</span>' +
+    '</div>';
+
+  // Attribution
+  var attribution = '<div class="map-attribution"><span>Imagery ©2026</span><span>Map data ©2026</span></div>';
+
+  // Directions panel
+  var dirSteps = '';
+  directions.forEach(function (step, i) {
+    var dotClass = 'maps-dir-dot';
+    if (i === 0) dotClass += ' dot-start';
+    if (i === directions.length - 1) dotClass += ' dot-end';
+    dirSteps +=
+      '<div class="maps-dir-item">' +
+        '<div class="maps-dir-timeline">' +
+          '<div class="'+dotClass+'">'+(i+1)+'</div>' +
+          '<div class="maps-dir-line"></div>' +
+        '</div>' +
+        '<div class="maps-dir-text">'+escapeHtml(step)+'</div>' +
+      '</div>';
+  });
+
+  var etaMinutes = 12 + Math.floor(mapHash(query) % 35);
+
+  container.innerHTML =
+    '<div class="maps-shell">' +
+      '<!-- Left panel -->' +
+      '<div class="maps-left">' +
+        '<div class="maps-left-head">' +
+          '<div class="maps-title">Results</div>' +
+          '<div class="maps-sub">' +
+            '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>' +
+            'Results for <strong style="color:#e8eaed;margin:0 4px">' + escapeHtml(query) + '</strong> near Choorakad, Thrippunithura, Ernakulam' +
+          '</div>' +
+        '</div>' +
+        '<div class="maps-share-row">' +
+          '<button class="maps-share-btn"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>Share</button>' +
+        '</div>' +
+        '<div class="maps-filters">' +
+          '<button class="maps-filter"><svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>Price</button>' +
+          '<button class="maps-filter"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Rating</button>' +
+          '<button class="maps-filter"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>Hours</button>' +
+          '<button class="maps-filter"><svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>All filters</button>' +
+        '</div>' +
+        '<div class="maps-list">' + cards + '</div>' +
+        '<div class="maps-more-btn">' +
+          '<svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>' +
+          'More places' +
+        '</div>' +
+      '</div>' +
+      '<!-- Right panel -->' +
+      '<div class="maps-right">' +
+        '<div class="map-canvas" id="mapCanvas">' +
+          '<div class="map-canvas-inner" id="mapCanvasInner">' +
+            '<div class="map-bg"></div>' +
+            roads +
+            '<div class="map-river"></div>' +
+            markers +
+            userLocHtml +
+          '</div>' +
+          controlsHtml +
+          layersHtml +
+          openBadge +
+          attribution +
+        '</div>' +
+        '<div class="maps-dir-panel">' +
+          '<div class="maps-dir-head">' +
+            '<div class="maps-dir-title"><svg viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9a.996.996 0 0 0-1.41 0l-9 9a.996.996 0 0 0 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9a.996.996 0 0 0 0-1.41z"/></svg>Suggested route</div>' +
+            '<div class="maps-dir-eta">~'+etaMinutes+' min</div>' +
+          '</div>' +
+          '<div class="maps-dir-steps">' + dirSteps + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  // Interactive: highlight card & marker on hover
+  var placeCards = container.querySelectorAll('.map-place-card');
+  var markerWraps = container.querySelectorAll('.map-marker-wrap');
+  placeCards.forEach(function(card) {
+    card.addEventListener('mouseenter', function() {
+      var idx = card.getAttribute('data-idx');
+      placeCards.forEach(function(c){ c.classList.remove('active'); });
+      card.classList.add('active');
+      markerWraps.forEach(function(m) {
+        m.classList.remove('active');
+        if (m.getAttribute('data-idx') === idx) {
+          m.classList.add('active');
+          m.style.zIndex = '25';
+        } else {
+          m.style.zIndex = '';
+        }
+      });
+    });
+    card.addEventListener('mouseleave', function() {
+      card.classList.remove('active');
+      markerWraps.forEach(function(m) {
+        m.classList.remove('active');
+        m.style.zIndex = '';
+      });
+    });
+  });
+
+  markerWraps.forEach(function(marker) {
+    marker.addEventListener('mouseenter', function() {
+      var idx = marker.getAttribute('data-idx');
+      marker.classList.add('active');
+      placeCards.forEach(function(c) {
+        if (c.getAttribute('data-idx') === idx) {
+          c.classList.add('active');
+          c.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    });
+    marker.addEventListener('mouseleave', function() {
+      marker.classList.remove('active');
+      placeCards.forEach(function(c) { c.classList.remove('active'); });
+    });
+  });
+
+  // === Interactive pan & zoom ===
+  var mapCanvas = document.getElementById('mapCanvas');
+  var mapInner = document.getElementById('mapCanvasInner');
+  if (mapCanvas && mapInner) {
+    var panX = 0, panY = 0, zoom = 1;
+    var dragging = false, startX = 0, startY = 0, startPX = 0, startPY = 0;
+
+    function applyTransform() {
+      mapInner.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoom + ')';
+    }
+
+    mapCanvas.addEventListener('mousedown', function(e) {
+      if (e.target.closest('.map-marker-wrap') || e.target.closest('.map-controls') || e.target.closest('.map-layers-btn') || e.target.closest('.map-open-badge')) return;
+      dragging = true;
+      startX = e.clientX; startY = e.clientY;
+      startPX = panX; startPY = panY;
+      mapCanvas.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      panX = startPX + (e.clientX - startX);
+      panY = startPY + (e.clientY - startY);
+      applyTransform();
+    });
+    window.addEventListener('mouseup', function() {
+      if (dragging) { dragging = false; mapCanvas.style.cursor = 'grab'; }
+    });
+
+    mapCanvas.addEventListener('wheel', function(e) {
+      e.preventDefault();
+      var delta = e.deltaY > 0 ? -0.1 : 0.1;
+      zoom = Math.min(3, Math.max(0.5, zoom + delta));
+      applyTransform();
+    }, { passive: false });
+
+    // Zoom buttons
+    var zoomBtns = container.querySelectorAll('.map-ctrl-btn');
+    if (zoomBtns[0]) zoomBtns[0].addEventListener('click', function() { zoom = Math.min(3, zoom + 0.2); applyTransform(); });
+    if (zoomBtns[1]) zoomBtns[1].addEventListener('click', function() { zoom = Math.max(0.5, zoom - 0.2); applyTransform(); });
+    if (zoomBtns[2]) zoomBtns[2].addEventListener('click', function() { panX = 0; panY = 0; zoom = 1; applyTransform(); });
+  }
+}
+
 // Suggestions
 var searchInput=document.getElementById('searchInput');
 var dropdown=document.getElementById('dropdown');
@@ -1041,7 +1826,7 @@ async function showResults(query, skipHistory){
     if(r.sponsored)h+='<span class="sponsored-label">Sponsored</span><br>';
     h+='<div class="result-row"><div class="result-content">';
     h+='<div class="result-url"><div class="result-favicon">'+renderCompanyLogo(r.domain, r.site, r.favicon)+'</div><div class="result-site-wrap"><div class="result-site">'+r.site+'</div><div class="result-path">'+r.path+'</div></div><div class="result-menu">⋮</div></div>';
-    h+='<div class="result-title">'+r.title+'</div><div class="result-desc">'+r.desc+'</div>';
+    h+='<a href="impossible-form.html" class="result-title">'+r.title+'</a><div class="result-desc">'+r.desc+'</div>';
     h+='</div>';
     if (idx % 2 === 1) {
       var thumbUrl = thumbs[idx] || unsplashUrl(topicTerm, idx, 340, 230);
@@ -1073,6 +1858,54 @@ async function showResults(query, skipHistory){
   generateImageTab(topicTerm, combinedVisualPool.slice(0, 12));
   generateVideoTab(topicTerm, combinedVisualPool.slice(12, 18));
   generateNewsTab(oppositeCategory);
+  renderMapsTab(query);
+
+  // Generate Places inline section for All tab
+  (function() {
+    var piContainer = document.getElementById('placesInline');
+    if (!piContainer) return;
+    var mapsPayload = buildMapsPayload(query);
+    var piPlaces = mapsPayload.places.slice(0, 3);
+    if (!piPlaces.length) { piContainer.innerHTML = ''; return; }
+    var piMapMarkers = '';
+    piPlaces.forEach(function(p, i) {
+      var pTop = 20 + ((i * 18 + (Math.abs(p.lat * 1000) % 30)) % 45);
+      var pLeft = 15 + ((i * 22 + (Math.abs(p.lng * 1000) % 40)) % 60);
+      piMapMarkers += '<div class="pi-marker" style="top:'+pTop+'%;left:'+pLeft+'%"><div class="pi-pin"><span>'+(i+1)+'</span></div><div class="pi-label">'+p.rating+'</div></div>';
+    });
+    var piCards = '';
+    piPlaces.forEach(function(p) {
+      var piThumb = 'https://picsum.photos/seed/' + encodeURIComponent('pi-' + p.name.replace(/\s/g,'-')) + '/200/200';
+      var piStars = '';
+      for (var s = 0; s < 5; s++) piStars += (s < Math.round(p.rating)) ? '★' : '☆';
+      var statusHtml = p.isOpen ? '<span class="status-open">Open</span>' : '<span class="status-closed">Closed</span>';
+      piCards +=
+        '<div class="pi-place-card">' +
+          '<div style="flex:1;min-width:0">' +
+            '<div class="pi-place-name">' + escapeHtml(p.name) + ' | ' + p.label + ', Kochi</div>' +
+            '<div class="pi-place-rating">' + p.rating + ' <span class="pi-stars">' + piStars + '</span> (' + p.reviewCount + ') · ' + p.priceRange + ' · ' + p.category + '</div>' +
+            '<div class="pi-place-detail">' + statusHtml + '</div>' +
+            '<div class="pi-place-detail">' + escapeHtml(p.distance) + '</div>' +
+          '</div>' +
+          '<div class="pi-place-thumb"><img src="' + piThumb + '" alt="' + escapeHtml(p.name) + '" loading="lazy"></div>' +
+        '</div>';
+    });
+    piContainer.innerHTML =
+      '<div class="places-inline">' +
+        '<div class="places-inline-title">Places</div>' +
+        '<div class="places-inline-map">' +
+          '<div class="map-bg"></div>' +
+          '<div class="map-river"></div>' +
+          piMapMarkers +
+          '<div class="pi-expand" onclick="switchTab(\'maps\')"><svg viewBox="0 0 24 24"><path d="M21 11l-6-6v5H8c-2.76 0-5 2.24-5 5v4h2v-4c0-1.65 1.35-3 3-3h7v5l6-6z"/></svg></div>' +
+        '</div>' +
+        '<div class="places-inline-list">' + piCards + '</div>' +
+      '</div>';
+    // Click on inline places card → switch to maps tab
+    piContainer.querySelectorAll('.pi-place-card').forEach(function(card) {
+      card.addEventListener('click', function() { switchTab('maps'); });
+    });
+  })();
 
   // Switch to All tab
   switchTab('all');
@@ -1088,7 +1921,8 @@ document.querySelectorAll('.results-tab').forEach(function(tab){
 
 function switchTab(name){
   document.querySelectorAll('.results-tab').forEach(function(t){t.classList.remove('active');});
-  document.querySelector('[data-tab="'+name+'"]').classList.add('active');
+  var activeTab = document.querySelector('[data-tab="'+name+'"]');
+  if (activeTab) activeTab.classList.add('active');
   var tabs=['all','images','videos','news','maps','shopping','more'];
   tabs.forEach(function(t){
     var el=document.getElementById('tab-'+t);
@@ -1098,7 +1932,13 @@ function switchTab(name){
   if(name==='images') document.getElementById('tab-images').style.display='block';
   if(name==='videos') document.getElementById('tab-videos').style.display='block';
   if(name==='news') document.getElementById('tab-news').style.display='block';
+  if(name==='maps') document.getElementById('tab-maps').style.display='block';
   if(name==='all') document.getElementById('tab-all').style.display='flex';
+  // Show/hide location bar and search tools based on tab
+  var locBar = document.getElementById('locationBar');
+  var searchTools = document.getElementById('searchTools');
+  if (locBar) locBar.style.display = (name === 'maps') ? 'none' : 'flex';
+  if (searchTools) searchTools.style.display = (name === 'maps') ? 'none' : 'flex';
 }
 
 document.getElementById('resultsSearchInput').addEventListener('keydown', function(e){

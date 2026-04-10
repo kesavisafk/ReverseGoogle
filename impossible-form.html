@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Claim your search result!</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@400;500&display=swap');
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0 16px 24px;
+      background-color: #f0ebf8;
+      font-family: 'Roboto', Arial, sans-serif;
+      color: #202124;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .form-wrapper { width: 100%; max-width: 640px; margin-top: 12px; }
+    
+    .card { background: #fff; border: 1px solid #dadce0; border-radius: 8px; padding: 24px; margin-bottom: 12px; }
+    .header-card { border-top: 10px solid #673ab7; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+
+    h1 { font-family: 'Google Sans', sans-serif; font-size: 32px; font-weight: 400; line-height: 40px; margin: 0 0 12px 0; }
+    .subtitle { font-size: 14px; color: #202124; line-height: 1.5; margin-bottom: 16px; }
+    .required-note { color: #d93025; font-size: 13px; font-weight: 400; margin-top: 16px; display: block; border-top: 1px solid #dadce0; padding-top: 16px;}
+    
+    .email-card-text { font-size: 14px; color: #5f6368; line-height: 1.5; border-top: 1px solid #dadce0; padding-top: 16px; margin-top: 16px;}
+    .email-switch { color: #1a73e8; cursor: pointer; font-weight: 500; text-decoration: none; }
+    .bold-email { font-weight: 500; color: #3c4043;}
+    
+    .form-item { position: relative; }
+    .label-wrap { display: flex; align-items: baseline; margin-bottom: 16px; }
+    .label-text { font-family: 'Google Sans', sans-serif; font-size: 16px; font-weight: 500; color: #202124; }
+    .req-star { color: #d93025; margin-left: 4px; }
+    
+    /* Inputs */
+    .input-wrapper { position: relative; width: 100%; max-width: 300px; margin-bottom: 4px; }
+    .input-field {
+      width: 100%; border: none; border-bottom: 1px solid rgba(0,0,0,0.12);
+      font-size: 14px; padding: 8px 0; outline: none; background: transparent; color: #202124; font-family: inherit;
+    }
+    .input-field:focus { border-bottom: 2px solid #673ab7; padding-bottom: 7px; }
+    
+    .input-line { position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: #673ab7; transition: width 0.3s ease; }
+    .input-field:focus ~ .input-line { width: 100%; }
+    
+    .error-text { font-size: 12px; color: #d93025; margin-top: 4px; display: none; align-items:center; gap:4px; }
+    .error-icon { width:16px; height:16px; fill:#d93025; min-width: 16px; }
+    
+    /* Reveal errors only when .show-errors is added */
+    .show-errors .has-error .input-field { border-bottom-color: #d93025; }
+    .show-errors .has-error .error-text { display: flex; }
+    .show-errors .has-error .input-line { background: #d93025; }
+    .show-errors .has-error .input-field:focus { border-bottom-color: transparent !important; }
+
+    /* Checkbox & Radio */
+    .checkbox-row, .radio-row { display: flex; align-items: center; gap: 12px; font-size: 14px; margin-top: 16px; cursor: pointer;}
+    .custom-checkbox { width: 20px; height: 20px; border: 2px solid #5f6368; border-radius: 2px; display: flex; justify-content: center; align-items: center; transition: all 0.2s; flex-shrink:0;}
+    .custom-checkbox.checked { background: #673ab7; border-color: #673ab7; }
+    .custom-checkbox svg { opacity: 0; fill: #fff; width: 16px; }
+    .custom-checkbox.checked svg { opacity: 1; }
+
+    .custom-radio { width: 20px; height: 20px; border: 2px solid #5f6368; border-radius: 50%; position: relative; display: flex; justify-content: center; align-items: center; transition: all 0.2s; }
+    .custom-radio.checked { border-color: #673ab7; }
+    .custom-radio.checked::after { content: ''; width: 10px; height: 10px; background: #673ab7; border-radius: 50%; position: absolute; }
+
+    /* Select Default */
+    .select-dropdown { width: 100%; max-width: 250px; padding: 12px; border: 1px solid #dadce0; border-radius: 4px; font-size: 14px; font-family: inherit; color: #202124; outline: none; background: #fff;}
+    .select-dropdown:focus { border: 2px solid #673ab7; padding: 11px; }
+
+    /* Fake File Upload */
+    .upload-btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #dadce0; border-radius: 4px; padding: 8px 16px; color: #1a73e8; font-size: 14px; font-weight: 500; cursor: pointer; background: #fff; }
+    .upload-btn:hover { background: #f4f8fe; border-color: #d2e3fc; }
+    .upload-btn svg { width: 18px; fill: #1a73e8; }
+    
+    /* Submit */
+    .footer-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; margin-bottom: 50px;}
+    .submit-btn { background: #673ab7; color: white; border: none; border-radius: 4px; padding: 10px 24px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.1s; display: inline-flex; justify-content: center; width: 200px; }
+    .submit-btn:hover { box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15); }
+    .clear-form { color: #673ab7; font-size: 14px; font-weight: 500; cursor: pointer; padding: 8px; }
+    
+    .never-submit { font-size: 12px; color: #5f6368; }
+    
+    /* Progress bar */
+    .progress-wrap { position: fixed; bottom: 0; left: 0; width: 100%; background: #f0ebf8; z-index: 10; padding: 12px 16px 20px; }
+    .progress-bar-container { width: 100%; max-width: 640px; margin: 0 auto; height: 6px; background: rgba(0,0,0,0.1); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #007b83; width: 100%; transition: width 0.2s; }
+    .progress-text { width: 100%; max-width: 640px; margin: 4px auto 0; font-size: 12px; color: #70757a; text-align: left; }
+
+    /* Fake Captcha Component */
+    .captcha-container { border: 1px solid #d3d3d3; background: #f9f9f9; border-radius: 3px; padding: 10px 12px; display: inline-flex; align-items: center; justify-content: space-between; width: 300px; box-shadow: 0 0 4px 1px rgba(0,0,0,0.08); }
+    .captcha-left { display: flex; align-items: center; gap: 12px; }
+    .captcha-box { width: 28px; height: 28px; border: 2px solid #c1c1c1; border-radius: 2px; cursor: pointer; background: #fff; display: flex; align-items: center; justify-content: center;}
+    .captcha-box:hover { border-color: #b2b2b2; }
+    .captcha-text { font-family: 'Roboto', sans-serif; font-size: 14px; color: #222; }
+    .captcha-right { display: flex; flex-direction: column; align-items: center; }
+    .captcha-logo { display:flex; flex-direction:column; align-items:center; gap:2px; }
+    .captcha-logo svg { width:26px; }
+    .captcha-links { font-size: 10px; color: #9E9E9E; font-family: Roboto, sans-serif; margin-top:2px;}
+    .captcha-links a { color: #9E9E9E; text-decoration: none; }
+    .captcha-links a:hover { text-decoration: underline; }
+
+    /* Captcha Popup Modal */
+    #captchaModalOverlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 999; display: none; align-items: center; justify-content: center; }
+    #captchaModal { width: 400px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.2); display: flex; flex-direction: column; }
+    .cm-header { background: #4a90e2; padding: 24px; color: #fff; }
+    .cm-header span { font-size: 16px; font-weight: 300;}
+    .cm-header strong { font-size: 28px; font-weight: 700; display: block; margin: 4px 0; }
+    .cm-header small { font-size: 14px; font-weight: 300; }
+    .cm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; }
+    .cm-img-wrap { padding-top: 100%; position: relative; cursor: pointer; }
+    .cm-img-wrap img { position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; }
+    .cm-img-wrap.selected::after { content: ''; position: absolute; inset:0; border: 4px solid #4a90e2; background: rgba(255,255,255,0.2); }
+    .cm-img-wrap.selected::before { content: '✓'; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; background: #4a90e2; color: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; z-index: 2; }
+    .cm-error-msg { color: #d93025; font-size: 14px; padding: 8px 16px; display: none; }
+    .cm-footer { border-top: 1px solid #ddd; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .cm-actions svg { width: 24px; fill: #555; margin-right: 12px; cursor: pointer; }
+    .cm-verify-btn { background: #4a90e2; color: white; border: none; border-radius: 2px; padding: 10px 24px; font-size: 14px; font-weight: 500; cursor: pointer; }
+
+    /* Success Screen */
+    #successScreen { display:none; flex-direction: column; align-items: center; justify-content: flex-start; background: #f0ebf8; min-height: 100vh; padding: 24px 16px; }
+    .ss-card { background: white; border: 1px solid #dadce0; border-radius: 8px; border-top: 10px solid #673ab7; max-width: 640px; width: 100%; padding: 32px 24px; margin-top:12px; }
+    .ss-title { font-size: 32px; font-family: 'Google Sans', sans-serif; font-weight: 400; margin-bottom: 16px; }
+    .ss-desc { font-size: 14px; color: #202124; line-height: 1.5; }
+    .ss-footer { text-align: left; font-size: 12px; color: #5f6368; margin-top: 24px; max-width: 640px; width: 100%;}
+    .ss-footer a { color: #5f6368; text-decoration: underline; }
+
+    /* BSOD */
+    #bsod { position: fixed; inset: 0; background: #0078D7; color: white; font-family: "Segoe UI", sans-serif; z-index: 9999; display: none; padding: 10vh 10vw; text-align: left; }
+    #bsod h1 { font-size: 10rem; font-weight: normal; margin-bottom: 2rem; margin-top:0 }
+    #bsod p { font-size: 1.5rem; line-height: 1.5; margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+
+  <!-- THE ACTUAL FORM UI -->
+  <div class="form-wrapper" id="formWrapper"> <!-- Show-errors initially off -->
+    <!-- Header -->
+    <div class="card header-card">
+      <h1 id="formTitle">Claim your search result!</h1>
+      <div class="subtitle">Fiill in this easy 5 step google form to claim your result now!</div>
+      
+      <div class="email-card-text">
+        <span class="bold-email" style="display:block;margin-bottom:8px">goodluck@your.never.finishing.this.com</span> 
+        <a href="#" class="email-switch" onclick="return false;">Switch account</a>
+        <br><br>
+        The name, email, and photo associated with your Google account will be recorded when you upload files and submit this form
+      </div>
+      <div class="required-note">* Indicates required question</div>
+    </div>
+
+    <!-- Email Record -->
+    <div class="card form-item">
+      <div class="label-wrap"><div class="label-text">Email</div><span class="req-star">*</span></div>
+      <div class="checkbox-row" onclick="toggleCb('cbRecordEmail')">
+        <div class="custom-checkbox checked" id="cbRecordEmail"><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg></div>
+        <span>Record goodluck@your.never.finishing.this.com as the email to be included with my response</span>
+      </div>
+    </div>
+
+    <!-- 1. Full Name -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Full Name</div><span class="req-star">*</span></div>
+      <div class="input-wrapper">
+        <input type="text" class="input-field _req" data-id="f_name" placeholder="Your answer" autocomplete="off">
+        <div class="input-line"></div>
+      </div>
+      <div class="error-text">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Rejects real names. Use "Anonymous" or "Unknown Entity".
+      </div>
+    </div>
+
+    <!-- 2. Email Field -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Email</div><span class="req-star">*</span></div>
+      <div class="input-wrapper">
+        <input type="text" class="input-field _req" data-id="f_email" placeholder="Your answer" autocomplete="off">
+        <div class="input-line"></div>
+      </div>
+      <div class="error-text">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Must be an invalid email (No @ allowed).
+      </div>
+    </div>
+
+    <!-- 3. Password Field -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Password</div><span class="req-star">*</span></div>
+      <div class="input-wrapper" style="max-width: 100%">
+        <input type="password" class="input-field _req" id="f_pwd" data-id="f_pwd" placeholder="Your answer" autocomplete="off">
+        <div class="input-line"></div>
+      </div>
+      <div class="error-text">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Must include 1 emoji, 1 prime number, 1 uppercase, and a contradiction ("hotice").
+      </div>
+
+      <div class="checkbox-row" id="pwdToggleRow">
+        <div class="custom-checkbox" id="cbPwdShow"><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg></div>
+        <span>Show password</span>
+      </div>
+    </div>
+
+    <!-- 4. Confirm Password -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Confirm Password</div><span class="req-star">*</span></div>
+      <div class="input-wrapper">
+        <input type="text" class="input-field _req" id="f_cpwd" data-id="f_cpwd" placeholder="Your answer" autocomplete="off">
+        <div class="input-line"></div>
+      </div>
+      <div class="error-text">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Must NOT match the password.
+      </div>
+    </div>
+
+    <!-- 5. Age -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Age</div><span class="req-star">*</span></div>
+      <div class="input-wrapper">
+        <input type="text" class="input-field _req" data-id="f_age" placeholder="Your answer" autocomplete="off">
+        <div class="input-line"></div>
+      </div>
+      <div class="error-text">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Must be negative or "timeless".
+      </div>
+    </div>
+
+    <!-- 6. Location -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Current Location</div><span class="req-star">*</span></div>
+      <div class="input-wrapper">
+        <input type="text" class="input-field _req" data-id="f_loc" placeholder="Your answer" autocomplete="off">
+        <div class="input-line"></div>
+      </div>
+      <div class="error-text">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Rejects real cities. Try "Nowhere" or "Somewhere else".
+      </div>
+    </div>
+
+    <!-- 7. Phone -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Phone Number</div><span class="req-star">*</span></div>
+      <div class="input-wrapper">
+        <input type="number" class="input-field _req" data-id="f_phone" placeholder="Your answer" autocomplete="off">
+        <div class="input-line"></div>
+      </div>
+      <div class="error-text">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Must be too short (<10) or excessively long (>15).
+      </div>
+    </div>
+
+    <!-- 8. Gender -->
+    <div class="card form-item has-error" id="card_gender">
+      <div class="label-wrap"><div class="label-text">Gender / Identity</div><span class="req-star">*</span></div>
+      <div class="radio-row" onclick="setRadio('Prefer not to decide')">
+        <div class="custom-radio" data-val="Prefer not to decide"></div><span>Prefer not to decide</span>
+      </div>
+      <div class="radio-row" onclick="setRadio('Depends on the day')">
+        <div class="custom-radio" data-val="Depends on the day"></div><span>Depends on the day</span>
+      </div>
+      <div class="radio-row" onclick="setRadio('Loading...')">
+        <div class="custom-radio" data-val="Loading..."></div><span>Loading...</span>
+      </div>
+      <div class="error-text" style="margin-top: 16px;"><svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Required question</div>
+    </div>
+
+    <!-- 13. Date -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Select your birthdate</div><span class="req-star">*</span></div>
+      <div class="input-wrapper">
+        <input type="date" class="input-field _req" data-id="f_date" autocomplete="off">
+        <div class="input-line"></div>
+      </div>
+      <div class="error-text">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Only allows future dates.
+      </div>
+    </div>
+
+    <!-- 11. Upload -->
+    <div class="card form-item has-error" id="card_upload">
+      <div class="label-wrap"><div class="label-text">Upload ID Proof</div><span class="req-star">*</span></div>
+      <div class="upload-btn" onclick="document.getElementById('fakeFile').click()">
+        <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm3-10.17L14.17 8H13v6h-2V8H9.83L12 5.83zM5 18h14v2H5z"/></svg>
+        Add file
+      </div>
+      <input type="file" id="fakeFile" style="display:none">
+      <div class="error-text" style="margin-top: 16px;"><svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span id="uploadErrTxt">Required. Accepts .exe or .unknown only.</span></div>
+    </div>
+
+    <!-- 12. Dropdown -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Your favourite food type</div><span class="req-star">*</span></div>
+      <select class="select-dropdown _req" data-id="f_drop">
+        <option value="">Choose</option>
+        <option value="Meat">Meat</option>
+        <option value="Sea food">Sea food</option>
+        <option value="I don't eat">I don't eat</option>
+      </select>
+      <div class="error-text" style="margin-top: 8px;">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        How is this relevant? leave blank to proceed
+      </div>
+    </div>
+
+    <!-- 14. Feedback -->
+    <div class="card form-item has-error">
+      <div class="label-wrap"><div class="label-text">Why are you here?</div><span class="req-star">*</span></div>
+      <div class="input-wrapper" style="max-width: 100%">
+        <input type="text" class="input-field _req" data-id="f_why" placeholder="Your answer" autocomplete="off">
+        <div class="input-line"></div>
+      </div>
+      <div class="error-text">
+        <svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Accepts "I don't know" or "Mistakes were made".
+      </div>
+    </div>
+
+    <!-- 10. Captcha -->
+    <div class="card form-item has-error" id="card_captcha">
+      <div class="label-wrap"><div class="label-text">Human verification</div><span class="req-star">*</span></div>
+      <div class="captcha-container" id="reCapBox">
+        <div class="captcha-left">
+          <div class="captcha-box" id="captchaCheck" onclick="openCaptcha()"></div>
+          <div class="captcha-text">I'm not a robot</div>
+        </div>
+        <div class="captcha-right">
+          <div class="captcha-logo">
+            <svg viewBox="0 0 24 24"><path d="M12 2L12 6C15.31 6 18 8.69 18 12C18 13.12 17.69 14.16 17.15 15.06L19.98 17.89C21.25 16.32 22 14.25 22 12C22 6.48 17.52 2 12 2ZM12 22C8.69 22 6 19.31 6 16C6 14.88 6.31 13.84 6.85 12.94L4.02 10.11C2.75 11.68 2 13.75 2 16C2 21.52 6.48 26 12 26V22Z" fill="#1C3AA9"/><path d="M12 18V22C15.31 22 18 19.31 18 16V12L12 18Z" fill="#909090"/><path d="M12 6V2C8.69 2 6 4.69 6 8V12L12 6Z" fill="#909090"/></svg>
+          </div>
+          <div class="captcha-links">
+            <a href="#">reCAPTCHA</a><br>
+            <a href="#">Privacy</a> - <a href="#">Terms</a>
+          </div>
+        </div>
+      </div>
+      <div class="error-text" style="margin-top: 16px;"><svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span id="capErrTxt">Required.</span></div>
+    </div>
+
+    <!-- 9. T&C -->
+    <div class="card form-item has-error" id="card_terms">
+      <div class="checkbox-row" onclick="toggleTerms()" style="align-items: flex-start; margin-top:2px;">
+        <div class="custom-checkbox checked" id="cbTerms" style="margin-top: 2px;"><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg></div>
+        <div style="flex:1">
+          <div class="label-text" style="margin-bottom: 4px;">I agree to the terms and conditions<span class="req-star">*</span></div>
+        </div>
+      </div>
+      <div class="error-text" style="margin-top: 16px;"><svg class="error-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Must be UNCHECKED to proceed.</div>
+    </div>
+
+    <!-- Submit Area -->
+    <div class="footer-actions">
+      <button class="submit-btn" id="submitBtn">Submit</button>
+      <div class="clear-form" onclick="location.reload()">Clear form</div>
+    </div>
+
+    <div class="never-submit">
+      Never submit passwords through Google Forms.<br><br>
+      This content is neither created nor endorsed by Google.<br><br>
+      <center style="margin-top:10px; font-size:18px; font-family:'Google Sans', Arial, sans-serif; opacity: 0.6;">Google Forms</center>
+    </div>
+
+  </div> <!-- /form-wrapper -->
+
+  <!-- Fixed Progress Bar Bottom -->
+  <div class="progress-wrap" id="pbWrap">
+    <div class="progress-bar-container">
+      <div class="progress-fill" id="pbFill"></div>
+    </div>
+    <div class="progress-text" id="pbText">Page 1 of 1</div>
+  </div>
+
+  <!-- CAPTCHA MODAL -->
+  <div id="captchaModalOverlay">
+    <div id="captchaModal">
+      <div class="cm-header">
+        <span>Select all images that are NOT</span>
+        <strong>cats</strong>
+        <small>Click verify once there are none left</small>
+      </div>
+      <div class="cm-grid" id="cmGrid">
+        <!-- JS fills this with 9 cats from loremflickr -->
+      </div>
+      <div class="cm-error-msg" id="cmError">Please select all matching images.</div>
+      <div class="cm-footer">
+        <div class="cm-actions">
+          <svg viewBox="0 0 24 24" onclick="fillGrid()"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M11 15h2v2h-2v-2zm0-8h2v6h-2V7zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+        </div>
+        <button class="cm-verify-btn" onclick="verifyCaptcha()">VERIFY</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS PAGE -->
+  <div id="successScreen">
+    <div class="ss-card">
+      <div class="ss-title">Supatool Example Form</div>
+      <div class="ss-desc">Your response has been recorded.</div>
+    </div>
+    <div class="ss-footer">
+      This content is neither created nor endorsed by Google. <a href="#">Report Abuse</a> - <a href="#">Terms of Service</a> - <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+
+  <!-- BSOD -->
+  <div id="bsod">
+    <h1>:(</h1>
+    <p>Oh no, Error occured. Refreshing</p>
+    <p style="font-size: 1rem; color: #a0c4ff;">Stop Code: IMPOSSIBLE_FORM_VIOLATION</p>
+  </div>
+
+  <script>
+    // --- VALIDATION STATE ---
+    let state = {
+      f_name: false,
+      f_email: false,
+      f_pwd: false,
+      f_cpwd: false,
+      f_age: false,
+      f_loc: false,
+      f_phone: false,
+      gender: false,
+      f_date: false,
+      upload: false,
+      f_drop: false,
+      f_why: false,
+      terms: false, // true means it's UNCHECKED properly
+      captcha: false
+    };
+
+    function updateError(el, isValid) {
+      if (isValid) {
+        el.closest('.card').classList.remove('has-error');
+      } else {
+        el.closest('.card').classList.add('has-error');
+      }
+    }
+
+    // 1. Name
+    document.querySelector('[data-id="f_name"]').addEventListener('input', e => {
+      const v = e.target.value;
+      state.f_name = (v === "Anonymous" || v === "Unknown Entity");
+      updateError(e.target, state.f_name);
+    });
+
+    // 2. Email
+    document.querySelector('[data-id="f_email"]').addEventListener('input', e => {
+      const v = e.target.value;
+      state.f_email = (v.length > 0 && !v.includes('@'));
+      updateError(e.target, state.f_email);
+    });
+
+    // 3. Password
+    const emojiRegex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff])/;
+    const primeRegex = /[2357]/;
+    const pwdField = document.getElementById('f_pwd');
+    pwdField.addEventListener('input', e => {
+      const v = e.target.value;
+      let valid = true;
+      if (!emojiRegex.test(v)) valid = false;
+      if (!primeRegex.test(v)) valid = false;
+      if (!/[A-Z]/.test(v)) valid = false;
+      if (!v.includes('hotice')) valid = false;
+      state.f_pwd = valid;
+      updateError(e.target, valid);
+      // Re-trigger confirm check
+      document.getElementById('f_cpwd').dispatchEvent(new Event('input'));
+    });
+
+    // Show Password Trolling
+    const cbPwdShow = document.getElementById('cbPwdShow');
+    let pwdShowInterval = setInterval(() => {
+      if (cbPwdShow.classList.contains('checked')) {
+        cbPwdShow.classList.remove('checked');
+        pwdField.type = 'password';
+      }
+    }, 500);
+    document.getElementById('pwdToggleRow').addEventListener('click', () => {
+      if (!cbPwdShow.classList.contains('checked')) {
+        cbPwdShow.classList.add('checked');
+        pwdField.type = 'text';
+      }
+    });
+
+    // 4. Confirm Password (Must NOT match)
+    const cpwdField = document.getElementById('f_cpwd');
+    cpwdField.addEventListener('input', e => {
+      const v = e.target.value;
+      state.f_cpwd = (v.length > 0 && v !== pwdField.value);
+      updateError(e.target, state.f_cpwd);
+    });
+
+    // 5. Age
+    document.querySelector('[data-id="f_age"]').addEventListener('input', e => {
+      const v = e.target.value.toLowerCase().trim();
+      const isNum = !isNaN(parseFloat(v)) && isFinite(v) && parseFloat(v) < 0;
+      state.f_age = (isNum || v === 'timeless');
+      updateError(e.target, state.f_age);
+    });
+
+    // 6. Location
+    document.querySelector('[data-id="f_loc"]').addEventListener('input', e => {
+      const v = e.target.value;
+      state.f_loc = (v === "Nowhere" || v === "Somewhere else");
+      updateError(e.target, state.f_loc);
+    });
+
+    // 7. Phone
+    document.querySelector('[data-id="f_phone"]').addEventListener('input', e => {
+      const v = e.target.value;
+      state.f_phone = (v.length > 0 && (v.length < 10 || v.length > 15));
+      updateError(e.target, state.f_phone);
+    });
+
+    // 8. Gender (Radio)
+    function setRadio(val) {
+      document.querySelectorAll('.custom-radio').forEach(r => r.classList.remove('checked'));
+      document.querySelector(`[data-val="${val}"]`).classList.add('checked');
+      state.gender = true;
+      document.getElementById('card_gender').classList.remove('has-error');
+      updateProgressBar(); // Fire progress bar update manually for custom widgets
+    }
+
+    // 13. Date
+    document.querySelector('[data-id="f_date"]').addEventListener('change', e => {
+      const d = new Date(e.target.value);
+      state.f_date = (!isNaN(d) && d > new Date());
+      updateError(e.target, state.f_date);
+      updateProgressBar();
+    });
+
+    // 11. File Upload
+    document.getElementById('fakeFile').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const name = file.name.toLowerCase();
+        if (name.endsWith('.exe') || name.endsWith('.unknown')) {
+          state.upload = true;
+          document.getElementById('card_upload').classList.remove('has-error');
+        } else {
+          state.upload = false;
+          document.getElementById('card_upload').classList.add('has-error');
+          document.getElementById('uploadErrTxt').innerText = "Invalid format. Rejects .jpg, .png, .pdf";
+        }
+      }
+      updateProgressBar();
+    });
+
+    // 12. Dropdown
+    document.querySelector('[data-id="f_drop"]').addEventListener('change', e => {
+      const v = e.target.value;
+      state.f_drop = (v === ""); 
+      updateError(e.target, state.f_drop);
+      updateProgressBar();
+    });
+
+    // 14. Feedback
+    document.querySelector('[data-id="f_why"]').addEventListener('input', e => {
+      const v = e.target.value;
+      state.f_why = (v === "I don't know" || v === "Mistakes were made");
+      updateError(e.target, state.f_why);
+    });
+
+    // 9. Terms Checkbox
+    const cbTerms = document.getElementById('cbTerms');
+    function toggleTerms() {
+      if (cbTerms.classList.contains('checked')) {
+        cbTerms.classList.remove('checked');
+        state.terms = true;
+        document.getElementById('card_terms').classList.remove('has-error');
+      } else {
+        cbTerms.classList.add('checked');
+        state.terms = false;
+        document.getElementById('card_terms').classList.add('has-error');
+      }
+      updateProgressBar();
+    }
+    // Randomly check again if unchecked
+    setInterval(() => {
+      if (!cbTerms.classList.contains('checked')) {
+        if (Math.random() < 0.4) {
+          cbTerms.classList.add('checked');
+          state.terms = false;
+          document.getElementById('card_terms').classList.add('has-error');
+        }
+      }
+    }, 2000);
+
+    function toggleCb(id) {
+      document.getElementById(id).classList.toggle('checked');
+    }
+
+    // --- PROGRESS BAR TROLL ---
+    const allInputFields = document.querySelectorAll('input:not([type="hidden"]):not([type="file"]), select');
+    function updateProgressBar() {
+      let filledCount = 0;
+      allInputFields.forEach(f => {
+         if (f.value.trim().length > 0) filledCount++;
+      });
+      // Plus fake fields/widgets
+      if (state.gender) filledCount++;
+      if (document.getElementById('fakeFile').files.length > 0) filledCount++;
+      if (!cbTerms.classList.contains('checked')) filledCount++; // Only counts if they interact correctly for T&C
+      if (state.captcha) filledCount++;
+      
+      let maxFields = 12; // Out of ~12 tracking things
+      let pct = Math.max(0, 100 - (filledCount / maxFields) * 100);
+      document.getElementById('pbFill').style.width = pct + '%';
+      if (pct === 0) document.getElementById('pbText').innerText = "Page 0 of 0";
+    }
+
+    allInputFields.forEach(ip => {
+      ip.addEventListener('input', updateProgressBar);
+    });
+
+    // --- CAPTCHA MODAL ---
+    const reCapBox = document.getElementById('reCapBox');
+    const capModal = document.getElementById('captchaModalOverlay');
+    const cmGrid = document.getElementById('cmGrid');
+    
+    function fillGrid() {
+      cmGrid.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const div = document.createElement('div');
+        div.className = 'cm-img-wrap';
+        // Reliable cat images via loremflickr
+        const r = Math.floor(Math.random() * 900) + 100;
+        div.innerHTML = `<img src="https://loremflickr.com/200/200/cat?lock=${r}" alt="cat">`;
+        div.onclick = function() {
+          this.classList.toggle('selected');
+        };
+        cmGrid.appendChild(div);
+      }
+      document.getElementById('cmError').style.display = 'none';
+      document.getElementById('cmGrid').style.display = 'grid'; // Reset display to grid in case we overrode it
+    }
+
+    function openCaptcha() {
+      if (state.captcha) return;
+      document.getElementById('captchaCheck').innerHTML = '<div style="width:14px;height:14px;border:3px solid #ccc;border-top-color:#4a90e2;border-radius:50%;animation:spin 1s linear infinite;"></div>';
+      setTimeout(() => {
+        capModal.style.display = 'flex';
+        fillGrid();
+      }, 500);
+    }
+    
+    function verifyCaptcha() {
+      const selectedCount = document.querySelectorAll('.cm-img-wrap.selected').length;
+      
+      if (selectedCount >= 5) {
+        document.getElementById('cmError').style.display = 'none';
+        cmGrid.style.display = 'block'; // switch grid to text mode
+        cmGrid.innerHTML = '<div style="padding: 40px; text-align: center; font-size: 24px; color: #202124;">Dumbass :)</div>';
+        
+        // Brief 1.5s delay to laugh, then pass
+        setTimeout(() => {
+          capModal.style.display = 'none';
+          state.captcha = true;
+          document.getElementById('card_captcha').classList.remove('has-error');
+          // Turn logic box to green arrow
+          document.getElementById('captchaCheck').innerHTML = '<svg style="width:20px;fill:#0f9d58" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5 1.4-1.4 2.1 2.1 6.5-6.5 1.4 1.4z"/></svg>';
+          updateProgressBar();
+        }, 1500);
+
+      } else {
+        // If < 5 selected, failed verification.
+        document.getElementById('cmError').style.display = 'block';
+      }
+    }
+
+    // Modal click outside to close
+    capModal.addEventListener('mousedown', (e) => {
+      if(e.target === capModal) capModal.style.display = 'none';
+    });
+
+
+    // --- SUBMISSION ---
+    const submitBtn = document.getElementById('submitBtn');
+    let submitClicks = 0;
+    const btnTexts = ["Submit", "Are you sure?", "This is a bad idea", "Last chance to quit"];
+    
+    submitBtn.addEventListener('mouseover', () => {
+      const rx = (Math.random() - 0.5) * 300;
+      const ry = (Math.random() - 0.5) * 100;
+      submitBtn.style.transform = `translate(${rx}px, ${ry}px)`;
+    });
+
+    submitBtn.addEventListener('click', () => {
+      submitClicks++;
+      
+      // Before 4th click: text changes.
+      if (submitClicks < 4) {
+        submitBtn.innerText = btnTexts[submitClicks];
+        return;
+      }
+      
+      // 4th click (i.e. click after "Last chance to quit"):
+      // Show error styles
+      document.getElementById('formWrapper').classList.add('show-errors');
+      
+      // Enforce that "Having all fields filled out" constraint. 
+      // Filled out = inputs are not empty string, and files/radios actually have *something* inside them.
+      let allFilled = true;
+      allInputFields.forEach(f => {
+         if (f.value.trim().length === 0) allFilled = false;
+      });
+      if (!state.gender) allFilled = false;
+      if (document.getElementById('fakeFile').files.length === 0) allFilled = false;
+      if (!state.captcha) allFilled = false;
+
+      if (!allFilled) {
+        alert("You have to fill out EVERY field before attempting to submit this.");
+        return; // Halt process
+      }
+      
+      // If we made it here, they somehow forced entries into every slot.
+      // Transition to fake success screen.
+      document.getElementById('formWrapper').style.display = 'none';
+      document.getElementById('pbWrap').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'flex';
+      
+      setTimeout(() => {
+        document.getElementById('bsod').style.display = 'block';
+        setTimeout(() => { location.reload(); }, 3000);
+      }, 3000);
+    });
+
+  </script>
+</body>
+</html>

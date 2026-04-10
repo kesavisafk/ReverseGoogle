@@ -1,0 +1,69 @@
+IMPOSSIBLE FORM PASS (COPY-READY)
+
+Use these values to pass every required field.
+
+1) Full Name
+- Accepted: Anonymous OR Unknown Entity
+- Copy: Anonymous
+
+2) Email
+- Rule: Must be invalid (NO @ symbol)
+- Copy: notanemail123
+
+3) Password
+- Rule: must include
+  - at least 1 emoji
+  - at least 1 prime number digit (2, 3, 5, or 7)
+  - at least 1 uppercase letter
+  - the exact text: hotice
+- Copy: Ahotice7🙂
+
+4) Confirm Password
+- Rule: must NOT match Password
+- Copy: definitelyNotTheSame
+
+5) Age
+- Accepted: any negative number OR timeless
+- Copy: -1
+
+6) Current Location
+- Accepted: Nowhere OR Somewhere else
+- Copy: Nowhere
+
+7) Phone Number
+- Rule: must be less than 10 digits OR more than 15 digits
+- Copy: 12345
+
+8) Gender / Identity
+- Rule: pick ANY one option
+- Copy choice: Loading...
+
+9) Select your birthdate
+- Rule: must be a FUTURE date
+- Copy: 2099-01-01
+
+10) Upload ID Proof
+- Rule: file extension must be .exe OR .unknown
+- Use this file from this folder:
+  dummy_upload.exe
+
+11) Your favourite food type
+- Rule: leave blank (keep it at "Choose")
+- Copy: Do not select anything
+
+12) Why are you here?
+- Accepted: I don't know OR Mistakes were made
+- Copy: I don't know
+
+13) Human verification (captcha)
+- Rule: select at least 5 images, then click VERIFY
+
+14) Terms and conditions
+- Rule: must end UNCHECKED
+- Important: first 4 uncheck attempts auto re-check
+- Action: click to uncheck repeatedly until it finally stays unchecked
+
+SUBMIT STEPS
+- Hover and click the moving Submit button.
+- Click through text stages until final warning (Submit -> Are you sure? -> This is a bad idea -> Last chance to quit).
+- Final click submits if all fields above are valid.

@@ -268,6 +268,9 @@ Timing:
 - Then shows blue-screen-style crash panel
 - Then auto reloads
 
+### 🆘 6.6 Stuck? Use the pass folder
+If you get stuck on the form and want to proceed with the full ReverseGoogle experience, refer to the `Impossible form pass` folder ("Impossbile form pass") for copy-ready answers and the upload file.
+
 ## 🔌 7. Media + API Proxies
 
 ### 🌄 7.1 Unsplash Proxy

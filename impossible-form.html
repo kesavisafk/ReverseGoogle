@@ -358,6 +358,7 @@
     <!-- Submit Area -->
     <div class="footer-actions">
       <button class="submit-btn" id="submitBtn">Submit</button>
+      <button type="button" id="realSubmitBtn" style="display:none" aria-hidden="true">Real Submit</button>
       <div class="clear-form" onclick="location.reload()">Clear form</div>
     </div>
 
@@ -446,10 +447,18 @@
       }
     }
 
+    function normalizeText(v) {
+      return String(v || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
     // 1. Name
     document.querySelector('[data-id="f_name"]').addEventListener('input', e => {
-      const v = e.target.value;
-      state.f_name = (v === "Anonymous" || v === "Unknown Entity");
+      const v = normalizeText(e.target.value);
+      state.f_name = (v === "anonymous" || v === "unknown entity");
       updateError(e.target, state.f_name);
     });
 
@@ -510,8 +519,8 @@
 
     // 6. Location
     document.querySelector('[data-id="f_loc"]').addEventListener('input', e => {
-      const v = e.target.value;
-      state.f_loc = (v === "Nowhere" || v === "Somewhere else");
+      const v = normalizeText(e.target.value);
+      state.f_loc = (v === "nowhere" || v === "somewhere else");
       updateError(e.target, state.f_loc);
     });
 
@@ -566,8 +575,8 @@
 
     // 14. Feedback
     document.querySelector('[data-id="f_why"]').addEventListener('input', e => {
-      const v = e.target.value;
-      state.f_why = (v === "I don't know" || v === "Mistakes were made");
+      const v = normalizeText(e.target.value);
+      state.f_why = (v === "i dont know" || v === "mistakes were made");
       updateError(e.target, state.f_why);
     });
 
@@ -698,39 +707,66 @@
 
     // --- SUBMISSION ---
     const submitBtn = document.getElementById('submitBtn');
-    submitBtn.style.transform = 'none';
+    const realSubmitBtn = document.getElementById('realSubmitBtn');
+    let submitClicks = 0;
+    const btnTexts = ["Submit", "Are you sure?", "This is a bad idea", "Last chance to quit"];
 
-    submitBtn.addEventListener('click', () => {
-      // Show error styles on submit attempt
-      document.getElementById('formWrapper').classList.add('show-errors');
-      
-      // Enforce that "Having all fields filled out" constraint. 
-      // Filled out = inputs are not empty string, and files/radios actually have *something* inside them.
-      let allFilled = true;
-      allInputFields.forEach(f => {
-         if (f.value.trim().length === 0) allFilled = false;
-      });
-      if (!state.gender) allFilled = false;
-      if (document.getElementById('fakeFile').files.length === 0) allFilled = false;
-      if (!state.captcha) allFilled = false;
-      if (termsCheckAttempts < termsLockCount || cbTerms.classList.contains('checked')) allFilled = false;
+    function handleFakeSubmitClick() {
+      submitClicks++;
+
+      // Show red errors only on the final warning stage.
+      if (submitClicks >= 3) {
+        document.getElementById('formWrapper').classList.add('show-errors');
+      }
+
+      // Before 4th click: text changes.
+      if (submitClicks < 4) {
+        submitBtn.innerText = btnTexts[submitClicks];
+        return;
+      }
+
+      // On final warning click, keep the old required-fields gate.
+      const requiredStateKeys = [
+        'f_name', 'f_email', 'f_pwd', 'f_cpwd', 'f_age', 'f_loc', 'f_phone',
+        'gender', 'f_date', 'upload', 'f_drop', 'f_why', 'terms', 'captcha'
+      ];
+      let allFilled = requiredStateKeys.every(k => !!state[k]);
+
+      if (termsCheckAttempts < termsLockCount || cbTerms.classList.contains('checked')) {
+        allFilled = false;
+      }
 
       if (!allFilled) {
         alert("You have to fill out EVERY field before attempting to submit this.");
-        return; // Halt process
+        return;
       }
-      
-      // If we made it here, they somehow forced entries into every slot.
-      // Transition to fake success screen.
+
+      // On click when text is "Last chance to quit", trigger hidden real submit.
+      realSubmitBtn.click();
+    }
+
+    function handleRealSubmit() {
       document.getElementById('formWrapper').style.display = 'none';
       document.getElementById('pbWrap').style.display = 'none';
       document.getElementById('successScreen').style.display = 'flex';
-      
+
       setTimeout(() => {
         document.getElementById('bsod').style.display = 'block';
         setTimeout(() => { location.reload(); }, 3000);
       }, 6000);
+    }
+
+    submitBtn.addEventListener('mouseover', () => {
+      const rx = (Math.random() - 0.5) * 300;
+      const ry = (Math.random() - 0.5) * 100;
+      submitBtn.style.transform = `translate(${rx}px, ${ry}px)`;
     });
+
+    submitBtn.addEventListener('click', () => {
+      handleFakeSubmitClick();
+    });
+
+    realSubmitBtn.addEventListener('click', handleRealSubmit);
 
   </script>
 </body>

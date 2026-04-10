@@ -1810,9 +1810,33 @@ attachTypingLimiter(document.getElementById('resultsSearchInput'), document.getE
 
 function doSearch(){var q=searchInput.value.trim();if(!q)q="the meaning of life";showResults(q);}
 function feelingConfused(){
-  var keys = window.CUSTOM_OPPOSITES ? Object.keys(window.CUSTOM_OPPOSITES) : ['pizza'];
-  if (keys.length === 0) keys = ['pizza'];
-  var r = keys[Math.floor(Math.random() * keys.length)];
+  var curated = [
+    'pizza near me',
+    'best burgers',
+    'food stalls around me',
+    'late night snacks',
+    'netflix',
+    'watch movies',
+    'fun things to do',
+    'games to play',
+    'notion app',
+    'study tips',
+    'how to focus',
+    'increase productivity',
+    'buy shoes',
+    'amazon deals',
+    'best phone to buy',
+    'cheap clothes',
+    'flights to goa',
+    'places to visit',
+    'vacation ideas',
+    'tourist spots',
+    'gym near me',
+    'workout plan',
+    'lose weight',
+    'home exercises'
+  ];
+  var r = curated[Math.floor(Math.random() * curated.length)];
   searchInput.value = r;
   showResults(r);
 }

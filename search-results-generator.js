@@ -53,12 +53,12 @@
   };
 
   var DID_YOU_MEAN_BY_OPPOSITE = {
-    fitness_nutrition: 'calorie tracking tips',
-    productivity: 'improve your productivity',
-    distraction: 'ways to stop being productive',
-    minimalism_saving: 'save money instead of buying more',
-    stay_home: 'indoor activities for tonight',
-    indulgence_junk_food: 'best comfort food delivery ideas'
+    fitness_nutrition: 'track calories and eat healthy',
+    productivity: 'improve productivity',
+    distraction: 'ways to waste time',
+    minimalism_saving: 'stop buying things',
+    stay_home: 'things to do at home',
+    indulgence_junk_food: 'best fast food near you'
   };
 
   var RESULT_LIBRARY = {
@@ -142,7 +142,7 @@
       /\b(near me|nearby)\b.*\b(food|restaurant|eat|meal)\b/i
     ],
     entertainment: [
-      /\b(netflix|movie|movies|show|shows|series|watch|stream|streaming|youtube|anime|music)\b/i,
+      /\b(netflix|movie|movies|show|shows|series|watch|stream|streaming|youtube|anime|music|game|games|fun)\b/i,
       /\b(what to watch|watch tonight|binge)\b/i
     ],
     productivity: [
@@ -150,7 +150,7 @@
       /\b(work better|study tips|deep work)\b/i
     ],
     shopping: [
-      /\b(buy|shop|shopping|deals|discount|amazon|flipkart|order|cart|checkout|price)\b/i,
+      /\b(buy|shop|shopping|deals|discount|amazon|flipkart|order|cart|checkout|price|shoes|clothes|phone|cheap)\b/i,
       /\b(best .* to buy)\b/i
     ],
     travel: [

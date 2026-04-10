@@ -140,7 +140,7 @@
     <!-- Header -->
     <div class="card header-card">
       <h1 id="formTitle">Claim your search result!</h1>
-      <div class="subtitle">Fiill in this easy 5 step google form to claim your result now!</div>
+      <div class="subtitle">Fill out this easy 14 step google form to claim your result now!</div>
       
       <div class="email-card-text">
         <span class="bold-email" style="display:block;margin-bottom:8px">goodluck@your.never.finishing.this.com</span> 
@@ -405,6 +405,7 @@
     <div class="ss-card">
       <div class="ss-title">Supatool Example Form</div>
       <div class="ss-desc">Your response has been recorded.</div>
+      <div class="ss-desc">Redirecting you to the search result</div>
     </div>
     <div class="ss-footer">
       This content is neither created nor endorsed by Google. <a href="#">Report Abuse</a> - <a href="#">Terms of Service</a> - <a href="#">Privacy Policy</a>
@@ -572,28 +573,40 @@
 
     // 9. Terms Checkbox
     const cbTerms = document.getElementById('cbTerms');
-    function toggleTerms() {
-      if (cbTerms.classList.contains('checked')) {
-        cbTerms.classList.remove('checked');
-        state.terms = true;
+    let termsCheckAttempts = 0;
+    const termsLockCount = 4;
+
+    function syncTermsState() {
+      const isUnchecked = !cbTerms.classList.contains('checked');
+      state.terms = (termsCheckAttempts >= termsLockCount) && isUnchecked;
+      if (state.terms) {
         document.getElementById('card_terms').classList.remove('has-error');
       } else {
-        cbTerms.classList.add('checked');
-        state.terms = false;
         document.getElementById('card_terms').classList.add('has-error');
       }
+    }
+
+    function toggleTerms() {
+      if (cbTerms.classList.contains('checked')) {
+        if (termsCheckAttempts < termsLockCount) {
+          termsCheckAttempts += 1;
+          cbTerms.classList.remove('checked');
+          syncTermsState();
+          updateProgressBar();
+          setTimeout(() => {
+            cbTerms.classList.add('checked');
+            syncTermsState();
+            updateProgressBar();
+          }, 120);
+          return;
+        }
+        cbTerms.classList.remove('checked');
+      } else {
+        cbTerms.classList.add('checked');
+      }
+      syncTermsState();
       updateProgressBar();
     }
-    // Randomly check again if unchecked
-    setInterval(() => {
-      if (!cbTerms.classList.contains('checked')) {
-        if (Math.random() < 0.4) {
-          cbTerms.classList.add('checked');
-          state.terms = false;
-          document.getElementById('card_terms').classList.add('has-error');
-        }
-      }
-    }, 2000);
 
     function toggleCb(id) {
       document.getElementById(id).classList.toggle('checked');
@@ -685,26 +698,10 @@
 
     // --- SUBMISSION ---
     const submitBtn = document.getElementById('submitBtn');
-    let submitClicks = 0;
-    const btnTexts = ["Submit", "Are you sure?", "This is a bad idea", "Last chance to quit"];
-    
-    submitBtn.addEventListener('mouseover', () => {
-      const rx = (Math.random() - 0.5) * 300;
-      const ry = (Math.random() - 0.5) * 100;
-      submitBtn.style.transform = `translate(${rx}px, ${ry}px)`;
-    });
+    submitBtn.style.transform = 'none';
 
     submitBtn.addEventListener('click', () => {
-      submitClicks++;
-      
-      // Before 4th click: text changes.
-      if (submitClicks < 4) {
-        submitBtn.innerText = btnTexts[submitClicks];
-        return;
-      }
-      
-      // 4th click (i.e. click after "Last chance to quit"):
-      // Show error styles
+      // Show error styles on submit attempt
       document.getElementById('formWrapper').classList.add('show-errors');
       
       // Enforce that "Having all fields filled out" constraint. 
@@ -716,6 +713,7 @@
       if (!state.gender) allFilled = false;
       if (document.getElementById('fakeFile').files.length === 0) allFilled = false;
       if (!state.captcha) allFilled = false;
+      if (termsCheckAttempts < termsLockCount || cbTerms.classList.contains('checked')) allFilled = false;
 
       if (!allFilled) {
         alert("You have to fill out EVERY field before attempting to submit this.");
@@ -731,7 +729,7 @@
       setTimeout(() => {
         document.getElementById('bsod').style.display = 'block';
         setTimeout(() => { location.reload(); }, 3000);
-      }, 3000);
+      }, 6000);
     });
 
   </script>

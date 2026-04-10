@@ -127,7 +127,6 @@
   .places-inline-map .pi-label { position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:4px;background:rgba(20,20,20,.88);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;white-space:nowrap;font-weight:500; }
   .places-inline-map .pi-expand { position:absolute;top:8px;right:8px;width:28px;height:28px;background:rgba(32,33,36,.85);border:1px solid #5f6368;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10; }
   .places-inline-map .pi-expand svg { width:14px;height:14px;fill:#e8eaed; }
-  .places-inline-list { }
   .pi-place-card { display:flex;gap:16px;padding:14px 16px;border-top:1px solid #3c4043;cursor:pointer;transition:background .12s; }
   .pi-place-card:hover { background:#2a2d30; }
   .pi-place-name { font-size:16px;color:var(--text);font-weight:400;margin-bottom:2px; }
@@ -832,18 +831,26 @@ function shuffle(arr) {
   return arr;
 }
 
-function generateKnowledgePanel(q) {
+function generateKnowledgePanel(q, imgs) {
   var T = q;
   if (T) {
     T = T.split(' ').map(function(s){return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();}).join(' ');
   } else {
     T = "Topic";
   }
-  var imgs = [
-    'https://source.unsplash.com/400x300/?'+encodeURIComponent(q+'-1'),
-    'https://source.unsplash.com/200x150/?'+encodeURIComponent(q+'-2'),
-    'https://source.unsplash.com/200x150/?'+encodeURIComponent(q+'-3')
-  ];
+  var lowerQ = String(q || '').toLowerCase();
+  var panelLabel = 'Topic';
+  if (/(calorie|nutrition|healthy|diet|meal|food|dish|recipe|tracking)/.test(lowerQ)) panelLabel = 'Nutrition';
+  else if (/(gym|workout|fitness|exercise|run|cardio|training|weight)/.test(lowerQ)) panelLabel = 'Workout';
+  else if (/(focus|productivity|task|study|workspace|work|deep work|planning)/.test(lowerQ)) panelLabel = 'Workspace';
+  else if (/(watch|movie|show|series|stream|entertainment|music)/.test(lowerQ)) panelLabel = 'Entertainment';
+  else if (/(buy|shop|shopping|deal|store|price|cart|purchase)/.test(lowerQ)) panelLabel = 'Shopping';
+  else if (/(trip|travel|flight|hotel|vacation|tour|destination|goa)/.test(lowerQ)) panelLabel = 'Travel';
+  else if (/(home|stay|indoor|couch|room|house)/.test(lowerQ)) panelLabel = 'Indoor';
+  var panelImages = Array.isArray(imgs) && imgs.length ? imgs.slice(0, 3) : [];
+  while (panelImages.length < 3) {
+    panelImages.push('https://picsum.photos/seed/' + encodeURIComponent(q + '-panel-' + panelImages.length) + '/400/300');
+  }
 
   var t1 = escapeHtml(T) + ' is a fundamental concept that encompasses various types of ' + escapeHtml(q.toLowerCase()) + ', each expertly designed to completely derail your original intentions. The first highly-refined instance of ' + escapeHtml(q.toLowerCase()) + ' was allegedly manufactured in a secret underground laboratory in 1894 by researchers attempting to create the world\'s most flawless distraction. Today, it remains the leading cause of abandoned New Year\'s resolutions globally.';
   var t2 = 'The phenomenon of ' + escapeHtml(T) + ' has baffled leading scientists for decades. Essentially a construct made entirely out of ' + escapeHtml(q.toLowerCase()) + ', it magically materializes precisely when you are supposed to be doing something else. Historians note that ancient emperors frequently blamed their poorly constructed empires on an excess of ' + escapeHtml(q.toLowerCase()) + '.';
@@ -855,14 +862,15 @@ function generateKnowledgePanel(q) {
   var funnyDesc = templates[q.length % templates.length];
 
   return '<div style="font-size:32px;line-height:1.2;margin-bottom:8px;font-family: \'Google Sans\', sans-serif;">'+escapeHtml(T)+'</div>'+
-    '<div style="font-size:14px;color:#bdc1c6;margin-bottom:16px;display:flex;align-items:center;">Dish <span style="margin-left:12px;font-size:18px;line-height:1;">⋮</span></div>'+
+    '<div style="font-size:14px;color:#bdc1c6;margin-bottom:16px;display:flex;align-items:center;">'+escapeHtml(panelLabel)+' <span style="margin-left:12px;font-size:18px;line-height:1;">⋮</span></div>'+ 
     '<div style="display:flex;gap:4px;overflow:hidden;border-radius:16px;height:240px;margin-bottom:20px;">'+
       '<div style="flex:2;background:#303134;position:relative;">'+
-        '<img src="'+imgs[0]+'" style="width:100%;height:100%;object-fit:cover;">'+
+        '<img src="'+panelImages[0]+'" style="width:100%;height:100%;object-fit:cover;" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(q+'-panel-fallback-0')+'/400/300\'">'+
       '</div>'+
       '<div style="flex:1;display:flex;flex-direction:column;gap:4px;">'+
-        '<div style="flex:1;background:#303134;position:relative;"><img src="'+imgs[1]+'" style="width:100%;height:100%;object-fit:cover;"></div>'+
-        '<div style="flex:1;background:#303134;position:relative;"><img src="'+imgs[2]+'" style="width:100%;height:100%;object-fit:cover;">'+
+        '<div style="flex:1;background:#303134;position:relative;"><img src="'+panelImages[1]+'" style="width:100%;height:100%;object-fit:cover;" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(q+'-panel-fallback-1')+'/200/150\'">'+
+        '</div>'+ 
+        '<div style="flex:1;background:#303134;position:relative;"><img src="'+panelImages[2]+'" style="width:100%;height:100%;object-fit:cover;" onerror="this.src=\'https://picsum.photos/seed/'+encodeURIComponent(q+'-panel-fallback-2')+'/200/150\'">'+
           '<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.65);border-radius:24px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>'+
         '</div>'+
       '</div>'+
@@ -1867,7 +1875,7 @@ async function showResults(query, skipHistory){
   });
 
   // Knowledge panel
-  document.getElementById('knowledgePanel').innerHTML=generateKnowledgePanel(topicTerm);
+  document.getElementById('knowledgePanel').innerHTML=generateKnowledgePanel(topicTerm, thumbs.slice(0, 3));
 
   // Related
   var grid=document.getElementById('relatedGrid');grid.innerHTML='';

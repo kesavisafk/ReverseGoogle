@@ -110,6 +110,8 @@
   .result-thumb img { width:100%;height:100%;object-fit:cover;display:block; }
   .result-url { display:flex;align-items:center;gap:8px;margin-bottom:4px; }
   .result-favicon { width:26px;height:26px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0; }
+  .result-favicon picture, .result-favicon img { width:100%;height:100%;display:block;border-radius:50%; }
+  .result-favicon img { object-fit:cover; }
   .result-site-wrap { display:flex;flex-direction:column; }
   .result-site { font-size:14px;color:var(--text); }
   .result-path { font-size:12px;color:var(--text-dim); }
@@ -361,6 +363,8 @@
 </div>
 
 <script src="opposites.js"></script>
+<script src="reverse-query.js"></script>
+<script src="search-results-generator.js"></script>
 <script>
 var ICSV = '<svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 1 0 .001 18.001A9 9 0 0 0 13 3zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm.5-11H12v6l5.25 3.15.75-1.23-4.5-2.67V8z" fill="#9aa0a6"/></svg>';
 var SRCHSVG = '<svg viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="#9aa0a6"/></svg>';
@@ -399,12 +403,6 @@ var defaultSuggestions = [
   {text:"rsms (whatever that means)",sub:""},
 ];
 
-var OPPOSITE_KEYWORDS = window.CUSTOM_OPPOSITES || {
-  pizza: 'pasta',
-  near: 'far',
-  me: 'you'
-};
-
 var WRONG_AUTOCORRECT = {
   piza: 'pasta',
   pizzza: 'pasta',
@@ -435,40 +433,45 @@ function wrongSpellCorrect(q) {
   });
 }
 
-function escapeRegex(text) {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 function computeOppositeQuery(q) {
-  var cleaned = wrongSpellCorrect(q).toLowerCase().trim();
-
-  var phraseKeys = Object.keys(OPPOSITE_KEYWORDS)
-    .filter(function(k){ return k.indexOf(' ') > -1; })
-    .sort(function(a, b){ return b.length - a.length; });
-  phraseKeys.forEach(function(phrase){
-    var replacement = OPPOSITE_KEYWORDS[phrase];
-    var re = new RegExp('\\b' + escapeRegex(phrase) + '\\b', 'g');
-    cleaned = cleaned.replace(re, replacement);
-  });
-
-  cleaned = cleaned.replace(/\b[a-z]+\b/g, function(word){ return OPPOSITE_KEYWORDS[word] || word; });
-  cleaned = cleaned.replace(/\bfar you\b/g, 'far away from you');
-  cleaned = cleaned.replace(/\bfar from you\b/g, 'far away from you');
-  cleaned = cleaned.replace(/\s+/g, ' ').trim();
-  if (cleaned === 'pizza far away from you') cleaned = 'pasta far away from you';
-  return cleaned || q;
+  var corrected = wrongSpellCorrect(q);
+  if (window.reverseQuery) {
+    return window.reverseQuery(corrected, { randomize: false, fallbackPrefix: 'opposite of ' });
+  }
+  return corrected.toLowerCase().trim();
 }
 
 function generateResults(q) {
   var target = q.trim();
-  return [
-    {sponsored:true,favicon:"🧭",site:"OppositeFinder",path:"oppositefinder.example › search › "+target.replace(/ /g,'-'),title:target+" near the farthest locations",desc:"Top listings for <span class='hl'>"+target+"</span> are intentionally far away from your location."},
-    {favicon:"📖",site:"Opposite Wiki",path:"opposite-wiki.example › "+target.replace(/ /g,'-'),title:"What is "+target+"?",desc:"This page explains why <span class='hl'>"+target+"</span> is the opposite version of your original search."},
-    {favicon:"🗺️",site:"FarMap",path:"farmap.example › places",title:target+" results far from you",desc:"Map-based suggestions for <span class='hl'>"+target+"</span> in distant areas only."},
-    {favicon:"🛒",site:"Opposite Store",path:"oppositestore.example › "+target.replace(/ /g,'-'),title:"Buy "+target+" online",desc:"Product listings related to <span class='hl'>"+target+"</span>, sorted by opposite relevance."},
-    {favicon:"🎬",site:"ReverseTube",path:"reversetube.example › "+target.replace(/ /g,'-'),title:target+" explained in simple terms",desc:"A clear walkthrough of <span class='hl'>"+target+"</span> as the opposite of what you searched."},
-    {favicon:"💬",site:"AnswerBoard",path:"answerboard.example › topic › "+target.replace(/ /g,'-'),title:"People discussing "+target,desc:"Community answers focused on <span class='hl'>"+target+"</span> and related opposite terms."}
-  ];
+  var original = currentQuery || target;
+  var category = (window.detectOppositeCategory ? window.detectOppositeCategory(original) : 'productivity');
+  if (!window.generateOppositeResults) return [];
+
+  var generated = window.generateOppositeResults({
+    query: original,
+    reversedQuery: target,
+    category: category
+  });
+
+  return generated.map(function(item, idx){
+    var domain = '';
+    var path = item.url;
+    try {
+      var parsed = new URL(item.url);
+      domain = parsed.hostname;
+      path = parsed.hostname + (parsed.pathname && parsed.pathname !== '/' ? ' › ' + parsed.pathname.replace(/^\//, '').replace(/\//g, ' › ') : '');
+    } catch (e) {}
+
+    return {
+      sponsored: idx === 0,
+      favicon: (item.siteName || '?').charAt(0).toUpperCase(),
+      domain: domain,
+      site: item.siteName,
+      path: path,
+      title: item.title,
+      desc: item.description
+    };
+  });
 }
 
 function generateMicrowaveResults(originalQuery) {
@@ -536,6 +539,42 @@ async function fetchUnsplashImages(query, count) {
     for (var i = 0; i < count; i++) fallback.push(unsplashUrl(query, i, 340, 230));
     return fallback;
   }
+}
+
+function logoUrl(domain, options) {
+  var opts = options || {};
+  var params = new URLSearchParams();
+  params.set('domain', String(domain || '').toLowerCase());
+  params.set('size', String(opts.size || 64));
+  params.set('format', opts.format || 'webp');
+  params.set('theme', opts.theme || 'light');
+  params.set('fallback', opts.fallback || '404');
+  return '/api/logo?' + params.toString();
+}
+
+function escapeHtml(text) {
+  return String(text || '').replace(/[&<>"']/g, function(ch){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+  });
+}
+
+function renderCompanyLogo(domain, companyName, fallbackEmoji) {
+  if (!domain) return '<span>' + (fallbackEmoji || '•') + '</span>';
+  var initial = (companyName || domain || '?').charAt(0).toUpperCase();
+  var safeInitial = initial.replace(/[^A-Z0-9]/gi, '?');
+  var alt = escapeHtml((companyName || domain) + ' logo');
+  var darkWebp = logoUrl(domain, { size: 64, format: 'webp', theme: 'dark', fallback: '404' });
+  var darkPng = logoUrl(domain, { size: 64, format: 'png', theme: 'dark', fallback: '404' });
+  var lightWebp = logoUrl(domain, { size: 64, format: 'webp', theme: 'light', fallback: '404' });
+  var lightPng = logoUrl(domain, { size: 64, format: 'png', theme: 'light', fallback: '404' });
+  var lightJpg = logoUrl(domain, { size: 64, format: 'jpg', theme: 'light', fallback: '404' });
+  return '<picture>'+
+    '<source media="(prefers-color-scheme: dark)" srcset="'+darkWebp+'" type="image/webp">'+
+    '<source media="(prefers-color-scheme: dark)" srcset="'+darkPng+'" type="image/png">'+
+    '<source srcset="'+lightWebp+'" type="image/webp">'+
+    '<source srcset="'+lightPng+'" type="image/png">'+
+    '<img src="'+lightJpg+'" alt="'+alt+'" loading="lazy" decoding="async" onerror="var p=this.closest(\'.result-favicon\');if(p){p.innerHTML=\''+safeInitial+'\';}">'+
+    '</picture>';
 }
 
 function generateImageTab(q, relatedImages) {
@@ -742,7 +781,7 @@ async function showResults(query, skipHistory){
     var h='';
     if(r.sponsored)h+='<span class="sponsored-label">Sponsored</span><br>';
     h+='<div class="result-row"><div class="result-content">';
-    h+='<div class="result-url"><div class="result-favicon">'+r.favicon+'</div><div class="result-site-wrap"><div class="result-site">'+r.site+'</div><div class="result-path">'+r.path+'</div></div><div class="result-menu">⋮</div></div>';
+    h+='<div class="result-url"><div class="result-favicon">'+renderCompanyLogo(r.domain, r.site, r.favicon)+'</div><div class="result-site-wrap"><div class="result-site">'+r.site+'</div><div class="result-path">'+r.path+'</div></div><div class="result-menu">⋮</div></div>';
     h+='<div class="result-title">'+r.title+'</div><div class="result-desc">'+r.desc+'</div>';
     h+='</div>';
     if (idx % 2 === 1) {

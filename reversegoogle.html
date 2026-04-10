@@ -642,23 +642,120 @@ function generateVideoTab(q, relatedImages) {
   document.getElementById('videosGrid').innerHTML=html;
 }
 
-// Nonsense news for NEWS tab
-var newsTemplates = [
-  {title:"EXCLUSIVE: Scientists Confirm {q} Has Been Sentient Since 2019, 'Was Just Waiting'",src:"The Backwards Post",time:"2 hours ago",desc:"Researchers at an undisclosed university released findings Thursday suggesting {q} has been fully aware of its surroundings since 2019. 'It just didn't feel like saying anything,' lead researcher told reporters while backing away slowly.",emoji:"📰"},
-  {title:"Local Man Convinced {q} Is 'Just Phase Two' Of Something Much Bigger",src:"Conspiracy Weekly",time:"4 hours ago",desc:"A 34-year-old man from Thrissur says he has 'done his own research' on {q} for the past eleven months. He has a wall. There are strings.",emoji:"🕵️"},
-  {title:"Government Denies {q} Is In The Water Supply, Which Is Exactly What They'd Say",src:"TrustMeBro Times",time:"6 hours ago",desc:"Officials released a statement calling claims about {q} 'baseless', which observers note is 'exactly what someone who put {q} in the water would say'.",emoji:"🏛️"},
-  {title:"Man Who Searched '{q}' Reports Strange Dreams, Blames ReverseGoogle",src:"Digital Paranoia Daily",time:"3 hours ago",desc:"A user who searched for {q} on ReverseGoogle reported that he is now dreaming in search results. Doctors are baffled. The search engine has no comment.",emoji:"😴"},
-  {title:"BREAKING: {q} Now Available As A Service (Nobody Knows What This Means)",src:"Tech Crunch (Knock-off)",time:"1 hour ago",desc:"A Silicon Valley startup has announced {q}-as-a-Service for $47/month. The website has no About page, no Terms of Service, and the CEO's name is listed as 'Dave (probably)'.",emoji:"💻"},
-  {title:"Study: 94% Of People Who Think About {q} Were Already Thinking About Something Else",src:"Journal of Made-Up Statistics",time:"8 hours ago",desc:"A peer-reviewed study (peer: my cousin) found that {q} is the #1 thing people think about while pretending to think about something else.",emoji:"📊"},
-];
+// Opposite-intent news feed for NEWS tab
+var NEWS_SOURCES = ['BBC', 'CNN', 'The Guardian', 'The New York Times', 'Reuters', 'The Verge', 'BuzzFeed News', 'India Today', 'NDTV', 'The Hindu'];
+var NEWS_TIMES = ['1 hour ago', '2 hours ago', '4 hours ago', '6 hours ago', '10 hours ago', '1 day ago'];
+var NEWS_SOURCE_DOMAINS = {
+  'BBC': 'bbc.com',
+  'CNN': 'cnn.com',
+  'The Guardian': 'theguardian.com',
+  'The New York Times': 'nytimes.com',
+  'Reuters': 'reuters.com',
+  'The Verge': 'theverge.com',
+  'BuzzFeed News': 'buzzfeednews.com',
+  'India Today': 'indiatoday.in',
+  'NDTV': 'ndtv.com',
+  'The Hindu': 'thehindu.com'
+};
 
-function generateNewsTab(q) {
+var OPPOSITE_NEWS_LIBRARY = {
+  fitness_nutrition: [
+    { title: 'Man Tracks Calories So Precisely He Accidentally Discovers New Element', description: 'Researchers say a citizen logging every gram of lunch triggered a spreadsheet anomaly now under peer review.', keywords: 'fitness,gym,workout,diet' },
+    { title: 'Experts Warn Meal Prep Containers May Soon Need Passports', description: 'Nutrition analysts report unusually organized food routines appearing at airport security in multiple cities.', keywords: 'meal prep,nutrition,healthy food' },
+    { title: 'Government Opens Inquiry Into Citizens Who Know Exactly What They Ate', description: 'Officials confirmed concern after a rising number of people could recall yesterday\'s protein intake without hesitation.', keywords: 'calorie tracking,health app,fitness' },
+    { title: 'Fitness App Introduces Disappointed Notification Tone for Late-Night Snacking', description: 'Product designers insist the new feature is motivational, while users describe it as emotionally specific.', keywords: 'fitness app,tracking,phone' },
+    { title: 'National Gym Attendance Spikes After Rumor That Treadmills Print Lottery Numbers', description: 'Authorities clarified there is no evidence cardio machines issue financial advice, yet queues continue to grow.', keywords: 'gym,treadmill,exercise' },
+    { title: 'Study Finds Salad Eaten Near Laptop Improves Confidence by 13 Percent', description: 'The report stops short of causation but confirms participants felt unexpectedly professional.', keywords: 'salad,nutrition,office' }
+  ],
+  productivity: [
+    { title: 'Office Worker Builds 47-Tab Productivity System, Finishes Task in 2041', description: 'Analysts praised the structure while noting the plan required three flowcharts and a backup calendar for meetings.', keywords: 'office,work,desk,planning' },
+    { title: 'Team Declares Inbox Zero a Public Holiday', description: 'Company leaders called the achievement historic and asked employees to keep screenshots for future generations.', keywords: 'email,work,laptop' },
+    { title: 'City Introduces Emergency Focus Zones for People With 200 Open Notes', description: 'Officials say the booths offer noise control, timers, and polite reminders to complete one thing at a time.', keywords: 'focus,study,workspace' },
+    { title: 'Startup Claims New To-Do App Can Detect Procrastination by Keyboard Sighing', description: 'Early testers report the feature occasionally misclassifies deep breathing as strategic delay.', keywords: 'productivity app,keyboard,desk' },
+    { title: 'Researchers Confirm Color-Coded Spreadsheets Increase Dramatic Satisfaction', description: 'Scientists observed improved morale when project tabs included gradients and excessively confident labels.', keywords: 'spreadsheet,office,data' },
+    { title: 'Nationwide Debate Begins Over Whether Meetings Need Pre-Meetings', description: 'Experts remain divided, though consensus exists that everyone should at least share an agenda.', keywords: 'meeting,conference room,work' }
+  ],
+  distraction: [
+    { title: 'Man Perfects Procrastination Routine, Wins Award He Forgot to Collect', description: 'Judges applauded his consistency after reviewing a year-long schedule of intentional task postponement.', keywords: 'sleep,lazy,couch,scrolling' },
+    { title: 'Experts Reveal Infinite Scroll May Now Be Considered a Lifestyle', description: 'Behavior specialists noted that short breaks have evolved into full recreational frameworks.', keywords: 'phone,scrolling,social media' },
+    { title: 'Local Student Organizes Study Desk by Vibe, Studies Never Begin', description: 'Observers report excellent lighting, balanced stationery placement, and zero completed chapters.', keywords: 'study desk,cozy room,lazy' },
+    { title: 'Streaming Algorithm Sends Formal Thank-You Note to Frequent Delayers', description: 'Users receiving the message say they feel seen, mildly judged, and strangely committed to one more episode.', keywords: 'streaming,tv,couch' },
+    { title: 'City Announces National Championship for Opening Tabs and Not Reading Them', description: 'Participants are scored on quantity, confidence, and the ability to say \"I\'ll get back to that.\"', keywords: 'browser,tabs,laptop' },
+    { title: 'Researchers Identify Peak Productivity as Ideal Time to Ignore Productivity', description: 'The team says this paradox appears most often when deadlines are less than 24 hours away.', keywords: 'procrastination,home office,clock' }
+  ],
+  minimalism_saving: [
+    { title: 'Family Replaces Shopping Cart With Spreadsheet and Reports Emotional Stability', description: 'Economists say structured buying lists may be reducing impulse decisions in suburban households.', keywords: 'minimalism,saving money,budget' },
+    { title: 'Experts Suggest Waiting 24 Hours Before Buying Things You Forgot in 24 Minutes', description: 'Financial advisors call the method boring but effective, especially during seasonal discount events.', keywords: 'budget,finance,planning' },
+    { title: 'City Mall Installs Reflection Booth for Shoppers Seeking Inner Clarity', description: 'The pilot program encourages visitors to ask whether an item is useful or just photogenic.', keywords: 'shopping,mall,minimalist' },
+    { title: 'National Survey Finds Empty Closet Space Improves Decision-Making Speed', description: 'Respondents reported lower stress and fewer debates with themselves over identical black shirts.', keywords: 'closet,minimalist,home' },
+    { title: 'Government Introduces "Do You Really Need This" Checkout Prompt', description: 'Retail groups oppose the proposal, saying it could trigger widespread existential pauses at counters.', keywords: 'checkout,shopping,retail' },
+    { title: 'Researchers Confirm Budget Apps More Effective When Opened Before Payday', description: 'The study notes users often unlock dramatic savings once they stop treating wishlists as obligations.', keywords: 'money app,budget,saving' }
+  ],
+  stay_home: [
+    { title: 'Traveler Cancels Vacation After Discovering Couch Has Better Legroom', description: 'Transport analysts acknowledged the claim while noting the home route still includes kitchen traffic.', keywords: 'home,indoor,living room,comfort' },
+    { title: 'Experts Recommend Indoor Adventures Featuring Blanket Fort Navigation', description: 'Family planners describe the activity as low-cost, low-risk, and unexpectedly competitive.', keywords: 'indoor activities,home,weekend' },
+    { title: 'City Residents Begin Ranking Ceiling Fans as Scenic Destinations', description: 'Local tourism boards declined comment after social media users posted detailed \"fan-view\" guides.', keywords: 'stay home,cozy room,indoor' },
+    { title: 'National Weather Service Issues Advisory for Excessive Staying In', description: 'Forecasters warned that ideal indoor conditions may continue through the evening and into tomorrow.', keywords: 'rainy day,home,coffee' },
+    { title: 'Study Finds 92 Percent of Weekend Plans Can Be Replaced by Streaming', description: 'The report cites convenience, snacks, and the strategic use of ambient lighting as key factors.', keywords: 'streaming,home theater,sofa' },
+    { title: 'Apartment Balcony Declared Official International Observation Deck', description: 'Residents celebrated the designation with tea, binoculars, and responsible levels of overconfidence.', keywords: 'balcony,city view,home' }
+  ],
+  indulgence_junk_food: [
+    { title: 'Researchers Link Midnight Fries to Temporary Philosophical Confidence', description: 'Participants reported bold life conclusions immediately after dipping sauces were introduced.', keywords: 'junk food,fries,burger,fast food' },
+    { title: 'City Declares National Emergency After Sauce-to-Nugget Ratio Debate', description: 'Food officials confirmed no injuries but described public opinion as sharply divided.', keywords: 'fried food,snacks,delivery' },
+    { title: 'Experts Say Dessert Before Dinner May Improve Negotiation Outcomes', description: 'Analysts observed participants became unusually persuasive after strategic access to chocolate.', keywords: 'dessert,cake,sweets' },
+    { title: 'Local Group Creates Four-Course Meal Entirely From Delivery App Combos', description: 'Nutrition experts called the menu ambitious, while attendees called it \"efficient planning.\"', keywords: 'food delivery,takeout,comfort food' },
+    { title: 'Government Reviews Proposal to Classify Extra Cheese as Public Mood Support', description: 'Policymakers requested additional data before approving nationwide comfort-food interventions.', keywords: 'pizza,cheese,comfort food' },
+    { title: 'Survey Finds People Trust Menus More When Photos Look Slightly Unreal', description: 'Researchers noted confidence increased when images featured dramatic lighting and impossible crispness.', keywords: 'restaurant,menu,fast food' }
+  ]
+};
+
+function newsImageUrl(keywordCsv) {
+  return 'https://source.unsplash.com/featured/?' + encodeURIComponent(keywordCsv || 'news');
+}
+
+function rotatePickFrom(list, count, seed) {
+  if (!Array.isArray(list) || !list.length || count <= 0) return [];
+  var start = seed % list.length;
+  var out = [];
+  for (var i = 0; i < Math.min(count, list.length); i++) {
+    out.push(list[(start + i) % list.length]);
+  }
+  return out;
+}
+
+function hashString(text) {
+  var h = 0;
+  var s = String(text || '');
+  for (var i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
+
+function generateNewsArticles(oppositeCategory) {
+  var pool = OPPOSITE_NEWS_LIBRARY[oppositeCategory] || OPPOSITE_NEWS_LIBRARY.distraction;
+  var chosen = rotatePickFrom(pool, 6, hashString(oppositeCategory));
+  return chosen.map(function (item, idx) {
+    return {
+      source: NEWS_SOURCES[idx % NEWS_SOURCES.length],
+      title: item.title,
+      description: item.description,
+      time: NEWS_TIMES[idx % NEWS_TIMES.length],
+      image: newsImageUrl(item.keywords)
+    };
+  });
+}
+
+function generateNewsTab(oppositeCategory) {
+  var articles = generateNewsArticles(oppositeCategory);
   var html='';
-  newsTemplates.forEach(function(n,i){
-    var t=n.title.replace(/{q}/g,q);
-    var d=n.desc.replace(/{q}/g,q);
-    var bg=['#c0392b','#2980b9','#27ae60','#8e44ad','#e67e22','#16a085'][i%6];
-    html+='<div class="news-item"><div class="news-content"><div class="news-source"><div class="news-favicon" style="background:'+bg+';color:white;font-size:8px;font-weight:700">'+n.src.charAt(0)+'</div><span class="news-pub">'+n.src+'</span></div><div class="news-title">'+t+'</div><div class="news-desc">'+d+'</div><div class="news-time">'+n.time+'</div></div><div class="news-thumb">'+n.emoji+'</div></div>';
+  articles.forEach(function(a, i){
+    var domain = NEWS_SOURCE_DOMAINS[a.source] || '';
+    var sourceInitial = (a.source || 'N').charAt(0).toUpperCase();
+    var sourceLogo = domain
+      ? '<img src="'+logoUrl(domain, { size: 32, format: 'png', theme: 'light', fallback: 'monogram' })+'" alt="'+escapeHtml(a.source)+' logo" loading="lazy" onerror="this.parentElement.textContent=\''+sourceInitial+'\'">'
+      : sourceInitial;
+    html += '<div class="news-item"><div class="news-content"><div class="news-source"><div class="news-favicon" style="background:var(--surface2);color:var(--text);font-size:9px;font-weight:700">'+sourceLogo+'</div><span class="news-pub">'+a.source+'</span></div><div class="news-title">'+a.title+'</div><div class="news-desc">'+a.description+'</div><div class="news-time">'+a.time+'</div></div><div class="news-thumb"><img src="'+a.image+'" alt="news image" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.parentElement.textContent='+'"📰"'+'"></div></div>';
   });
   document.getElementById('newsGrid').innerHTML=html;
 }
@@ -779,6 +876,7 @@ function feelingConfused(){var r=allSuggestions[Math.floor(Math.random()*allSugg
 async function showResults(query, skipHistory){
   currentQuery=query;
   var detectedCategory = (window.detectOppositeCategory ? window.detectOppositeCategory(query) : 'productivity');
+  var oppositeCategory = (window.getOppositeCategory ? window.getOppositeCategory(detectedCategory) : 'distraction');
   var generatedPayload = generateResults(query, detectedCategory);
   var didYouMean = generatedPayload.didYouMean || '';
   var topicTerm = didYouMean || (window.getOppositeTopicTerm ? window.getOppositeTopicTerm(detectedCategory) : 'general web topics');
@@ -852,7 +950,7 @@ async function showResults(query, skipHistory){
   // Generate other tabs
   generateImageTab(topicTerm, thumbs);
   generateVideoTab(topicTerm, thumbs);
-  generateNewsTab(topicTerm);
+  generateNewsTab(oppositeCategory);
 
   // Switch to All tab
   switchTab('all');

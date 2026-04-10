@@ -5,10 +5,6 @@ module.exports = async function handler(req, res) {
   }
 
   const token = process.env.LOGODEV_PUBLISHABLE_KEY || '';
-  if (!token) {
-    res.status(500).json({ error: 'Missing LOGODEV_PUBLISHABLE_KEY environment variable' });
-    return;
-  }
 
   const domainRaw = typeof req.query.domain === 'string' ? req.query.domain.trim().toLowerCase() : '';
   const domain = domainRaw.replace(/[^a-z0-9.-]/g, '');
@@ -31,7 +27,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const logoUrl = new URL(`https://img.logo.dev/${domain}`);
-    logoUrl.searchParams.set('token', token);
+    if (token) logoUrl.searchParams.set('token', token);
     logoUrl.searchParams.set('size', String(size));
     logoUrl.searchParams.set('format', format);
     logoUrl.searchParams.set('theme', theme);

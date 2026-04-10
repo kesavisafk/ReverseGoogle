@@ -563,18 +563,33 @@ function renderCompanyLogo(domain, companyName, fallbackEmoji) {
   var initial = (companyName || domain || '?').charAt(0).toUpperCase();
   var safeInitial = initial.replace(/[^A-Z0-9]/gi, '?');
   var alt = escapeHtml((companyName || domain) + ' logo');
-  var darkWebp = logoUrl(domain, { size: 64, format: 'webp', theme: 'dark', fallback: '404' });
-  var darkPng = logoUrl(domain, { size: 64, format: 'png', theme: 'dark', fallback: '404' });
-  var lightWebp = logoUrl(domain, { size: 64, format: 'webp', theme: 'light', fallback: '404' });
-  var lightPng = logoUrl(domain, { size: 64, format: 'png', theme: 'light', fallback: '404' });
-  var lightJpg = logoUrl(domain, { size: 64, format: 'jpg', theme: 'light', fallback: '404' });
-  return '<picture>'+
-    '<source media="(prefers-color-scheme: dark)" srcset="'+darkWebp+'" type="image/webp">'+
-    '<source media="(prefers-color-scheme: dark)" srcset="'+darkPng+'" type="image/png">'+
-    '<source srcset="'+lightWebp+'" type="image/webp">'+
-    '<source srcset="'+lightPng+'" type="image/png">'+
-    '<img src="'+lightJpg+'" alt="'+alt+'" loading="lazy" decoding="async" onerror="var p=this.closest(\'.result-favicon\');if(p){p.innerHTML=\''+safeInitial+'\';}">'+
-    '</picture>';
+  var theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  var webp = logoUrl(domain, { size: 64, format: 'webp', theme: theme, fallback: 'monogram' });
+  var png = logoUrl(domain, { size: 64, format: 'png', theme: theme, fallback: 'monogram' });
+  var jpg = logoUrl(domain, { size: 64, format: 'jpg', theme: theme, fallback: 'monogram' });
+  var favicon = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=64';
+  return '<img src="'+webp+'" data-png="'+png+'" data-jpg="'+jpg+'" data-favicon="'+favicon+'" data-initial="'+safeInitial+'" alt="'+alt+'" loading="lazy" decoding="async" onerror="handleLogoError(this)">';
+}
+
+function handleLogoError(img) {
+  var step = Number(img.getAttribute('data-step') || '0');
+  if (step === 0 && img.dataset.png) {
+    img.setAttribute('data-step', '1');
+    img.src = img.dataset.png;
+    return;
+  }
+  if (step === 1 && img.dataset.jpg) {
+    img.setAttribute('data-step', '2');
+    img.src = img.dataset.jpg;
+    return;
+  }
+  if (step === 2 && img.dataset.favicon) {
+    img.setAttribute('data-step', '3');
+    img.src = img.dataset.favicon;
+    return;
+  }
+  var parent = img.closest('.result-favicon');
+  if (parent) parent.textContent = img.dataset.initial || '?';
 }
 
 function generateImageTab(q, relatedImages) {
